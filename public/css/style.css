@@ -1,0 +1,94 @@
+:root {
+    --primary-color: #ff7701;
+    --secondary-color :#5b7083;
+}
+body{
+    font-family: "Noto Kufi Arabic", serif;
+}
+
+.link_hover:hover{
+    color: var(--primary-color) !important;
+}
+/* Auth Pages Style */
+.auth h3 { color: var(--primary-color);}
+.auth button { background: var(--primary-color);}
+.auth button:hover {background: var(--primary-color);}
+
+/* Settings Page Style */
+.settings .position {
+    position: relative;
+    top: 10px;
+}
+.text-grey {
+    font-size: 13px;
+    color: var(--secondary-color) !important;
+}
+
+/* Home Page Style */
+.text-orange-color { color: #ff7701 !important; }
+#rightPageHome {
+    z-index: 1000;
+    position: sticky;
+    top: 10px;
+}
+.post-container{
+    margin-bottom: 100px;
+}
+.post-container textarea{
+    resize: none;
+    border: 0;
+}
+.logo-main{
+    width: 40px;
+    height: 40px;
+}
+.image-preview img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+.emoji-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background: #fff;
+}
+.emoji-picker span {
+    font-size: 24px;
+    cursor: pointer;
+}
+.emoji-picker span:hover {
+    background: #f0f0f0;
+    border-radius: 50%;
+}
+.btn-orange, .btn-orange:hover {
+    background: var(--primary-color);
+}
+
+#post-like-section:hover{ cursor: pointer;}
+
+/* Profile Page Style */
+.profile .profile_background_image{
+    width: 100%;
+    height: 360px;
+}
+.cover_image{
+    margin-top: -55px;
+}
+.follow_btn_margin{
+    margin-top: -35px;
+}
+.nav-pills .nav-link.active, .nav-pills .show>.nav-link{
+    background: var(--primary-color);
+}
+
+/* Follow Page Style */
+.follow .bio {
+    font-size: 15px;
+}
