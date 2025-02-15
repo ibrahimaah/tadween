@@ -14,6 +14,9 @@ use App\Models\PollVote;
 use App\Models\User;
 use Carbon\Carbon;
 
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+
 class PostController extends Controller
 {
     public function index()
@@ -114,7 +117,9 @@ class PostController extends Controller
                 ]);
             }
 
-            if ($post) {
+            if ($post) 
+            {
+                Cache::forget('posts_page_' . request('page', 1));
                 // تحميل بيانات المستخدم المرتبطة بالمنشور
                 $post->load(['user', 'poll']);
 
@@ -188,18 +193,30 @@ class PostController extends Controller
             ], 200);
         }
     }
+   
 
     //Display All Posts For Users
     public function loadPosts()
     {
+         // استرجاع المنشورات مع بيانات المستخدم والإعجابات
+     
+        // $posts = Post::with(['user', 'userPostLike', 'poll'])
+        //     ->withCount('replies')
+        //     ->withCount('postLikes')
+        //     ->orderBy('created_at', 'desc')
+        //     ->paginate(10); 
+
+
         $maxLength = 200; // الحد الأقصى لطول النص الذي سيتم عرضه
 
-        // استرجاع المنشورات مع بيانات المستخدم والإعجابات
-        $posts = Post::with(['user', 'userPostLike', 'poll'])
-            ->withCount('replies')
-            ->withCount('postLikes')
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+        $cacheKey = 'posts_page_' . request('page', 1);
+
+        $posts = Cache::remember($cacheKey, now()->addMinutes(10), function () {
+            return Post::with(['user', 'userPostLike', 'poll'])
+                ->withCount(['replies', 'postLikes'])
+                ->orderBy('created_at', 'desc')
+                ->paginate(10);
+        });
 
         // تعديل البيانات التي سيتم إرجاعها
         $postsData = $posts->map(function ($post) use ($maxLength) {
@@ -215,30 +232,41 @@ class PostController extends Controller
             $user_username = $post->user->username ? htmlspecialchars($post->user->username, ENT_QUOTES, 'UTF-8') : null;
             $user_cover_image = $post->user->profile->cover_image ? htmlspecialchars($post->user->profile->cover_image, ENT_QUOTES, 'UTF-8') : null;
 
-            $pollData = null;
-            if ($post->poll) {
-                $pollData = [
-                    'expires_at' => $post->poll->expires_at->format('Y-m-d H:i:s'),
-                    'options' => [
-                        [
-                            'option_text' => $post->poll->option1_text,
-                            'votes'       => $post->poll->option1_votes,
-                        ],
-                        [
-                            'option_text' => $post->poll->option2_text,
-                            'votes'       => $post->poll->option2_votes,
-                        ],
-                        [
-                            'option_text' => $post->poll->option3_text,
-                            'votes'       => $post->poll->option3_votes,
-                        ],
-                        [
-                            'option_text' => $post->poll->option4_text,
-                            'votes'       => $post->poll->option4_votes,
-                        ],
-                    ],
-                ];
-            }
+            // $pollData = null;
+            // if ($post->poll) {
+            //     $pollData = [
+            //         'expires_at' => $post->poll->expires_at->format('Y-m-d H:i:s'),
+            //         'options' => [
+            //             [
+            //                 'option_text' => $post->poll->option1_text,
+            //                 'votes'       => $post->poll->option1_votes,
+            //             ],
+            //             [
+            //                 'option_text' => $post->poll->option2_text,
+            //                 'votes'       => $post->poll->option2_votes,
+            //             ],
+            //             [
+            //                 'option_text' => $post->poll->option3_text,
+            //                 'votes'       => $post->poll->option3_votes,
+            //             ],
+            //             [
+            //                 'option_text' => $post->poll->option4_text,
+            //                 'votes'       => $post->poll->option4_votes,
+            //             ],
+            //         ],
+            //     ];
+            // }
+
+            $pollData = $post->poll ? [
+                'expires_at' => $post->poll->expires_at->format('Y-m-d H:i:s'),
+                'options' => array_filter([
+                    $post->poll->option1_text ? ['option_text' => $post->poll->option1_text, 'votes' => $post->poll->option1_votes] : null,
+                    $post->poll->option2_text ? ['option_text' => $post->poll->option2_text, 'votes' => $post->poll->option2_votes] : null,
+                    $post->poll->option3_text ? ['option_text' => $post->poll->option3_text, 'votes' => $post->poll->option3_votes] : null,
+                    $post->poll->option4_text ? ['option_text' => $post->poll->option4_text, 'votes' => $post->poll->option4_votes] : null,
+                ]),
+            ] : null;
+            
             return [
                 'is_owner' => Auth::id() === $post->user_id,
                 'slug_id' => $post->slug_id,
@@ -367,7 +395,7 @@ class PostController extends Controller
 
             // البحث عن المنشور باستخدام slug_id
             $post = Post::where('slug_id', $request->slug_id)->first();
-
+            Cache::forget('posts_page_' . request('page', 1));
             // التحقق من وجود المنشور
             if (!$post) {
                 return response()->json([

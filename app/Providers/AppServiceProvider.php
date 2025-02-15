@@ -21,8 +21,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //$locale = Cookie::get('locale', 'en');  // إذا لم تكن موجودة، يتم تعيين اللغة الافتراضية إلى 'ar'
-        //App::setLocale($locale);  // تعيين اللغة
+        $locale = Cookie::get('locale', 'ar');  // إذا لم تكن موجودة، يتم تعيين اللغة الافتراضية إلى 'ar'
+        App::setLocale($locale);  // تعيين اللغة
 
         
          // استخدام قوالب Bootstrap 5 لتقسيم الصفحات

@@ -12,14 +12,16 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\AdminController;
+use Illuminate\Support\Facades\Cookie;
+use Illuminate\Http\Request;
 
 ///////////// Route For Change Language /////////////
-Route::get('lang/{locale}', function ($locale) {
+Route::get('lang/{locale}', function ($locale, Request $request) {
     if (in_array($locale, ['en', 'ar'])) {
-        cookie()->queue('locale', $locale, 60 * 24 * 365); // 365 يوم
-        App::setLocale($locale); // تعيين اللغة
+        Cookie::queue('locale', $locale, 60 * 24 * 365); // Store locale for 1 year
+        App::setLocale($locale);
     }
-    return redirect()->back(); // إعادة توجيه المستخدم
+    return redirect()->back();
 })->name('lang.switch');
 
 Route::get('/', function () {

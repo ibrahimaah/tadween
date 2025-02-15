@@ -17,13 +17,13 @@
     <link rel="stylesheet" href="{{asset('css/style.css')}}">
     <link rel="manifest" href="{{ asset('manifest.json') }}">
 
-    <script>
+    {{-- <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/serviceworker.js')
                 .then(() => console.log("Service Worker Registered"))
                 .catch((error) => console.log("Service Worker Registration Failed:", error));
         }
-    </script>
+    </script> --}}
 
 </head>
 

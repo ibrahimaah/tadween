@@ -45,6 +45,7 @@ class AuthController extends Controller
             'remember_token' => Str::random(60), // تعيين remember_token افتراضيًا
         ]);
 
+        // dd($user);
         // تسجيل الدخول مباشرة بعد إنشاء الحساب
         Auth::login($user);
 
