@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Helpers\TextHelper;
+use App\Models\Follow;
 use App\Models\Notification;
 use App\Models\Poll;
 use App\Models\PollVote;
@@ -210,12 +211,28 @@ class PostController extends Controller
         $maxLength = 200; // الحد الأقصى لطول النص الذي سيتم عرضه
 
         $cacheKey = 'posts_page_' . request('page', 1);
+        
 
-        $posts = Cache::remember($cacheKey, now()->addMinutes(10), function () {
+        $posts = Cache::remember($cacheKey, now()->addMinutes(10), function () 
+        {
+            $followings = Follow::where('follower_id', Auth::id())->get(['following_id', 'created_at']);
+
             return Post::with(['user', 'userPostLike', 'poll'])
-                ->withCount(['replies', 'postLikes'])
-                ->orderBy('created_at', 'desc')
-                ->paginate(10);
+                        ->withCount(['replies', 'postLikes'])
+                        ->where(function ($query) use ($followings) {
+                            foreach ($followings as $follow) {
+                                $query->orWhere(function ($q) use ($follow) {
+                                    $q->where('user_id', $follow->following_id)
+                                    ->where('created_at', '>', $follow->created_at);
+                                });
+                            }
+                        })
+                        ->orWhereHas('postLikes', function ($query) {
+                            $query->where('user_id', Auth::id());
+                        })
+                        ->orderBy('created_at', 'desc')
+                        ->paginate(10);
+
         });
 
         // تعديل البيانات التي سيتم إرجاعها

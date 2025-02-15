@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Follow;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class FollowController extends Controller
 {
@@ -50,7 +51,8 @@ class FollowController extends Controller
             'following_id' => $user->id
         ]);
 
-        if ($follow->exists()) {
+        if ($follow->exists()) 
+        {
             $follow->delete();
             $isFollowing = false;
             $message = __('follows.user_follow_removed_successfully');
@@ -65,7 +67,7 @@ class FollowController extends Controller
             $message = __('follows.user_follow_successfully');
             $followTextBtn = __('follows.user_cancel_follow');
         }
-    
+        Cache::forget('posts_page_' . request('page', 1));
         return response()->json([
             'success' => true,
             'follow_text_btn' => $followTextBtn,

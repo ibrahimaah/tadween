@@ -12,8 +12,11 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\AdminController;
+use App\Models\Follow;
+use App\Models\Post;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 ///////////// Route For Change Language /////////////
 Route::get('lang/{locale}', function ($locale, Request $request) {
@@ -24,9 +27,25 @@ Route::get('lang/{locale}', function ($locale, Request $request) {
     return redirect()->back();
 })->name('lang.switch');
 
+ 
 Route::get('/', function () {
     abort(404);
 });
+// Route::get('tmp',function(){
+
+//     $followings = Follow::where('follower_id', Auth::id())->get(['following_id', 'created_at']);
+    
+//     $res =  Post::with(['user', 'userPostLike', 'poll'])
+//     ->withCount(['replies', 'postLikes'])
+//     ->orWhereHas('postLikes', function ($query) {
+//         $query->where('user_id', Auth::id());
+//     })
+//     ->orderBy('created_at', 'desc')->get();
+
+//     dd($res);
+
+// });
+
 // Route::get('/', [PostController::class, 'index'])->name('home')->middleware('auth');
 ////////////////////// Routes For Home ////////////////////
 Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->group(function () {

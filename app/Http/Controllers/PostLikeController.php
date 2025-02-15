@@ -7,6 +7,7 @@ use App\Models\Post;
 use Illuminate\Http\Request;
 use App\Models\PostLike;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class PostLikeController extends Controller
 {
@@ -36,6 +37,7 @@ class PostLikeController extends Controller
             // إذا كان الإعجاب موجودًا، قم بحذفه (إلغاء الإعجاب)
             $like->delete();
             $likeCount = PostLike::where('post_id', $post->id)->count();
+            Cache::forget('posts_page_' . request('page', 1));
             return response()->json([
                 'success' => true,
                 'message' => __('home.post_like_removed_successfully'),
@@ -49,7 +51,7 @@ class PostLikeController extends Controller
                 'post_id' => $post->id,
             ]);
             $likeCount = PostLike::where('post_id', $post->id)->count();
-
+            Cache::forget('posts_page_' . request('page', 1));
             return response()->json([
                 'success' => true,
                 'message' => __('home.post_like_successfully'),
