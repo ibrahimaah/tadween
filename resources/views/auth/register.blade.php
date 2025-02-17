@@ -55,7 +55,7 @@
                     <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" required>
                 </div>
                 <div class="mb-5 form-check {{ app()->getLocale() == 'ar' ? 'form-check-reverse' : '' }}">
-                    <input class="form-check-input" type="checkbox" value="1" id="terms" name="terms">
+                    <input class="form-check-input" type="checkbox" value="1" id="terms" name="terms" {{ old('terms') ? 'checked' : '' }}>
                     <label class="form-check-label" for="terms">
                         {{ __('auth.terms_agree_field') }}
                         <a href="{{ route('terms') }}" class="text-decoration-none" target="_blank">{{ __('auth.terms_and_conditions_field') }}</a>

@@ -68,20 +68,30 @@ class AuthController extends Controller
             'password' => 'required|string|min:8',
         ]);
 
+        // Determine if login is an email or username
         $field = filter_var($credentials['login'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
 
-        if (Auth::attempt([$field => $credentials['login'], 'password' => $credentials['password']])) 
-        { 
-            $request->session()->regenerate();
-    
-            return redirect()->intended('/');
-        }
- 
-        return back()->withErrors([
-            'login' => __('auth.failed'),
-        ]);
+        // Find user by email or username
+        $user = User::where($field, $credentials['login'])->first();
 
+        if (!$user) {
+            return back()->withErrors([
+                'login' => __('auth.invalid_username_or_email'), // Custom error for invalid username/email
+            ])->withInput();
+        }
+
+        // Check password separately
+        if (!Auth::attempt([$field => $credentials['login'], 'password' => $credentials['password']])) {
+            return back()->withErrors([
+                'password' => __('auth.invalid_password'), // Custom error for wrong password
+            ])->withInput();
+        }
+
+        // Regenerate session and redirect if login is successful
+        $request->session()->regenerate();
+        return redirect()->intended('/');
     }
+
 
     
     /**

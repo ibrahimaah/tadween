@@ -2,7 +2,7 @@
 
 return [
 
-    'accepted' => 'يجب قبول :attribute.',
+    'accepted' => 'يجب عليك قبول :attribute للمتابعة.',
     'accepted_if' => 'يجب قبول :attribute عندما يكون :other :value.',
     'active_url' => ':attribute ليس عنوان URL صالحًا.',
     'after' => 'يجب أن يكون :attribute تاريخًا بعد :date.',
@@ -20,7 +20,7 @@ return [
         'array' => 'يجب أن يحتوي :attribute على عناصر بين :min و :max.',
     ],
     'boolean' => 'يجب أن تكون قيمة :attribute إما true أو false.',
-    'confirmed' => 'تأكيد :attribute غير مطابق.',
+    'confirmed' => 'تأكيد :attribute لا يطابق كلمة المرور التي أدخلتها.',
     'current_password' => 'كلمة المرور غير صحيحة.',
     'date' => ':attribute ليس تاريخًا صالحًا.',
     'date_equals' => 'يجب أن يكون :attribute تاريخًا مساويًا لـ :date.',
@@ -104,11 +104,24 @@ return [
     'starts_with' => 'يجب أن يبدأ :attribute بأحد القيم التالية: :values.',
     'string' => 'يجب أن يكون :attribute نصًا.',
     'timezone' => 'يجب أن يكون :attribute منطقة زمنية صالحة.',
-    'unique' => 'تم أخذ :attribute بالفعل.',
+    'unique' => ':attribute مستخدم بالفعل.',
     'uploaded' => 'فشل في تحميل :attribute.',
     'url' => 'صيغة :attribute غير صالحة.',
     'uuid' => 'يجب أن يكون :attribute UUID صالحًا.',
+    'postText.max' => 'يجب ألا يتجاوز نص المنشور 400 حرف.',
+    'images.*.image' => 'يجب أن يكون كل ملف صورة صالحة (JPEG أو PNG أو GIF أو WebP أو JPG).',
+    'images.*.mimes' => 'يُسمح فقط بتنسيقات JPEG و PNG و GIF و WebP و JPG.',
+    'images.*.max' => 'يجب أن يكون حجم كل صورة 1 ميجابايت أو أقل.',
 
+    'pollQuestion.max' => 'يجب ألا يتجاوز سؤال الاستطلاع 200 حرف.',
+    'poll_option1.max' => 'يجب ألا يتجاوز الخيار الأول للاستطلاع 25 حرفًا.',
+    'poll_option2.max' => 'يجب ألا يتجاوز الخيار الثاني للاستطلاع 25 حرفًا.',
+    'poll_option3.max' => 'يجب ألا يتجاوز الخيار الثالث للاستطلاع 25 حرفًا.',
+    'poll_option4.max' => 'يجب ألا يتجاوز الخيار الرابع للاستطلاع 25 حرفًا.',
+
+    'poll_duration.in' => 'يرجى اختيار مدة استطلاع صالحة (1 أو 6 أو 12 أو 24 ساعة).',
+    
+    
     'custom' => [
         'attribute-name' => [
             'rule-name' => 'رسالة مخصصة.',

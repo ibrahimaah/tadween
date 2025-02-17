@@ -34,6 +34,8 @@ return [
 
     'reset_password_label' => 'Reset Password',
     'new_password_field' => 'New Password',
+    'invalid_username_or_email' => 'The username or email is incorrect.',
+    'invalid_password' => 'The password you entered is incorrect.',
 
 
 ];

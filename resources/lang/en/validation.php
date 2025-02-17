@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'accepted' => 'The :attribute field must be accepted.',
+    'accepted' => 'You must accept the :attribute to continue.',
     'accepted_if' => 'The :attribute field must be accepted when :other is :value.',
     'active_url' => 'The :attribute field must be a valid URL.',
     'after' => 'The :attribute field must be a date after :date.',
@@ -33,7 +33,7 @@ return [
     ],
     'boolean' => 'The :attribute field must be true or false.',
     'can' => 'The :attribute field contains an unauthorized value.',
-    'confirmed' => 'The :attribute field confirmation does not match.',
+    'confirmed' => 'The :attribute confirmation does not match the password you entered.',
     'contains' => 'The :attribute field is missing a required value.',
     'current_password' => 'The password is incorrect.',
     'date' => 'The :attribute field must be a valid date.',
@@ -160,6 +160,20 @@ return [
     'url' => 'The :attribute field must be a valid URL.',
     'ulid' => 'The :attribute field must be a valid ULID.',
     'uuid' => 'The :attribute field must be a valid UUID.',
+    'postText.max' => 'Your post text must not exceed 400 characters.',
+    'images.*.image' => 'Each file must be a valid image (JPEG, PNG, GIF, WebP, JPG).',
+    'images.*.mimes' => 'Only JPEG, PNG, GIF, WebP, and JPG formats are allowed.',
+    'images.*.max' => 'Each image must be 1MB or smaller.',
+    
+    'pollQuestion.max' => 'The poll question must not exceed 200 characters.',
+    'poll_option1.max' => 'Poll option 1 must not exceed 25 characters.',
+    'poll_option2.max' => 'Poll option 2 must not exceed 25 characters.',
+    'poll_option3.max' => 'Poll option 3 must not exceed 25 characters.',
+    'poll_option4.max' => 'Poll option 4 must not exceed 25 characters.',
+
+    'poll_duration.in' => 'Please choose a valid poll duration (1, 6, 12, or 24 hours).',
+    
+    
 
     /*
     |--------------------------------------------------------------------------

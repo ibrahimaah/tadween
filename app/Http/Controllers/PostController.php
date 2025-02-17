@@ -45,7 +45,8 @@ class PostController extends Controller
                 'poll_option3' => 'nullable|string|max:25',
                 'poll_option4' => 'nullable|string|max:25',
                 'poll_duration' => 'nullable|in:1,6,12,24',
-            ]);
+            ], __('validation')); // This loads messages from the correct language file
+            
 
             // التحقق إذا كان المنشور فارغاً (لا يوجد نص ولا صور ولا استبيان)
             $postTextExists = !empty($request->postText);

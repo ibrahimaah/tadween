@@ -34,6 +34,8 @@ return [
 
     'reset_password_label' => 'إعادة تعيين كلمة المرور',
     'new_password_field' => 'كلمة المرور الجديدة',
+    'invalid_username_or_email' => 'اسم المستخدم أو البريد الإلكتروني غير صحيح.',
+    'invalid_password' => 'كلمة المرور التي أدخلتها غير صحيحة.',
 
 
 ];

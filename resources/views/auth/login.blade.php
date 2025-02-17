@@ -30,7 +30,7 @@
 
                     <div class="mb-4">
                         <label for="login" class="form-label text-muted">{{ __('auth.email_username_field') }}</label>
-                        <input type="text" class="form-control" id="login" name="login" required>
+                        <input type="text" class="form-control" id="login" name="login"  value="{{ old('login') }}" required>
                         
                         @error('login')
                             <small class="text-danger">{{ $message }}</small>
