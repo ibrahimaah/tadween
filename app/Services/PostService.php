@@ -14,7 +14,7 @@ class PostService
     {
         try 
         { 
-
+            
             $cacheKey = 'posts_page_' . request('page', 1);
         
             $posts = Cache::remember($cacheKey, now()->addMinutes(10), function () 

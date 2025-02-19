@@ -38,6 +38,7 @@ class FollowService
             $request = Follow::findOrFail($id);  
             if($request->delete())
             {
+                $this->clear_posts_cache();
                 return ['code' => 1, 'data' => true];
             }
             else 

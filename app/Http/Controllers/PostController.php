@@ -215,7 +215,7 @@ class PostController extends Controller
 
 
 
-        $this->clear_posts_cache();
+        // $this->clear_posts_cache();
         $maxLength = 200; // الحد الأقصى لطول النص الذي سيتم عرضه
 
         
