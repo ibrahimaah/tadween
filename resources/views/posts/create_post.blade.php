@@ -13,7 +13,7 @@
                 <form id="postForm" action="{{ route("posts.store") }}" method="post">
                     @csrf
                     <div class="mb-3 d-flex">
-                        <img class="logo-main rounded-circle border mx-2" src="{{asset('img/logo.webp')}}" alt="Tadween logo...">
+                        <img class="logo-main rounded-circle border mx-2" src="{{asset('img/logo.png')}}" alt="Tadween logo...">
                         @php
                             $fullName = Auth::user()->name; // اسم المستخدم
                             $nameParts = explode(' ', trim($fullName)); // تقسيم الاسم إلى أجزاء بناءً على المسافة

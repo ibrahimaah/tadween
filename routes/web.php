@@ -31,20 +31,15 @@ Route::get('lang/{locale}', function ($locale, Request $request) {
 Route::get('/', function () {
     abort(404);
 });
-// Route::get('tmp',function(){
+Route::get('tmp',function(){
 
-//     $followings = Follow::where('follower_id', Auth::id())->get(['following_id', 'created_at']);
+        
+        $followers = Follow::where('following_id',12)->pluck('follower_id');
+        dd($followers);
+        Follow::whereIn('follower_id', $followers)->update(['is_pending' => false]);        
     
-//     $res =  Post::with(['user', 'userPostLike', 'poll'])
-//     ->withCount(['replies', 'postLikes'])
-//     ->orWhereHas('postLikes', function ($query) {
-//         $query->where('user_id', Auth::id());
-//     })
-//     ->orderBy('created_at', 'desc')->get();
 
-//     dd($res);
-
-// });
+});
 
 // Route::get('/', [PostController::class, 'index'])->name('home')->middleware('auth');
 ////////////////////// Routes For Home ////////////////////
@@ -102,6 +97,17 @@ Route::middleware(['auth'])->group(function () {
     Route::get('messages/{username}/chat', [MessageController::class, 'chat'])->name('messages.chat');
     Route::post('messages/store', [MessageController::class, 'sendMessage']);
     Route::get('messages/{receiver_username}', [MessageController::class, 'getMessages']);
+});
+
+
+////////////// Routes for Follow Up Requests ////////////////
+Route::middleware(['auth'])->group(function () {
+    Route::get('follow-up-requests', [FollowController::class, 'follow_up_requests'])->name('follow_up_requests'); 
+    Route::post('/approve-follow-request/{id}', [FollowController::class, 'approveFollowRequest'])->name('approve_follow_request');
+    Route::post('/deny-follow-request/{id}', [FollowController::class, 'denyFollowRequest'])->name('deny_follow_request');
+
+//     Route::post('/follow-request/approve/{id}', [FollowController::class, 'approveFollowRequest'])->name('approve_follow_request');
+// Route::post('/follow-request/deny/{id}', [FollowController::class, 'denyFollowRequest'])->name('deny_follow_request');
 });
 
 ////////////// Routes for Settings ////////////////

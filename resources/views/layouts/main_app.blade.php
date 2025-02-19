@@ -6,7 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="{{asset('img/logo.webp')}}">
+    <link rel="icon" href="{{asset('img/logo.png')}}">
     <title>@yield('pageTitle')</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -97,7 +97,7 @@
 
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
+    <script src="{{asset('js/posts/create_post.js?version=1.0')}}"></script>
     @yield('java_scripts')
     <script src="{{asset('js/home.js?version=1.0')}}"></script>
 

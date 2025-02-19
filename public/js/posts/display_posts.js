@@ -29,7 +29,7 @@ function loadPosts() {
                     var username = $('html').attr('lang') === 'ar' ? post.user.username+'@' : '@'+post.user.username;
                     
                     //Load Posts At Home AND Profile Page
-                    var user_image = post.user.cover_image != null ? post.user.cover_image : 'img/logo.webp';
+                    var user_image = post.user.cover_image != null ? post.user.cover_image : 'img/logo.png';
 
                     // تحويل السلسلة النصية إلى مصفوفة
                     var post_image = '';

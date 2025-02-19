@@ -10,7 +10,7 @@ class Follow extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['follower_id', 'following_id'];
+    protected $fillable = ['follower_id', 'following_id','is_pending'];
 
     public function follower()
     {

@@ -54,7 +54,7 @@
                 </a>
             </div>
             <div class="col text-{{ app()->getLocale() == 'ar' ? 'start' : 'end' }}">
-                <img class="logo-main" src="{{asset('img/logo.webp')}}" alt="Tadween logo...">
+                <img class="logo-main" src="{{asset('img/logo.png')}}" alt="Tadween logo...">
             </div>
         </div>
     </div>
@@ -74,7 +74,7 @@
                     @if ($post['user']['cover_image'] != null)
                         <img src="{{ asset($post['user']['cover_image']) }}" class="img-fluid logo-main rounded-circle" alt="User Image">
                     @else
-                    <img src="{{ asset('img/logo.webp') }}" class="img-fluid logo-main rounded-circle" alt="User Image">
+                    <img src="{{ asset('img/logo.png') }}" class="img-fluid logo-main rounded-circle" alt="User Image">
                     @endif
 
                     <div class="px-1">
@@ -262,7 +262,7 @@
     @auth
         <script src="{{asset('js/posts/delete_post.js?version=1.0')}}"></script>
         <script src="{{asset('js/posts/create_reply_post.js?version=1.0')}}"></script>
-        <script src="{{asset('js/posts/create_post.js?version=1.0')}}"></script>
+        {{-- <script src="{{asset('js/posts/create_post.js?version=1.0')}}"></script> --}}
         <script src="{{asset('js/posts/create_vote_poll.js?version=1.0')}}"></script>
     @endauth
 @endsection

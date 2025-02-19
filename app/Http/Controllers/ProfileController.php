@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\TextHelper;
-
+use App\Models\AccountPrivacy;
 use App\Models\User;
 use App\Models\Post;
 use Illuminate\Support\Facades\Auth;
@@ -21,19 +21,38 @@ class ProfileController extends Controller
             ->first();
 
         // التحقق إذا كان المستخدم موجودًا
-        if (!$user) {
+        if (!$user) 
+        {
             return redirect()->route('home')->with('error', __('profile.profile_user_not_found'));
         }
+        // Check follow status
+        $is_following = Auth::user()->isFollowing($user);
+        $is_pending = Auth::user()->hasPendingFollowRequest($user);
 
-        // التحقق مما إذا كان المستخدم الحالي يتابع هذا المستخدم
-        $is_following = false;
-        $is_following = Auth::check() && Auth::user()->following->contains($user->id);
+        // Determine button text
+        $follow_btn_status_text = '';
+        if ($is_following) 
+        {
+            $follow_btn_status_text = __('profile.user_cancel_follow');
+        } 
+        elseif ($is_pending) 
+        {
+            $follow_btn_status_text = __('follows.pending');
+        } 
+        else 
+        {
+            $follow_btn_status_text = __('profile.user_follow');
+        }
+
+
+        $is_profile_locked = ($user->account_privacy == 'private') && (!$is_following || $is_pending) && (Auth::id() !== $user->id);
         
+
         // إعداد البيانات المراد عرضها
         $data = [
             'is_owner' => Auth::id() === $user->id,
             'name' => $user->name,
-            'username' => $user->username,
+            'username' => $user->username, 
             'background_image' => $user->profile->background_image ?? null,
             'cover_image' => $user->profile->cover_image ?? null,
             'bio' => $user->profile->bio ?? null,
@@ -44,8 +63,11 @@ class ProfileController extends Controller
             'follower_count' => $user->followers_count,
             'following_count' => $user->following_count,
             'is_following' => $is_following,
-        ];
-        
+            'follow_btn_status_text' => $follow_btn_status_text,
+            // 'is_public' => $user->account_privacy == 'public' ? true : false,
+            'is_profile_locked' => $is_profile_locked,
+            'is_private' => $user->account_privacy == AccountPrivacy::PRIVATE,
+        ]; 
         return view('profile.profile', ['data' => $data]);
     }
 

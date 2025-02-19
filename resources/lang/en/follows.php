@@ -12,4 +12,6 @@ return [
     'user_cancel_follow' => 'Unfollow',
     'not_found_followers' => 'Not found followers',
     'not_found_followings' => 'Not found followings',
+    'pending' => 'Pending',
+    'user_follow_request_successfully' => 'You have successfully send follow request',
 ];

@@ -13,13 +13,18 @@ use App\Models\Notification;
 use App\Models\Poll;
 use App\Models\PollVote;
 use App\Models\User;
-use Carbon\Carbon;
-
+use App\Services\PostService;
+use App\Traits\CacheClearable;
+use Carbon\Carbon; 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class PostController extends Controller
 {
+    use CacheClearable;
+    
+    public function __construct(private PostService $postService){}
+
     public function index()
     {  
         return view('posts.home');
@@ -209,32 +214,34 @@ class PostController extends Controller
         //     ->paginate(10); 
 
 
+
+        $this->clear_posts_cache();
         $maxLength = 200; // الحد الأقصى لطول النص الذي سيتم عرضه
 
-        $cacheKey = 'posts_page_' . request('page', 1);
         
 
-        $posts = Cache::remember($cacheKey, now()->addMinutes(10), function () 
-        {
-            $followings = Follow::where('follower_id', Auth::id())->get(['following_id', 'created_at']);
-
-            return Post::with(['user', 'userPostLike', 'poll'])
-                        ->withCount(['replies', 'postLikes'])
-                        ->where(function ($query) use ($followings) {
-                            foreach ($followings as $follow) {
-                                $query->orWhere(function ($q) use ($follow) {
-                                    $q->where('user_id', $follow->following_id)
-                                    ->where('created_at', '>', $follow->created_at);
-                                });
-                            }
+        /*
+         ->orWhere(function ($query) {
+                            $query->whereHas('postLikes', function ($q) {
+                                $q->where('user_id', Auth::id());
+                            })
+                            ->orWhereHas('user', function ($q) {
+                                $q->where('account_privacy', 'public');
+                            });
                         })
-                        ->orWhereHas('postLikes', function ($query) {
-                            $query->where('user_id', Auth::id());
-                        })
-                        ->orderBy('created_at', 'desc')
-                        ->paginate(10);
+        */
 
-        });
+
+        $res_get_home_page_posts = $this->postService->get_home_page_posts();
+        if ($res_get_home_page_posts['code'] !== 1) {
+            return response()->json([
+                'success' => false,
+                'message' => $res_get_home_page_posts['msg'], 
+            ]);
+        }
+
+         
+        $posts = $res_get_home_page_posts['data'];
 
         // تعديل البيانات التي سيتم إرجاعها
         $postsData = $posts->map(function ($post) use ($maxLength) {

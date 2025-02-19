@@ -33,7 +33,7 @@ function loadMessages() {
                 data.messages.forEach(function(message) {
                     var username = $('html').attr('lang') === 'ar' ? message.username+'@' : '@'+message.username;
                     
-                    var user_image = message.cover_image != null ? '../' + message.cover_image : '../img/logo.webp';
+                    var user_image = message.cover_image != null ? '../' + message.cover_image : '../img/logo.png';
                     var messageLink = `messages/${message.username}/chat`;
                     
                     var messageHtml = `

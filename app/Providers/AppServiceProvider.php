@@ -1,10 +1,13 @@
 <?php
 
 namespace App\Providers;
+
+use App\Http\View\Composers\SidebarComposer;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\View;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -13,7 +16,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+         // Register the SidebarComposer to bind with the sidebar view
+         View::composer('layouts.sidebar', SidebarComposer::class);
     }
 
     /**

@@ -82,8 +82,4 @@
 </div>
 @endsection
 
-@section('java_scripts')
-    @auth
-    <script src="{{asset('js/posts/create_post.js?version=1.0')}}"></script>
-    @endauth
-@endsection
+ 

@@ -37,12 +37,12 @@ function loadFollows() {
 
                     if (userName === '') {
                         //Load Posts At Home Page
-                        var user_image = follow.cover_image != null ? '../' + follow.cover_image : '../img/logo.webp';
+                        var user_image = follow.cover_image != null ? '../' + follow.cover_image : '../img/logo.png';
                         var followLink = `profile/${follow.username}`;
                         
                     } else {
                         //Load Posts At Profile Page
-                        var user_image = follow.cover_image != null ? '../' + follow.cover_image : '../img/logo.webp';
+                        var user_image = follow.cover_image != null ? '../' + follow.cover_image : '../img/logo.png';
                         var followLink = `/${follow.username}`;
                     }
                     

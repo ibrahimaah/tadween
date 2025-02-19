@@ -5,7 +5,7 @@
 //             return cache.addAll([
 //                 '/offline.html',  // صفحة عدم الاتصال
 //                 '/css/style.css',  // ملف الـ CSS المحلي
-//                 '/img/logo.webp',  // الأيقونة
+//                 '/img/logo.png',  // الأيقونة
 //                 '/manifest.json',  // ملف PWA
 //                 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css',
 //                 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css',

@@ -14,7 +14,7 @@
             <form method="POST" class="auth" action="{{ route('admin.register') }}">
                 @csrf
                 <div class="my-3 text-center">
-                    <img src="{{asset('img/logo.webp')}}" width="70" alt="Tadween logo..." class="img-fluid">
+                    <img src="{{asset('img/logo.png')}}" width="70" alt="Tadween logo..." class="img-fluid">
                 </div>
 
                 <div class="mb-5 text-center">

@@ -19,22 +19,22 @@
 
             <div class="col text-{{ app()->getLocale() == 'ar' ? 'start' : 'end' }}">
                 <h3 class="h5 mb-1">{{$data['name']}}</h3>
-                <p class="text-grey">
+                {{-- <p class="text-grey">
                     {{ __('profile.profile_blogs') }} : {{$data['post_count']}}
-                </p>
+                </p> --}}
             </div>
         </div>
 
         <div class="row">
             <div class="col-12">
                 <img class="profile_background_image"
-                    src="{{ $data['background_image'] == null ? asset('img/logo.webp') : asset($data['background_image']) }}"
+                    src="{{ $data['background_image'] == null ? asset('img/logo.png') : asset($data['background_image']) }}"
                     alt="Tadween logo..."
                 >
             </div>
             <div class="col">
                 <img class="cover_image border border-4 border-white rounded-circle mx-3"
-                src="{{ $data['cover_image'] == null ? asset('img/logo.webp') : asset($data['cover_image']) }}"
+                src="{{ $data['cover_image'] == null ? asset('img/logo.png') : asset($data['cover_image']) }}"
                 alt="Tadween logo..." width="100">
             
                 @if (Auth::check() && !$data['is_owner'])
@@ -46,7 +46,7 @@
                     
                     <button type="button" class="btn btn-orange text-light" onclick="followUser('{{$data['username']}}')">
                         <span class="follow_text_btn">
-                            {{ $data['is_following'] ? __('profile.user_cancel_follow') : __('profile.user_follow') }}
+                            {{ $data['follow_btn_status_text'] }}
                         </span>
                     </button>
                     
@@ -59,7 +59,11 @@
 
         <div class="row mt-3">
             <div class="col-12 mb-3">
-                <h3 class="h5">{{$data['name']}}</h3>
+                <h3 class="h5">
+                    {!! $data['is_private'] ? '<i class="fa-solid fa-lock text-orange-color"></i>' : '' !!}
+                    {{$data['name']}} 
+                </h3>
+                
                 <span class="text-muted" id="getUserName" data-get-username="{{ $data['username'] }}">
                     {{ app()->getLocale() == 'ar' ? $data['username'].'@' : '@'.$data['username'] }}
                 </span>
@@ -112,49 +116,71 @@
 
         </div>
 
-        <div class="row text-center">
-            
-            <ul class="nav nav-pills nav-fill">
-                <li class="nav-item">
-                    <button class="nav-link tab-link active" data-tab="userPosts">{{ __('profile.profile_blogs') }}</button>
-                </li>
-                <li class="nav-item">
-                    <button class="nav-link tab-link" data-tab="userPostsReplies">{{ __('profile.profile_replies') }}</button>
-                </li>
-                <li class="nav-item">
-                    <button class="nav-link tab-link" data-tab="userPostsMedia">{{ __('profile.profile_media') }}</button>
-                </li>
-                <li class="nav-item">
-                    <button class="nav-link tab-link" data-tab="userPostsLikes">{{ __('profile.profile_likes') }}</button>
-                </li>
-            </ul>
-        </div>
+
+
+
+        @if(!$data['is_profile_locked'])
+            <div class="row text-center">
+                
+                <ul class="nav nav-pills nav-fill">
+                    <li class="nav-item">
+                        <button class="nav-link tab-link active" data-tab="userPosts">{{ __('profile.profile_blogs') }}</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link tab-link" data-tab="userPostsReplies">{{ __('profile.profile_replies') }}</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link tab-link" data-tab="userPostsMedia">{{ __('profile.profile_media') }}</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link tab-link" data-tab="userPostsLikes">{{ __('profile.profile_likes') }}</button>
+                    </li>
+                </ul>
+            </div>
+        @endif
+
+
     </div>
 
-    <!-- HTML to display posts -->
-    <p class="text-center text-muted empty_posts d-none my-5 p-3">{{__('home.posts_empty')}}</p>
+    @if(!$data['is_profile_locked'])
+        <!-- HTML to display posts -->
+        <p class="text-center text-muted empty_posts d-none my-5 p-3">{{__('home.posts_empty')}}</p>
 
-    <div class="post-container mt-3" id="display-posts-container"></div>
-    <!-- Loading Spinner -->
-    <div class="d-none justify-content-center my-3" id="posts_loading_indicator">
-        <div class="spinner-border text-danger" role="status">
-            <span class="visually-hidden">Loading...</span>
+        <div class="post-container mt-3" id="display-posts-container"></div>
+        <!-- Loading Spinner -->
+        <div class="d-none justify-content-center my-3" id="posts_loading_indicator">
+            <div class="spinner-border text-danger" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
         </div>
-    </div>
 
 
-    <!-- Bootstrap Delete Confirmation Post Modal -->
-    @include('posts.delete_post_modal')
-
+        <!-- Bootstrap Delete Confirmation Post Modal -->
+        @include('posts.delete_post_modal')
+    @else    
+        <div class="container text-center">
+            <div class="card p-4">
+                <h4 class="text-orange-color">هذه المنشورات محمية</h4>
+                <p class="mt-3">المتابعون المؤكدون فقط من يمكنهم الوصول إلى منشورات  <span>{{ $data['username'] }}</span> وملفه الشخصي الكامل. انقر على زر "متابعة" لإرسال طلب متابعة.</p>
+                
+            </div>
+        </div>
+    @endif
 </div>
 @endsection
 
 @section('java_scripts')
-    <script src="{{asset('js/posts/display_posts.js?version=1.0')}}"></script>
-    <script src="{{asset('js/posts/post_like.js?version=1.0')}}"></script>
-    @auth
-    <script src="{{asset('js/posts/delete_post.js?version=1.0')}}"></script>
-    <script src="{{asset('js/posts/create_post.js?version=1.0')}}"></script>
-    <script src="{{asset('js/users/follow_user.js?version=1.0')}}"></script>
-    @endauth
+    @if(!$data['is_profile_locked'])
+            <script src="{{asset('js/posts/display_posts.js?version=1.0')}}"></script>
+            <script src="{{asset('js/posts/post_like.js?version=1.0')}}"></script>
+            @auth
+                <script src="{{asset('js/posts/delete_post.js?version=1.0')}}"></script>
+                {{-- <script src="{{asset('js/posts/create_post.js?version=1.0')}}"></script> --}}
+            @endauth
+    @endif
+
+    @auth 
+        <script src="{{asset('js/users/follow_user.js?version=1.0')}}"></script>
+    @endauth 
+
 @endsection

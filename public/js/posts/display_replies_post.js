@@ -24,7 +24,7 @@ function loadReplies() {
                 var dropMenuClass = $('html').attr('lang') === 'ar' ? 'text-end' : 'text-start';
                 // Loop through replies and append to the container
                 data.replies.forEach(function(reply) {
-                    var user_image = reply.user.cover_image != null ? '../' + reply.user.cover_image : '../img/logo.webp';
+                    var user_image = reply.user.cover_image != null ? '../' + reply.user.cover_image : '../img/logo.png';
                     var reply_image = reply.reply_image != null ? `<img src="../${reply.reply_image}" class="img-fluid reply-image" alt="Reply Image" data-bs-toggle="modal" data-bs-target="#replyImageModal" data-image="../${reply.reply_image}">` : '';
                     var userName = $('html').attr('lang') === 'ar' ? reply.user.username+'@' : '@'+reply.user.username;
 

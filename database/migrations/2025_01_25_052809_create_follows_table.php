@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('follower_id');
             $table->unsignedBigInteger('following_id');
+            $table->boolean('is_pending')->default(false);
             $table->timestamps();
 
             $table->foreign('follower_id')->references('id')->on('users')->onDelete('cascade');

@@ -12,4 +12,6 @@ return [
     'user_cancel_follow' => 'إلغاء المتابعة',
     'not_found_followers' => 'لا يوجد متابعبن',
     'not_found_followings' => 'لا يوجد متابَعين',
+    'pending' => 'قيد الانتظار',
+    'user_follow_request_successfully' => 'تم إرسال طلب المتابعة بنجاح',
 ];

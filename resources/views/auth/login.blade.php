@@ -8,7 +8,7 @@
     <div class="container mt-5">
         <div class="row justify-content-center">
             <div class="col-md-6 d-none d-md-block">
-                <img src="{{asset('img/logo.webp')}}" alt="Tadween logo..." class="img-fluid h-100" width="300">
+                <img src="{{asset('img/logo.png')}}" alt="Tadween logo..." class="img-fluid h-100" width="300">
             </div>
             <div class="col-md-6">
                 <form action="{{ route('login') }}" class="auth bg-light p-3 shadow" method="POST">
@@ -20,7 +20,7 @@
                     @endif
 
                     <div class="mt-3 text-center">
-                        <img src="{{asset('img/logo.webp')}}" width="70" alt="Tadween logo..." class="img-fluid">
+                        <img src="{{asset('img/logo.png')}}" width="70" alt="Tadween logo..." class="img-fluid">
                     </div>
 
                     <div class="mt-3 text-center">
@@ -30,7 +30,7 @@
 
                     <div class="mb-4">
                         <label for="login" class="form-label text-muted">{{ __('auth.email_username_field') }}</label>
-                        <input type="text" class="form-control" id="login" name="login"  value="{{ old('login') }}" required>
+                        <input type="text" class="form-control" id="login" name="login" dir="ltr"  value="{{ old('login') }}" required>
                         
                         @error('login')
                             <small class="text-danger">{{ $message }}</small>

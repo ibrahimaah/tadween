@@ -58,7 +58,9 @@ $(document).ready(function() {
     if (userName) {
         $('#postText').append(`@${userName}`);
     }
+    // alert(2)
     $('#loadingIndicator').hide();
+    // alert(3)
 
     //function to check input length
     function checkInputLength(inputSelector, counterSelector, maxLength) {
@@ -86,7 +88,8 @@ $(document).ready(function() {
     checkInputLength('#poll_option4', '#optionCount4', 25);
     
 
-    $('#postForm').on('submit', function(e) {
+    $('#postForm').on('submit', function(e) 
+    {
         e.preventDefault();
 
         var formData = new FormData(this);
@@ -111,7 +114,8 @@ $(document).ready(function() {
                 $('#loadingIndicator').hide();
                 $('#submitBtn').show();
                 
-                if (data.success) {
+                if (data.success) 
+                {
                     var successMessage = `<p class="text-success">${data.message}</p>`;
                     errorsContainer.append(successMessage);
                     $('#postForm')[0].reset();
@@ -154,7 +158,7 @@ function addPostToPage(post) {
     var dropMenuClass = $('html').attr('lang') === 'ar' ? 'text-end' : 'text-start';
     var userName = $('html').attr('lang') === 'ar' ? post.user.username+'@' : '@'+post.user.username;
 
-    var user_image = post.user.cover_image != null ? post.user.cover_image : 'img/logo.webp';
+    var user_image = post.user.cover_image != null ? post.user.cover_image : 'img/logo.png';
     // تحويل السلسلة النصية إلى مصفوفة
     var post_image = '';
     if (post.image) {

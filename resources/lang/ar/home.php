@@ -56,6 +56,7 @@ return [
     'reply_confirm_message_delete' => 'هل أنت متأكد أنك تريد حذف هذا الرد؟',
     'not_authorized_to_delete_reply' => 'غير مصرح لك بحذف هذا الرد.',
     'post_reply_deleted_successfully' => 'تم حذف الرد بنجاح',
+    'follow_up_requests' => 'طلبات المتابعة',
 
 ];
 

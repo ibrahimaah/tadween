@@ -42,6 +42,6 @@
     <script src="{{asset('js/posts/post_like.js?version=1.0')}}"></script>
     @auth
     <script src="{{asset('js/posts/delete_post.js?version=1.0')}}"></script>
-    <script src="{{asset('js/posts/create_post.js?version=1.0')}}"></script>
+    
     @endauth
 @endsection

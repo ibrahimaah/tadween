@@ -3,13 +3,13 @@
 
         <!-- Profile Section -->
         <div class="mb-2">
-            <img src="{{asset('img/logo.webp')}}" alt="" class="img-fluid" style="max-width: 50px; height: auto;">
+            <img src="{{asset('img/logo.png')}}" alt="" class="img-fluid" style="max-width: 50px; height: auto;">
         </div>
 
         <!-- User Info -->
         @auth
-        <div class="d-flex align-items-center">
-            <i class="fa-solid fa-lock text-orange-color"></i>
+        <div class="d-flex align-items-baseline">
+            {{-- <i class="fa-solid fa-lock text-orange-color"></i> --}}
             <span class="mx-2 h6">{{Auth::user()->name}}</span>
         </div>
         <div class="flex-column mb-3">
@@ -97,6 +97,26 @@
         <i class="fa-regular fa-comments text-orange-color"></i>
         <a href="{{route('messages.index')}}" class="mx-3 text-decoration-none {{ request()->is('messages') ? 'text-orange-color' : 'text-dark' }}">{{__('home.messages')}}</a>
     </div>
+
+    {{-- Follow-Up Requests --}}
+    @if(auth()->user()->is_private())
+    <div class="d-flex align-items-center mb-3">
+        <i class="fa-solid fa-user-plus text-orange-color position-relative">
+            <!-- Smaller badge showing number of requests -->
+            @if($pendingRequestsCount > 0)
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success p-1" style="font-size: 0.7rem;">
+                    {{ $pendingRequestsCount }}<!-- Replace with your dynamic request count -->
+                    <span class="visually-hidden">requests</span>
+                </span>
+            @endif
+
+        </i>
+        <a href="{{ route('follow_up_requests') }}" class="mx-3 text-decoration-none {{ request()->is('follow-up-requests') ? 'text-orange-color' : 'text-dark' }}">
+            {{ __('home.follow_up_requests') }}
+        </a>
+    </div>
+    @endif
+    
     
     <!-- Settings Link -->
     <div class="d-flex align-items-center mb-3">

@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AccountPrivacy;
 use App\Models\User;
 use App\Models\UserProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
@@ -89,6 +91,7 @@ class SettingController extends Controller
                 ], 200);  // Send an error if the old password is incorrect
             }
 
+            $old_account_privacy = $user->account_privacy;
             // Update the user's information
             $user->update([
                 'name' => $request->name,
@@ -97,7 +100,12 @@ class SettingController extends Controller
                 'account_privacy' => $request->account_privacy,
                 'password' => $request->password_new ? Hash::make($request->password_new) : $user->password, // Only update password if provided
             ]);
+            $new_account_privacy = $request->account_privacy;
 
+            if($old_account_privacy == AccountPrivacy::PRIVATE && $new_account_privacy == AccountPrivacy::PUBLIC)
+            { 
+                $user->acceptAllFollowRequests();
+            }
             // Return a successful response
             return response()->json([
                 'success' => true,
@@ -114,7 +122,7 @@ class SettingController extends Controller
             // Handle any unexpected exceptions
             return response()->json([
                 'success' => false,
-                'message' => __('settings.unexpected_error'),
+                'message' => $e->getMessage(),
             ], 200);
         }
     }
