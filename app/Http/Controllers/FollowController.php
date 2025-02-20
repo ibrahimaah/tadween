@@ -211,6 +211,7 @@ class FollowController extends Controller
         $pendingRequests = Follow::where('following_id', $user->id)
                                 ->where('is_pending', true)
                                 ->with('follower') // Assuming 'follower' is a relationship defined on the Follow model
+                                ->orderBy('created_at','DESC')
                                 ->get();
 
         return view('follow_up_requests.index', compact('pendingRequests'));

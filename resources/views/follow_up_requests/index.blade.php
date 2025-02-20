@@ -41,6 +41,7 @@
                 <tr>
                     <th>#</th>
                     <th>{{ __('follow_up_requests.follower') }}</th>
+                    <th>{{ __('follow_up_requests.request_date') }}</th>
                     <th>{{ __('follow_up_requests.action') }}</th>
                 </tr>
             </thead>
@@ -49,6 +50,7 @@
                     <tr>
                         <td>{{ $loop->iteration }}</td>
                         <td>{{ $request->follower->name }}</td> <!-- Assuming 'follower' relationship is defined -->
+                        <td>{{ $request->created_at->diffForHumans() }}</td>
                         <td> 
                             <!-- Approve and Deny buttons using AJAX -->
                             <button data-id="{{ $request->id }}" class="approve-btn btn btn-success btn-sm">

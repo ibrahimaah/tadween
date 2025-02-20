@@ -10,4 +10,5 @@ return [
     'request_approved' => 'Follow request approved!',
     'request_denied' => 'Follow request denied!',
     'pending_requests' => 'Pending Follow Requests',
+    'request_date' => 'Request Date'
 ];

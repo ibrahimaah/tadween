@@ -9,4 +9,5 @@
         'request_approved' => 'تمت الموافقة على طلب المتابعة!',
         'request_denied' => 'تم رفض طلب المتابعة!',
         'pending_requests' => 'طلبات المتابعة المعلقة',
+        'request_date' => 'تاريخ إرسال الطلب'
     ];
