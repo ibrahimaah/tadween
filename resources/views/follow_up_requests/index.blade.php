@@ -49,7 +49,12 @@
                 @foreach($pendingRequests as $request)
                     <tr>
                         <td>{{ $loop->iteration }}</td>
-                        <td>{{ $request->follower->name }}</td> <!-- Assuming 'follower' relationship is defined -->
+                        <td>
+                            <a href="{{ route('profile', $request->follower->username) }}" class="text-primary">
+                                {{ $request->follower->name }}
+                            </a>
+                        </td>
+                        
                         <td>{{ $request->created_at->diffForHumans() }}</td>
                         <td> 
                             <!-- Approve and Deny buttons using AJAX -->
