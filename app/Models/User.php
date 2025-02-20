@@ -139,6 +139,14 @@ class User extends Authenticatable
             ->exists();
     }
 
+    public function isFollower(User $user)
+    { 
+        return $this->followers()
+            ->where('users.id', $user->id)
+            ->wherePivot('is_pending', false)
+            ->exists();
+    }
+
     /**
      * Check if the current user has a pending follow request for a specific user.
      *

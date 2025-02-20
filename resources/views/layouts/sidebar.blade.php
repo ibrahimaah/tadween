@@ -103,12 +103,13 @@
     <div class="d-flex align-items-center mb-3">
         <i class="fa-solid fa-user-plus text-orange-color position-relative">
             <!-- Smaller badge showing number of requests -->
-            @if($pendingRequestsCount > 0)
-                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success p-1" style="font-size: 0.7rem;">
-                    {{ $pendingRequestsCount }}<!-- Replace with your dynamic request count -->
-                    <span class="visually-hidden">requests</span>
-                </span>
+            @if((int)$pendingRequestsCount > 0)
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success p-1" style="font-size: 0.7rem;">
+                {{ $pendingRequestsCount }}<!-- Replace with your dynamic request count -->
+                <span class="visually-hidden">requests</span>
+            </span>
             @endif
+            
 
         </i>
         <a href="{{ route('follow_up_requests') }}" class="mx-3 text-decoration-none {{ request()->is('follow-up-requests') ? 'text-orange-color' : 'text-dark' }}">

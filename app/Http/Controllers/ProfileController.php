@@ -28,7 +28,8 @@ class ProfileController extends Controller
         // Check follow status
         $is_following = Auth::user()->isFollowing($user);
         $is_pending = Auth::user()->hasPendingFollowRequest($user);
-
+        $is_follower = Auth::user()->isFollower($user);
+       
         // Determine button text
         $follow_btn_status_text = '';
         if ($is_following) 
@@ -45,7 +46,7 @@ class ProfileController extends Controller
         }
 
 
-        $is_profile_locked = ($user->account_privacy == 'private') && (!$is_following || $is_pending) && (Auth::id() !== $user->id);
+        $is_profile_locked = ($user->account_privacy == 'private') && (!$is_following || $is_pending) && (Auth::id() !== $user->id) && (!$is_follower);
         
 
         // إعداد البيانات المراد عرضها
