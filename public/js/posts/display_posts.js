@@ -29,10 +29,10 @@ function loadPosts() {
                     var username = $('html').attr('lang') === 'ar' ? post.user.username+'@' : '@'+post.user.username;
                     
                     // alert(is_private);
-                    console.log(post.user)
+                    // console.log(post.user)
                     //Load Posts At Home AND Profile Page
                     var user_image = post.user.cover_image != null ? post.user.cover_image : 'img/user.jpg';
-
+                    var is_private = post.user.is_private;
                     // تحويل السلسلة النصية إلى مصفوفة
                     var post_image = '';
                     if (post.image) {
@@ -114,18 +114,20 @@ function loadPosts() {
                                 <a href="${profileLink}" class="d-flex text-decoration-none text-dark">
                                     <img src="${user_image}" class="rounded-circle logo-main" alt="User Image">
                                     <div class="px-1">
-                                        <p class="mx-1 mb-0">${post.user.name}</p>
+                                        <p class="mx-1 mb-0">
+                                            ${post.user.name}
+                                             ${is_private ? '<i class="fa-solid fa-lock text-orange-color me-1"></i>' : ''} 
+                                        </p>
                                         <p class="mx-1 mt-0 text-grey">
                                             ${username}
                                             (${post.created_at})
                                         </p>
                                     </div> 
-                                    
                                 </a>
-                                    
                                 ${deleteButton}
-                                    
                             </div>
+
+
 
                             ${post_type}
 

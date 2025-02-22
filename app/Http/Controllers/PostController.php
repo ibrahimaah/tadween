@@ -302,7 +302,7 @@ class PostController extends Controller
                     'name' => $user_name,
                     'username' => $user_username,
                     'cover_image' => $user_cover_image,
-                    // 'user_account_privacy' => $user_account_privacy
+                    'is_private' => $post->user->account_privacy == AccountPrivacy::PRIVATE ? true : false
                 ],
                 'poll' => $pollData,
                 'text' => mb_strlen(strip_tags($post_text)) > $maxLength

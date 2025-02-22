@@ -103,6 +103,7 @@ class ProfileController extends Controller
             $user_name = $post->user->name ? htmlspecialchars($post->user->name, ENT_QUOTES, 'UTF-8') : null;
             $user_username = $post->user->username ? htmlspecialchars($post->user->username, ENT_QUOTES, 'UTF-8') : null;
             $user_cover_image = $post->user->profile->cover_image ? htmlspecialchars($post->user->profile->cover_image, ENT_QUOTES, 'UTF-8') : null;
+            $user_account_privacy = $post->user->account_privacy ? htmlspecialchars($post->user->account_privacy, ENT_QUOTES, 'UTF-8') : null;
 
             $pollData = null;
             if ($post->poll) {
@@ -137,6 +138,7 @@ class ProfileController extends Controller
                     'name' => $user_name,
                     'username' => $user_username,
                     'cover_image' => $user_cover_image,
+                    'account_privacy' => $user_account_privacy
                 ],
                 'poll' => $pollData,
                 'post_type' => $post->post_type,

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AccountPrivacy;
 use Illuminate\Http\Request;
 use App\Models\Follow;
 use App\Models\User;
@@ -112,6 +113,7 @@ class FollowController extends Controller
                 'user_bio' => $user_bio,
                 'follower_btn_text' => $is_following_follower ? __('follows.user_cancel_follow') : __('profile.user_follow'),
                 'is_following' => $is_following_follower, // إضافة حالة المتابعة
+                'is_private' => $followerUser->account_privacy == AccountPrivacy::PRIVATE ? true : false
             ];
         });
 
@@ -161,6 +163,7 @@ class FollowController extends Controller
                 'user_bio' => $user_bio,
                 'follower_btn_text' => $is_following_follower ? __('follows.user_cancel_follow') : __('follows.user_follow'),
                 'is_following' => $is_following_follower, // إضافة حالة المتابعة
+                'is_private' => $followingUser->account_privacy == AccountPrivacy::PRIVATE ? true : false
             ];
         });
 

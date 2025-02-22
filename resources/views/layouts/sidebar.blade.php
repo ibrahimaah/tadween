@@ -3,14 +3,20 @@
 
         <!-- Profile Section -->
         <div class="mb-2">
-            <img src="{{asset('img/logo.png')}}" alt="" class="img-fluid" style="max-width: 50px; height: auto;">
+            <img src="{{asset('img/user.jpg')}}" alt="" class="img-fluid" style="max-width: 50px; height: auto;">
         </div>
 
         <!-- User Info -->
         @auth
         <div class="d-flex align-items-baseline">
             {{-- <i class="fa-solid fa-lock text-orange-color"></i> --}}
-            <span class="mx-2 h6">{{Auth::user()->name}}</span>
+            {{-- <span class="mx-2 h6">{{Auth::user()->name}}</span> --}}
+            <p class="mx-1 mb-0"> 
+                 {{Auth::user()->name}}
+                 @if(Auth::user()->is_private())
+                 <i class="fa-solid fa-lock text-orange-color me-1"></i>
+                 @endif 
+            </p>
         </div>
         <div class="flex-column mb-3">
             <div class="mb-2 mx-3">

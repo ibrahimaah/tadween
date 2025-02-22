@@ -34,7 +34,7 @@ function loadFollows() {
                     var username = $('html').attr('lang') === 'ar' ? follow.username+'@' : '@'+follow.username;
                     var bioTextMargin = $('html').attr('lang') === 'ar' ? 'me-5' : 'ms-5';
                     var bioTextMargin = $('html').attr('lang') === 'ar' ? 'me-5' : 'ms-5';
-
+                    var is_private = follow.is_private;
                     if (userName === '') {
                         //Load Posts At Home Page
                         var user_image = follow.cover_image != null ? '../' + follow.cover_image : '../img/logo.png';
@@ -53,7 +53,10 @@ function loadFollows() {
                                 <a href="${followLink}" class="d-flex text-decoration-none text-dark">
                                     <img src="${user_image}" class="rounded-circle logo-main" alt="User Image">
                                     <div class="px-1">
-                                        <p class="mx-1 mb-0">${follow.name}</p>
+                                         <p class="mx-1 mb-0">
+                                            ${follow.name}
+                                             ${is_private ? '<i class="fa-solid fa-lock text-orange-color me-1"></i>' : ''} 
+                                        </p>
                                         <p class="mx-1 my-0 text-grey">${username}</p>
                                     </div>
                                 </a>
