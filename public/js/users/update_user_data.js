@@ -27,7 +27,8 @@ $(document).ready(function() {
                 $('#loadingIndicatorPersonal').hide();
                 $('#submitBtnPersonal').show();
                 
-                if (data.success) {
+                if (data.success) 
+                {
                     // تحديث رسالة التوست
                     $('.toast .toast-body').text(data.message);
                 } else {

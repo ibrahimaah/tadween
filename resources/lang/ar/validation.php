@@ -1,7 +1,7 @@
 <?php
 
 return [
-
+    'failed' => 'التحقق من صحة البيانات فشل',
     'accepted' => 'يجب عليك قبول :attribute للمتابعة.',
     'accepted_if' => 'يجب قبول :attribute عندما يكون :other :value.',
     'active_url' => ':attribute ليس عنوان URL صالحًا.',

@@ -72,7 +72,7 @@
             <div class="col-12">
                 <div class="row">
                     <div class="col">
-                        <a href="{{ route('followings.index', $data['username']) }}" class="text-decoration-none">
+                        <a href="{{ $data['is_profile_locked'] ? '#' : route('followings.index', $data['username']) }}" class="text-decoration-none">
                             <p class="text-orange-color">
                                 {{ $data['following_count'] }}
                                 <span class="text-grey fw-bold">{{ __('profile.profile_following') }}</span>
@@ -80,7 +80,7 @@
                         </a>
                     </div>
                     <div class="col">
-                        <a href="{{ route('followers.index', $data['username']) }}" class="text-decoration-none">
+                        <a href="{{ $data['is_profile_locked'] ? '#' : route('followers.index', $data['username']) }}" class="text-decoration-none">
                             <p class="text-orange-color">
                                 <span class="follower_count">{{ $data['follower_count'] }}</span>
                                 <span class="text-grey fw-bold">{{ __('profile.profile_followers') }}</span>

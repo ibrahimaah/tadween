@@ -127,35 +127,35 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/approve-follow-request/{id}', [FollowController::class, 'approveFollowRequest'])->name('approve_follow_request');
     Route::post('/deny-follow-request/{id}', [FollowController::class, 'denyFollowRequest'])->name('deny_follow_request');
 
-//     Route::post('/follow-request/approve/{id}', [FollowController::class, 'approveFollowRequest'])->name('approve_follow_request');
-// Route::post('/follow-request/deny/{id}', [FollowController::class, 'denyFollowRequest'])->name('deny_follow_request');
+    //     Route::post('/follow-request/approve/{id}', [FollowController::class, 'approveFollowRequest'])->name('approve_follow_request');
+    // Route::post('/follow-request/deny/{id}', [FollowController::class, 'denyFollowRequest'])->name('deny_follow_request');
+
+
+    ////////////// Routes for Settings ////////////////
+    Route::prefix('settings')->group(function () {
+        Route::get('/', [SettingController::class, 'index'])->name('settings');
+        Route::post('/update_personal', [SettingController::class, 'updatePersonalInformation'])->name('settings.update.personal.information');
+        Route::post('/update_profile', [SettingController::class, 'updateProfileInformation'])->name('settings.update.profile.information');
+        Route::delete('/delete_account', [SettingController::class, 'deleteMyAccount'])->name('settings.account.delete');
+    });
+
+    ////////////// Routes for Profile (Dynamic Username) ////////////////
+    Route::get('{username}', [ProfileController::class, 'index'])
+        ->name('profile');
+
+    Route::get('{username}/posts', [ProfileController::class, 'getPostsByUsername']);
+    Route::get('{username}/posts/replies', [ProfileController::class, 'getRepliesByUsername']);
+    Route::get('{username}/posts/media', [ProfileController::class, 'getMediaPostsByUsername']);
+    Route::get('{username}/posts/likes', [ProfileController::class, 'getLikedPostsByUsername']);
+
+    ////////////// Routes for Follows ////////////////
+    Route::post('follows', [FollowController::class, 'store'])->name('follows.store');
+    Route::get('{username}/followers', [FollowController::class, 'getFollowers'])->name('followers.index');
+    Route::get('{username}/followers/load-followers', [FollowController::class, 'loadFollowers']);
+    Route::get('{username}/followings', [FollowController::class, 'getFollowings'])->name('followings.index');
+    Route::get('{username}/followings/load-followings', [FollowController::class, 'loadFollowings']);
+
 });
-
-////////////// Routes for Settings ////////////////
-Route::prefix('settings')->group(function () {
-    Route::get('/', [SettingController::class, 'index'])->name('settings');
-    Route::post('/update_personal', [SettingController::class, 'updatePersonalInformation'])->name('settings.update.personal.information');
-    Route::post('/update_profile', [SettingController::class, 'updateProfileInformation'])->name('settings.update.profile.information');
-    Route::delete('/delete_account', [SettingController::class, 'deleteMyAccount'])->name('settings.account.delete');
-});
-
-////////////// Routes for Profile (Dynamic Username) ////////////////
-Route::get('{username}', [ProfileController::class, 'index'])
-    ->name('profile');
-
-Route::get('{username}/posts', [ProfileController::class, 'getPostsByUsername']);
-Route::get('{username}/posts/replies', [ProfileController::class, 'getRepliesByUsername']);
-Route::get('{username}/posts/media', [ProfileController::class, 'getMediaPostsByUsername']);
-Route::get('{username}/posts/likes', [ProfileController::class, 'getLikedPostsByUsername']);
-
-////////////// Routes for Follows ////////////////
-Route::post('follows', [FollowController::class, 'store'])->name('follows.store');
-Route::get('{username}/followers', [FollowController::class, 'getFollowers'])->name('followers.index');
-Route::get('{username}/followers/load-followers', [FollowController::class, 'loadFollowers']);
-Route::get('{username}/followings', [FollowController::class, 'getFollowings'])->name('followings.index');
-Route::get('{username}/followings/load-followings', [FollowController::class, 'loadFollowings']);
-
-
 
 ///////////////////////Admin Routes//////////////////////////
 Route::prefix('admin')->group(function () {

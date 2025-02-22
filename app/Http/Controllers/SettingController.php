@@ -101,15 +101,15 @@ class SettingController extends Controller
                 'password' => $request->password_new ? Hash::make($request->password_new) : $user->password, // Only update password if provided
             ]);
             $new_account_privacy = $request->account_privacy;
-
+            $has_been_public = false;
             if($old_account_privacy == AccountPrivacy::PRIVATE && $new_account_privacy == AccountPrivacy::PUBLIC)
             { 
-                $user->acceptAllFollowRequests();
+                $user->acceptAllFollowRequests(); 
             }
             // Return a successful response
             return response()->json([
                 'success' => true,
-                'message' => __('settings.update_success'),
+                'message' => __('settings.update_success'), 
             ], 200);
             
         } catch (\Illuminate\Validation\ValidationException $e) {

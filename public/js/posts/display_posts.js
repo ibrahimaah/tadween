@@ -28,8 +28,10 @@ function loadPosts() {
                 data.posts.forEach(function(post) {
                     var username = $('html').attr('lang') === 'ar' ? post.user.username+'@' : '@'+post.user.username;
                     
+                    // alert(is_private);
+                    console.log(post.user)
                     //Load Posts At Home AND Profile Page
-                    var user_image = post.user.cover_image != null ? post.user.cover_image : 'img/logo.png';
+                    var user_image = post.user.cover_image != null ? post.user.cover_image : 'img/user.jpg';
 
                     // تحويل السلسلة النصية إلى مصفوفة
                     var post_image = '';
@@ -117,7 +119,8 @@ function loadPosts() {
                                             ${username}
                                             (${post.created_at})
                                         </p>
-                                    </div>
+                                    </div> 
+                                    
                                 </a>
                                     
                                 ${deleteButton}

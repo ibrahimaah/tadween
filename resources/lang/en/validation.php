@@ -12,7 +12,7 @@ return [
     | as the size rules. Feel free to tweak each of these messages here.
     |
     */
-
+    'failed' => 'Validation failed',
     'accepted' => 'You must accept the :attribute to continue.',
     'accepted_if' => 'The :attribute field must be accepted when :other is :value.',
     'active_url' => 'The :attribute field must be a valid URL.',

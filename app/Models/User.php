@@ -134,16 +134,14 @@ class User extends Authenticatable
     public function isFollowing(User $user)
     {
         return $this->following()
-            ->where('users.id', $user->id)
-            ->wherePivot('is_pending', false)
+            ->wherePivot('following_id', $user->id)
             ->exists();
     }
 
     public function isFollower(User $user)
     { 
         return $this->followers()
-            ->where('users.id', $user->id)
-            ->wherePivot('is_pending', false)
+            ->wherePivot('follower_id', $user->id)
             ->exists();
     }
 
@@ -156,7 +154,7 @@ class User extends Authenticatable
     public function hasPendingFollowRequest(User $user)
     {
         return $this->pendingFollowing()
-            ->where('users.id', $user->id)
+            ->wherePivot('following_id', $user->id)
             ->exists();
     }
 
@@ -190,6 +188,8 @@ class User extends Authenticatable
 
     public function is_private()
     {
-        return $this->account_privacy === 'private';
+        return $this->account_privacy == AccountPrivacy::PRIVATE;
     }
+
+     
 }
