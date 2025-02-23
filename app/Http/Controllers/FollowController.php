@@ -90,7 +90,7 @@ class FollowController extends Controller
         }
 
         // Load the followers with the follower's user data
-        $followers = Follow::where('following_id', $user->id)
+        $followers = Follow::where('following_id', $user->id)->where('is_pending',false)
         ->with('follower')
         ->paginate(10);
 
@@ -140,7 +140,7 @@ class FollowController extends Controller
         }
         
         // Load the followings with the followings user data
-        $followings = Follow::where('follower_id', $user->id)
+        $followings = Follow::where('follower_id', $user->id)->where('is_pending',false)
         ->with('following')
         ->paginate(10);
 
