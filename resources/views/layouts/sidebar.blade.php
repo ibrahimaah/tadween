@@ -110,7 +110,7 @@
         <div class="d-flex align-items-center mb-3">
             <i class="fa-solid fa-user-plus text-orange-color position-relative">
                 <!-- Smaller badge showing number of requests -->
-                @if((int)$pendingRequestsCount > 0)
+                @if((int)$pendingRequestsCount > 0 && $unseenCount > 0)
                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success p-1" style="font-size: 0.7rem;">
                     {{ $pendingRequestsCount }}<!-- Replace with your dynamic request count -->
                     <span class="visually-hidden">requests</span>

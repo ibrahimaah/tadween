@@ -13,12 +13,21 @@ class SidebarComposer
         $user = Auth::user();
 
         // If user is authenticated, get the number of pending requests
-        if ($user) {
+        if ($user) 
+        {
             $pendingRequestsCount = Follow::where('following_id', $user->id)
                                            ->where('is_pending', true)
                                            ->count(); 
-        } else {
+
+            $unseenCount = Follow::where('following_id', $user->id)
+                                 ->where('is_pending', true)
+                                 ->where('is_seen', false)
+                                 ->count();
+        } 
+        else 
+        {
             $pendingRequestsCount = 0; // No pending requests for guest users
+            $unseenCount = 0;
         }
 
         // Format the count
@@ -26,6 +35,7 @@ class SidebarComposer
 
         // Share the formatted count with the view
         $view->with('pendingRequestsCount', $formattedCount);
+        $view->with('unseenCount', $unseenCount);
     }
 
     private function formatCount($count)

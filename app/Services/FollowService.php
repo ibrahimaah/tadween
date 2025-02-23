@@ -17,7 +17,6 @@ class FollowService
     {
         try 
         {
-            
             if (!Auth::check()) 
             {
                 throw new Exception(__('follows.unauthenticated'));
@@ -36,21 +35,23 @@ class FollowService
             $data = [];
             $is_already_following = $current_user->isFollowing($target_user);
             $has_already_sent_follow_request = $current_user->hasPendingFollowRequest($target_user);
-            $is_followed_by_target_user = $current_user->isFollower($target_user);
+            // $is_followed_by_target_user = $current_user->isFollower($target_user);
 
-            if ($is_already_following || $has_already_sent_follow_request) 
+            if ($has_already_sent_follow_request || $is_already_following) 
             {
-                $follow = Follow::where([
+                Follow::where([
                     'follower_id' => $current_user->id,
                     'following_id' => $target_user->id
-                ]);
-
-                $follow->delete();
+                ])->delete();
+            
+                $messageKey = $has_already_sent_follow_request 
+                    ? 'follows.user_follow_request_removed_successfully' 
+                    : 'follows.user_follow_removed_successfully';
+            
                 $data = [
-                    'message' => __('follows.user_follow_removed_successfully'),
+                    'message' => __($messageKey),
                     'follow_text_btn' => __('follows.user_follow')
                 ];
-                
             }
             else
             {
@@ -59,7 +60,8 @@ class FollowService
                     $follow = Follow::create([
                         'follower_id'  => $current_user->id,
                         'following_id' => $target_user->id,
-                        'is_pending'   => $is_followed_by_target_user ? false : true
+                        // 'is_pending'   => $is_followed_by_target_user ? false : true
+                        'is_pending'   => true
                     ]);
 
                     if (!$follow) 
@@ -67,9 +69,13 @@ class FollowService
                         throw new Exception("Can not add row to follows table");
                     }
 
-                    $data = [
-                        'message' => $is_followed_by_target_user ? __('follows.user_follow_successfully') : __('follows.user_follow_request_successfully'),
-                        'follow_text_btn' => $is_followed_by_target_user ? __('follows.user_cancel_follow') : __('follows.pending')
+                    // $data = [
+                    //     'message' => $is_followed_by_target_user ? __('follows.user_follow_successfully') : __('follows.user_follow_request_successfully'),
+                    //     'follow_text_btn' => $is_followed_by_target_user ? __('follows.user_cancel_follow') : __('follows.pending')
+                    // ]; 
+                     $data = [
+                        'message' =>  __('follows.user_follow_request_successfully'),
+                        'follow_text_btn' =>  __('follows.pending')
                     ]; 
                 }
                 else 
@@ -146,6 +152,34 @@ class FollowService
         catch (Exception $ex) 
         {
             return ['code' => 0, 'msg' => $ex->getMessage()];
+        }
+    }
+
+    function get_follow_up_requests($user_id)
+    {
+        try 
+        {
+            $user = User::findOrFail($user_id);
+             // Get all pending follow requests where the current user is the 'following' user
+            $pendingRequests = Follow::where('following_id', $user->id)
+                                     ->where('is_pending', true)
+                                     ->with('follower') // Assuming 'follower' is a relationship defined on the Follow model
+                                     ->orderBy('created_at','DESC')
+                                     ->get();
+
+            // Update is_seen for all pending requests
+            Follow::where('following_id', $user->id)
+                  ->where('is_pending', true)
+                  ->where('is_seen', false)
+                  ->update(['is_seen' => true]);
+
+            return ['code' => 1, 'data' => $pendingRequests];
+
+
+        }
+        catch(Exception $ex)
+        {
+            return ['code' => 0 , 'msg' => $ex->getMessage()];
         }
     }
 }

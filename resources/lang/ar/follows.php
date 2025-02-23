@@ -14,4 +14,5 @@ return [
     'not_found_followings' => 'لا يوجد متابَعين',
     'pending' => 'قيد الانتظار',
     'user_follow_request_successfully' => 'تم إرسال طلب المتابعة بنجاح',
+    'user_follow_request_removed_successfully' => 'تم إلغاء طلب المتابعة بنجاح',
 ];

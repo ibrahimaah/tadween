@@ -46,7 +46,8 @@ class ProfileController extends Controller
         }
 
 
-        $is_profile_locked = ($user->account_privacy == 'private') && (!$is_following || $is_pending) && (Auth::id() !== $user->id) && (!$is_follower);
+        // $is_profile_locked = ($user->account_privacy == 'private') && (!$is_following || $is_pending) && (Auth::id() !== $user->id) && (!$is_follower);
+        $is_profile_locked = ($user->account_privacy == 'private') && (!$is_following || $is_pending) && (Auth::id() !== $user->id);
         
 
         // إعداد البيانات المراد عرضها

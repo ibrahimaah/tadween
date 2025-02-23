@@ -183,14 +183,18 @@ class FollowController extends Controller
         {
             return redirect()->route('home');
         }
-        // Get all pending follow requests where the current user is the 'following' user
-        $pendingRequests = Follow::where('following_id', $user->id)
-                                ->where('is_pending', true)
-                                ->with('follower') // Assuming 'follower' is a relationship defined on the Follow model
-                                ->orderBy('created_at','DESC')
-                                ->get();
 
-        return view('follow_up_requests.index', compact('pendingRequests'));
+
+        $res_get_follow_up_requests = $this->followService->get_follow_up_requests(Auth::id());
+        if($res_get_follow_up_requests['code'] == 0)
+        {
+            dd($res_get_follow_up_requests['msg']);
+        }
+        else 
+        {
+            return view('follow_up_requests.index', ['pendingRequests' => $res_get_follow_up_requests['data']]);
+        }
+        
     }
 
     public function approveFollowRequest($id)
