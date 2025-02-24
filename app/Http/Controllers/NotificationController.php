@@ -29,7 +29,9 @@ class NotificationController extends Controller
 
         // تعديل البيانات التي سيتم إرجاعها
         $notificationsData = $notifications->map(function ($notification) {
-            $senderName = optional($notification->sender)->name ?? __('notifications.unknown_user');
+            $senderName = (optional($notification->sender)->name ?? __('notifications.unknown_user')) . 
+              ' <i class="fa-solid fa-lock text-orange-color"></i>';
+
 
             // تحديد النص بناءً على نوع الإشعار
             $message = match ($notification->type) {
