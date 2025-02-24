@@ -33,6 +33,7 @@ function loadPosts() {
                     //Load Posts At Home AND Profile Page
                     var user_image = post.user.cover_image != null ? post.user.cover_image : 'img/user.jpg';
                     var is_private = post.user.is_private;
+                    
                     // تحويل السلسلة النصية إلى مصفوفة
                     var post_image = '';
                     if (post.image) {

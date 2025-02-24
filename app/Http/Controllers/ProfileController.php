@@ -49,14 +49,15 @@ class ProfileController extends Controller
         // $is_profile_locked = ($user->account_privacy == 'private') && (!$is_following || $is_pending) && (Auth::id() !== $user->id) && (!$is_follower);
         $is_profile_locked = ($user->account_privacy == 'private') && (!$is_following || $is_pending) && (Auth::id() !== $user->id);
         
+        
 
         // إعداد البيانات المراد عرضها
         $data = [
             'is_owner' => Auth::id() === $user->id,
             'name' => $user->name,
             'username' => $user->username, 
-            'background_image' => $user->profile->background_image ?? null,
-            'cover_image' => $user->profile->cover_image ?? null,
+            'background_image' => $user->profile->background_image ?? asset('img/logo.png'),
+            'cover_image' => $user->profile->cover_image ?? asset('img/user.jpg'),
             'bio' => $user->profile->bio ?? null,
             'country' => $user->profile->country ?? null,
             'city' => $user->profile->city ?? null,
@@ -104,7 +105,7 @@ class ProfileController extends Controller
             $user_name = $post->user->name ? htmlspecialchars($post->user->name, ENT_QUOTES, 'UTF-8') : null;
             $user_username = $post->user->username ? htmlspecialchars($post->user->username, ENT_QUOTES, 'UTF-8') : null;
             $user_cover_image = $post->user->profile->cover_image ? htmlspecialchars($post->user->profile->cover_image, ENT_QUOTES, 'UTF-8') : null;
-            $user_account_privacy = $post->user->account_privacy ? htmlspecialchars($post->user->account_privacy, ENT_QUOTES, 'UTF-8') : null;
+            $is_private = $post->user->account_privacy == AccountPrivacy::PRIVATE ? true : false;
 
             $pollData = null;
             if ($post->poll) {
@@ -139,7 +140,7 @@ class ProfileController extends Controller
                     'name' => $user_name,
                     'username' => $user_username,
                     'cover_image' => $user_cover_image,
-                    'account_privacy' => $user_account_privacy
+                    'is_private' => $is_private
                 ],
                 'poll' => $pollData,
                 'post_type' => $post->post_type,
@@ -194,6 +195,7 @@ class ProfileController extends Controller
             $user_name = $post->user->name ? htmlspecialchars($post->user->name, ENT_QUOTES, 'UTF-8') : null;
             $user_username = $post->user->username ? htmlspecialchars($post->user->username, ENT_QUOTES, 'UTF-8') : null;
             $user_cover_image = $post->user->profile->cover_image ? htmlspecialchars($post->user->profile->cover_image, ENT_QUOTES, 'UTF-8') : null;
+            $is_private = $post->user->account_privacy == AccountPrivacy::PRIVATE ? true : false;
             $pollData = null;
             if ($post->poll) {
                 $pollData = [
@@ -226,6 +228,7 @@ class ProfileController extends Controller
                     'name' => $user_name,
                     'username' => $user_username,
                     'cover_image' => $user_cover_image,
+                    'is_private' => $is_private,
                 ],
                 'poll' => $pollData,
                 'post_type' => $post->post_type,
@@ -281,7 +284,7 @@ class ProfileController extends Controller
                 $user_name = $post->user->name ? htmlspecialchars($post->user->name, ENT_QUOTES, 'UTF-8') : null;
                 $user_username = $post->user->username ? htmlspecialchars($post->user->username, ENT_QUOTES, 'UTF-8') : null;
                 $user_cover_image = $post->user->profile->cover_image ? htmlspecialchars($post->user->profile->cover_image, ENT_QUOTES, 'UTF-8') : null;
-                
+                $is_private = $post->user->account_privacy == AccountPrivacy::PRIVATE ? true : false;
                 return [
                     'is_owner' => Auth::id() === $post->user_id,
                     'slug_id' => $post->slug_id,
@@ -290,6 +293,7 @@ class ProfileController extends Controller
                         'name' => $user_name,
                         'username' => $user_username,
                         'cover_image' => $user_cover_image,
+                        'is_private' => $is_private,
                     ],
                     
                     'text' => mb_strlen($post_text) > $maxLength
@@ -343,6 +347,7 @@ class ProfileController extends Controller
             $user_name = $post->user->name ? htmlspecialchars($post->user->name, ENT_QUOTES, 'UTF-8') : null;
             $user_username = $post->user->username ? htmlspecialchars($post->user->username, ENT_QUOTES, 'UTF-8') : null;
             $user_cover_image = $post->user->profile->cover_image ? htmlspecialchars($post->user->profile->cover_image, ENT_QUOTES, 'UTF-8') : null;
+            $is_private = $post->user->account_privacy == AccountPrivacy::PRIVATE ? true : false;
             $pollData = null;
             if ($post->poll) {
                 $pollData = [
@@ -375,6 +380,7 @@ class ProfileController extends Controller
                     'name' => $user_name,
                     'username' => $user_username,
                     'cover_image' => $user_cover_image,
+                    'is_private' => $is_private ,
                 ],
                 'poll' => $pollData,
                 'post_type' => $post->post_type,

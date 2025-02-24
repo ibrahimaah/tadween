@@ -28,13 +28,13 @@
         <div class="row">
             <div class="col-12">
                 <img class="profile_background_image"
-                    src="{{ $data['background_image'] == null ? asset('img/logo.png') : asset($data['background_image']) }}"
+                    src="{{ $data['background_image'] }}"
                     alt="Tadween logo..."
                 >
             </div>
             <div class="col">
                 <img class="cover_image border border-4 border-white rounded-circle mx-3"
-                src="{{ $data['cover_image'] == null ? asset('img/logo.png') : asset($data['cover_image']) }}"
+                src="{{ asset($data['cover_image']) }}"
                 alt="Tadween logo..." width="100">
             
                 @if (Auth::check() && !$data['is_owner'])
@@ -60,8 +60,9 @@
         <div class="row mt-3">
             <div class="col-12 mb-3">
                 <h3 class="h5">
-                    {!! $data['is_private'] ? '<i class="fa-solid fa-lock text-orange-color"></i>' : '' !!}
+                    
                     {{$data['name']}} 
+                    {!! $data['is_private'] ? '<i class="fa-solid fa-lock text-orange-color"></i>' : '' !!}
                 </h3>
                 
                 <span class="text-muted" id="getUserName" data-get-username="{{ $data['username'] }}">

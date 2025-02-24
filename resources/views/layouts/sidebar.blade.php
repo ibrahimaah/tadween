@@ -3,7 +3,7 @@
 
         <!-- Profile Section -->
         <div class="mb-2">
-            <img src="{{asset('img/user.jpg')}}" alt="" class="img-fluid" style="max-width: 50px; height: auto;">
+            <img src="{{ auth()->user()->profile->cover_image ?? asset('img/user.jpg') }}" alt="" class="img-fluid" style="max-width: 50px; height: auto;">
         </div>
 
         <!-- User Info -->
@@ -111,10 +111,10 @@
             <i class="fa-solid fa-user-plus text-orange-color position-relative">
                 <!-- Smaller badge showing number of requests -->
                 @if((int)$pendingRequestsCount > 0 && $unseenCount > 0)
-                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success p-1" style="font-size: 0.7rem;">
-                    {{ $pendingRequestsCount }}<!-- Replace with your dynamic request count -->
-                    <span class="visually-hidden">requests</span>
-                </span>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success p-1" style="font-size: 0.7rem;">
+                        {{ $pendingRequestsCount }}<!-- Replace with your dynamic request count -->
+                        <span class="visually-hidden">requests</span>
+                    </span>
                 @endif
                 
 
