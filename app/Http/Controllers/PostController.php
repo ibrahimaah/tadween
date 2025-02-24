@@ -387,6 +387,7 @@ class PostController extends Controller
                     'name' => $user_name,
                     'username' => $user_username,
                     'cover_image' => $user_cover_image,
+                    'is_private' => Auth::user()->is_private(),
                 ],
                 'poll' => $pollData,
                 'post_type' => $post->post_type,

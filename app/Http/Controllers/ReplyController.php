@@ -132,6 +132,7 @@ class ReplyController extends Controller
                     'name' => $user_name,
                     'username' => $user_username,
                     'cover_image' => $user_cover_image,
+                    'is_private' => $reply->user->is_private(),
                 ],
             ];
         });

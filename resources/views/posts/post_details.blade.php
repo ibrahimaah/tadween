@@ -74,11 +74,16 @@
                     @if ($post['user']['cover_image'] != null)
                         <img src="{{ asset($post['user']['cover_image']) }}" class="img-fluid logo-main rounded-circle" alt="User Image">
                     @else
-                    <img src="{{ asset('img/logo.png') }}" class="img-fluid logo-main rounded-circle" alt="User Image">
+                    <img src="{{ asset('img/user.jpg') }}" class="img-fluid logo-main rounded-circle" alt="User Image">
                     @endif
 
                     <div class="px-1">
-                        <p class="mx-1 mb-0">{{$post['user']['name']}}</p>
+                        {{-- <p class="mx-1 mb-0">{{$post['user']['name']}}</p>  --}}
+                        <h3 class="h5">
+                    
+                            {{ $post['user']['name'] }} 
+                            {!! $post['user']['is_private'] ? '<i class="fa-solid fa-lock text-orange-color"></i>' : '' !!}
+                        </h3>
                         <p class="mx-1 mt-0 text-grey">
                             {{ app()->getLocale() == 'ar' ? $post['user']['username'].'@' : '@'. $post['user']['username'] }}
                             ({{$post['created_at']}})

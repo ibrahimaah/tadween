@@ -34,7 +34,11 @@
         <p class="text-center text-orange-color">{{ __('follow_up_requests.no_pending_requests') }}</p>
     @else
 
-
+        @if(auth()->user()->is_private())
+            <div class="alert alert-info text-center">
+                {{ __('follow_up_requests.public_account_auto_accept') }}
+            </div>
+        @endif
     
         <table class="table table-bordered text-center">
             <thead>

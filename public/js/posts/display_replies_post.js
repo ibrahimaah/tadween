@@ -27,7 +27,7 @@ function loadReplies() {
                     var user_image = reply.user.cover_image != null ? '../' + reply.user.cover_image : '../img/logo.png';
                     var reply_image = reply.reply_image != null ? `<img src="../${reply.reply_image}" class="img-fluid reply-image" alt="Reply Image" data-bs-toggle="modal" data-bs-target="#replyImageModal" data-image="../${reply.reply_image}">` : '';
                     var userName = $('html').attr('lang') === 'ar' ? reply.user.username+'@' : '@'+reply.user.username;
-
+                    var is_private = reply.user.is_private;
                     var deleteButton = '';
                     if (reply.is_owner) {
                         deleteButton = `<div class="dropstart">
@@ -53,7 +53,11 @@ function loadReplies() {
                                 <a href="/${reply.user.username}" class="d-flex text-decoration-none text-dark">
                                     <img src="${user_image}" class="rounded-circle logo-main" alt="User Image">
                                     <div class="px-1">
-                                        <p class="mx-1 mb-0">${reply.user.name}</p>
+                                        <p class="mx-1 mb-0">
+                                            ${reply.user.name}
+                                             ${is_private ? '<i class="fa-solid fa-lock text-orange-color me-1"></i>' : ''} 
+                                        </p>
+
                                         <p class="mx-1 mt-0 text-grey">${userName} (${reply.created_at})</p>
                                     </div>
                                 </a>
