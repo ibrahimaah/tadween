@@ -67,6 +67,7 @@ Route::get('tmp',function(){
 Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->group(function () {
     // Posts
     Route::get('/', [PostController::class, 'index'])->name('home');
+    // Route::get('load-homepage-posts', [PostController::class, 'loadHomePagePosts']);
     Route::post('posts', [PostController::class, 'store'])->name('posts.store');
     Route::post('vote', [PostController::class, 'storeVote']);
     Route::get('load-posts', [PostController::class, 'loadPosts']);

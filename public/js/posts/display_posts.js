@@ -3,9 +3,11 @@ var page = 1; // Initial page
 var loading = false; // To prevent multiple requests
 var hasMorePosts = true; // التأكد من وجود صفحات إضافية
 const userName = window.location.pathname.split('/').pop();
+
 var pagePath = '';
 // Function to load posts
-function loadPosts() {
+function loadPosts() 
+{
     // منع الطلب عند التحميل أو إذا انتهت الردود
     if (loading || !hasMorePosts) return;
     loading = true;
@@ -65,7 +67,7 @@ function loadPosts() {
                             </ul>
                         </div>`;
                     }
-
+                    
                     var post_type = '';
                     if (post.post_type === 'poll') {
                         var poll_options = ''
@@ -100,7 +102,9 @@ function loadPosts() {
                             ${totalVotesHtml}
                             <p class="mt-4 text-muted">⏳ ${finishVotes} ${post.poll.expires_at}</p>
                         </div>`;
-                    } else {
+                    } 
+                    else 
+                    {
                         post_type =`
                         <div class="text-dark">
                             <p class="post-text mb-3">${post.text ?? ''}</p>
@@ -109,8 +113,9 @@ function loadPosts() {
                     }
                     
                     var postHtml = `
+                        
                         <div class="bg-white rounded-4 p-3 mb-2" id="post${post.slug_id}">
-                            
+                            <p class="text-orange-color">${post.likedByPhrase ?? ''}</p>
                             <div class="d-flex justify-content-between">
                                 <a href="${profileLink}" class="d-flex text-decoration-none text-dark">
                                     <img src="${user_image}" class="rounded-circle logo-main" alt="User Image">
@@ -190,10 +195,14 @@ function loadPosts() {
 // تفعيل جلب المنشورات عند تحميل الصفحة وعند التمرير
 $(document).ready(function() {
 
-    if (userName === '') {
+    if (userName === '') 
+    {
         //if page is home
+        // pagePath = '/load-posts';
         pagePath = '/load-posts';
-    } else {
+    } 
+    else 
+    {
         //if page is profile
         pagePath = `/${userName}/posts`;
     }

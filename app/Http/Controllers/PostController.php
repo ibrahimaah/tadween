@@ -202,7 +202,7 @@ class PostController extends Controller
         }
     }
    
-
+     
     //Display All Posts For Users
     public function loadPosts()
     {
@@ -233,7 +233,8 @@ class PostController extends Controller
         */
 
 
-        $res_get_home_page_posts = $this->postService->get_home_page_posts();
+        $res_get_home_page_posts = $this->postService->get_posts();
+
         if ($res_get_home_page_posts['code'] !== 1) {
             return response()->json([
                 'success' => false,
@@ -316,6 +317,7 @@ class PostController extends Controller
                 'reposts_count' => $post->reposts_count ?? 0,
                 'post_likes_count' => $post->post_likes_count ?? 0,
                 'is_post_liked' => $post->userPostLike !== null,
+                'likedByPhrase' => $post->likedByPhrase
             ];
         });
 
