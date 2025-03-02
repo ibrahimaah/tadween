@@ -60,7 +60,8 @@ class PostService
                             }); 
                     })
                     ->orWhere('user_id', Auth::id()) // Include your own posts
-                    ->orderBy('created_at', 'desc')
+                    ->orderByRaw('GREATEST(posts.created_at, COALESCE((SELECT MAX(created_at) FROM post_likes WHERE post_likes.post_id = posts.id), posts.created_at)) DESC')
+                    //->orderBy('created_at', 'desc')
                     ->paginate(10);
             });
             // Log::info($posts);
