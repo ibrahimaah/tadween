@@ -51,7 +51,7 @@ class PostService
                     // })
                       
                     //Get posts liked by followings but only after they were followed
-                    ->orWhereHas('postLikes', function ($query) use ($my_followings) {
+                    ->WhereHas('postLikes', function ($query) use ($my_followings) {
                         foreach ($my_followings as $follow) {
                             $query->orWhere(function ($q) use ($follow) {
                                 $q->where('user_id', $follow->following_id)
