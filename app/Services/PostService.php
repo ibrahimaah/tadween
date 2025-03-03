@@ -17,7 +17,8 @@ class PostService
     use CacheClearable;
     public function get_posts()
     {
-        try {
+        try 
+        {
             $this->clear_posts_cache(); // remove this line later
 
             $cacheKey = 'posts_page_' . request('page', 1);
@@ -43,11 +44,31 @@ class PostService
                             });
                         }
                     })
-                    // Get posts that my followings have liked
-                    ->orWhereHas('postLikes', function ($query) use ($followingIds_arr) {
-                        $query->whereIn('user_id', $followingIds_arr)
-                            ->orWhere('user_id', Auth::id()); // Also include posts I have liked
+                    // // Get posts that my followings have liked
+                    // ->orWhereHas('postLikes', function ($query) use ($followingIds_arr) {
+                    //     $query->whereIn('user_id', $followingIds_arr)
+                    //         ->orWhere('user_id', Auth::id()); // Also include posts I have liked
+                    // })
+                      // Get posts liked by followings but only after they were followed
+                    
+                    ->orWhereHas('postLikes', function ($query) use ($my_followings) {
+                        foreach ($my_followings as $follow) {
+                            $query->orWhere(function ($q) use ($follow) {
+                                $q->where('user_id', $follow->following_id)
+                                    ->where('created_at', '>', $follow->created_at);
+                            });
+                        }
+                        $query->orWhere('user_id', Auth::id()); // Also include posts I have liked
                     })
+                      // Get posts that my followings have liked AFTER they were followed
+                    // ->orWhereHas('postLikes', function ($query) {
+                    //     $query->whereIn('user_id', function ($subQuery) {
+                    //         $subQuery->select('following_id')
+                    //             ->from('follows')
+                    //             ->whereColumn('follows.following_id', 'post_likes.user_id')
+                    //             ->whereColumn('post_likes.created_at', '>', 'follows.created_at'); // Ensure the like happened after follow
+                    //     })->orWhere('user_id', Auth::id()); // Also include posts I have liked
+                    // })
                     // Ensure posts belong to users who have public profiles or private but followed
                     ->whereHas('user', function ($query) use ($followingIds_arr) {
                         $query->where('account_privacy', AccountPrivacy::PUBLIC)
@@ -67,7 +88,8 @@ class PostService
 
             $formattedPosts = collect(); // Use a collection instead of an array
 
-            foreach ($posts as $post) {
+            foreach ($posts as $post) 
+            {
                 $likedByFollowings = $post->postLikes->filter(function ($post_like) use ($followingIds_arr) {
                     return in_array($post_like->user_id, $followingIds_arr);
                 });
