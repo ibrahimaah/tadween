@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 
 class PostService
 {
@@ -35,7 +36,10 @@ class PostService
                     $clonedPost->likedByPhrase = __('messages.like_post', [
                         'user' => "<a href='" . route('profile', ['username' => $username]) . "' class='text-orange-color text-decoration-none' target='_blank'>$name</a>"
                     ]);
-
+                    ////////////////////////////////////////////////
+                    // the following code is wrong but it is neccessary for sorting
+                    $clonedPost->created_at = $like->created_at;
+                    ///////////////////////////////////////////
                     $formattedPosts->push($clonedPost);
                 }
             } else {
@@ -52,8 +56,9 @@ class PostService
     {
         $page = request()->get('page', 1);
         $total = $items->count();
-        $pagedData = $items->forPage($page, $perPage);
 
+        $pagedData = $items->forPage($page, $perPage);
+        // Log::info('pagedData: '.$pagedData);
         return new LengthAwarePaginator($pagedData, $total, $perPage, $page, [
             'path' => request()->url(),
             'query' => request()->query(),
@@ -62,12 +67,22 @@ class PostService
 
     private function filterPostsByFollowings($query, $my_followings)
     {
-        foreach ($my_followings as $follow) {
-            $query->orWhere(function ($q) use ($follow) {
-                $q->where('user_id', $follow->following_id)
-                    ->where('created_at', '>', $follow->created_at);
-            });
-        }
+        // foreach ($my_followings as $follow) {
+        //     $query->orWhere(function ($q) use ($follow) {
+        //         $q->where('user_id', $follow->following_id)
+        //             ->where('created_at', '>', $follow->created_at);
+        //     });
+        // }
+
+        $query->where(function ($q) use ($my_followings) {
+            foreach ($my_followings as $follow) {
+                $q->orWhere(function ($subQuery) use ($follow) {
+                    $subQuery->where('user_id', $follow->following_id)
+                        ->where('created_at', '>', $follow->updated_at); // Ensure the like happened after following
+                });
+            }
+        });
+        
     }
 
     private function filterPostsByLikes($query, $my_followings)
@@ -82,7 +97,7 @@ class PostService
         });
 
         $query->orWhere(function ($q) {
-            $q->where('user_id', Auth::id()); // Include posts I have liked
+            $q->where('user_id', Auth::id()); 
         });
     }
 
@@ -103,10 +118,7 @@ class PostService
     }
 
 
-    private function getPostOrderingQuery()
-    {
-        return 'GREATEST(posts.created_at, COALESCE((SELECT MAX(created_at) FROM post_likes WHERE post_likes.post_id = posts.id), posts.created_at)) DESC';
-    }
+     
 
     private function fetchPosts($my_followings, $followingIds_arr)
     {
@@ -118,8 +130,7 @@ class PostService
             ->whereHas('user', function ($query) use ($followingIds_arr) {
                 $this->filterByAccountPrivacy($query, $followingIds_arr);
             })
-            ->orWhere('user_id', Auth::id()) // Include own posts
-            ->orderByRaw($this->getPostOrderingQuery())
+            ->orWhere('user_id', Auth::id()) // Include own posts 
             ->get();
 
         $postsFromLikes = Post::with(['user', 'userPostLike', 'poll', 'postLikes'])
@@ -129,8 +140,7 @@ class PostService
             })
             ->whereHas('user', function ($query) use ($followingIds_arr) {
                 $this->filterByAccountPrivacy($query, $followingIds_arr);
-            })
-            ->orderByRaw($this->getPostOrderingQuery())
+            }) 
             ->get();
 
         return [
@@ -157,14 +167,25 @@ class PostService
             $postsFromFollowings = $postsData['followings'];
             $postsFromLikes = $postsData['likes'];
 
+            // info($postsFromLikes->count());
+
             // Apply formatLikedByPosts ONLY to posts from likes
             $formattedLikedPosts = $this->formatLikedByPosts($postsFromLikes, $followingIds_arr);
 
-            // Merge posts from followings and formatted liked posts
-            $mergedPosts = collect($postsFromFollowings)->merge($formattedLikedPosts);
 
-            // Paginate merged posts
-            $paginatedPosts = $this->paginateCollection($mergedPosts, 10);
+            // Merge posts from followings and formatted liked posts 
+            // $mergedPosts = collect($formattedLikedPosts)->merge($postsFromFollowings);
+            $mergedPosts = collect($postsFromFollowings)->merge($formattedLikedPosts);
+           
+             // Sort the merged posts by the 'created_at' field in descending order (latest first)
+            $sortedPosts = $mergedPosts->sortByDesc(function ($post) {
+                return $post->created_at;
+            })->values();
+
+           
+            // Paginate the sorted posts
+            $paginatedPosts = $this->paginateCollection($sortedPosts, 10);
+ 
 
             return ['code' => 1, 'data' => $paginatedPosts];
         } catch (Exception $ex) {
