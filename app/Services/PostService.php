@@ -86,13 +86,22 @@ class PostService
         });
     }
 
+    // private function filterByAccountPrivacy($query, $followingIds_arr)
+    // {
+    //     $query->where('account_privacy', AccountPrivacy::PUBLIC)
+    //         ->orWhere(function ($q) use ($followingIds_arr) {
+    //             $q->where('account_privacy', AccountPrivacy::PRIVATE)->whereIn('id', $followingIds_arr);
+    //         });
+    // }
     private function filterByAccountPrivacy($query, $followingIds_arr)
     {
-        $query->where('account_privacy', AccountPrivacy::PUBLIC)
-            ->orWhere(function ($q) use ($followingIds_arr) {
-                $q->where('account_privacy', AccountPrivacy::PRIVATE)->whereIn('id', $followingIds_arr);
+        $query->whereIn('id', $followingIds_arr) // Only include users I follow
+            ->where(function ($q) {
+                $q->where('account_privacy', AccountPrivacy::PUBLIC) // Public accounts in followings
+                    ->orWhere('account_privacy', AccountPrivacy::PRIVATE); // Private accounts in followings
             });
     }
+
 
     private function getPostOrderingQuery()
     {
