@@ -22,23 +22,29 @@ class PostService
         $formattedPosts = collect();
 
         foreach ($posts as $post) {
-            $likedByFollowings = $post->postLikes->filter(function ($post_like) use ($followingIds_arr) {
-                return in_array($post_like->user_id, $followingIds_arr);
+            $likedByFollowingsAndMe = $post->postLikes->filter(function ($post_like) use ($followingIds_arr) {
+                return in_array($post_like->user_id, $followingIds_arr) || $post_like->user_id  == Auth::id();
             });
 
-            if ($likedByFollowings->isNotEmpty()) {
-                foreach ($likedByFollowings as $like) {
+            if ($likedByFollowingsAndMe->isNotEmpty()) 
+            {
+                foreach ($likedByFollowingsAndMe as $like) 
+                {
+                    
                     $name = $like->user->name;
                     $username = $like->user->username;
 
                     // Clone the post to avoid modifying the original reference
                     $clonedPost = clone $post;
-                    $clonedPost->likedByPhrase = __('messages.like_post', [
-                        'user' => "<a href='" . route('profile', ['username' => $username]) . "' class='text-orange-color text-decoration-none' target='_blank'>$name</a>"
-                    ]);
+                    if($like->user->id !== Auth::id())
+                    {
+                        $clonedPost->likedByPhrase = __('messages.like_post', [
+                            'user' => "<a href='" . route('profile', ['username' => $username]) . "' class='text-orange-color text-decoration-none' target='_blank'>$name</a>"
+                        ]);
+                    }
                     ////////////////////////////////////////////////
                     // the following code is wrong but it is neccessary for sorting
-                    $clonedPost->created_at = $like->created_at;
+                    $clonedPost->ordered_date = $like->created_at;
                     ///////////////////////////////////////////
                     $formattedPosts->push($clonedPost);
                 }
@@ -85,21 +91,38 @@ class PostService
         
     }
 
+
+    
     private function filterPostsByLikes($query, $my_followings)
     {
-        $query->where(function ($q) use ($my_followings) {
-            foreach ($my_followings as $follow) {
-                $q->orWhere(function ($subQuery) use ($follow) {
-                    $subQuery->where('user_id', $follow->following_id)
-                        ->where('created_at', '>', $follow->updated_at); // Ensure the like happened after following
-                });
+        $query->where(function ($q) use ($my_followings) 
+        {
+            foreach ($my_followings as $follow) 
+            {
+                // Check if the follow request is accepted (i.e., is_pending is false)
+                if (!$follow->is_pending) 
+                {
+                    $q->orWhere(function ($subQuery) use ($follow) 
+                    {
+                        // Ensure the like is after the follow request is accepted
+                        $subQuery->where('user_id', $follow->following_id)
+                            ->where('created_at', '>', $follow->updated_at);
+                    });
+
+                     // Likes from the current user
+                    $q->orWhere(function ($subQuery) use ($follow) 
+                    {
+                        // Ensure it's the current user liking
+                        $subQuery->where('user_id', Auth::id())
+                            ->where('created_at', '>', $follow->updated_at); // Like after follow
+                    });
+                }
             }
         });
-
-        $query->orWhere(function ($q) {
-            $q->where('user_id', Auth::id()); 
-        });
     }
+    
+ 
+
 
     // private function filterByAccountPrivacy($query, $followingIds_arr)
     // {
@@ -133,15 +156,25 @@ class PostService
             ->orWhere('user_id', Auth::id()) // Include own posts 
             ->get();
 
+        // $postsFromFollowings = collect();
         $postsFromLikes = Post::with(['user', 'userPostLike', 'poll', 'postLikes'])
             ->withCount(['replies', 'postLikes'])
             ->whereHas('postLikes', function ($query) use ($my_followings) {
                 $this->filterPostsByLikes($query, $my_followings);
-            })
+            }) 
             ->whereHas('user', function ($query) use ($followingIds_arr) {
                 $this->filterByAccountPrivacy($query, $followingIds_arr);
             }) 
             ->get();
+
+            // info($postsFromLikes);
+
+            // Add the is_liked property to each post
+            $postsFromFollowings->each(function ($post) {
+                $post->ordered_date = $post->created_at;
+            });
+
+            
 
         return [
             'followings' => $postsFromFollowings,
@@ -165,21 +198,24 @@ class PostService
             });
 
             $postsFromFollowings = $postsData['followings'];
+            info($postsFromFollowings);
             $postsFromLikes = $postsData['likes'];
-
+             
             // info($postsFromLikes->count());
 
             // Apply formatLikedByPosts ONLY to posts from likes
             $formattedLikedPosts = $this->formatLikedByPosts($postsFromLikes, $followingIds_arr);
-
+           
 
             // Merge posts from followings and formatted liked posts 
             // $mergedPosts = collect($formattedLikedPosts)->merge($postsFromFollowings);
-            $mergedPosts = collect($postsFromFollowings)->merge($formattedLikedPosts);
            
+            $mergedPosts = collect($postsFromFollowings)->merge($formattedLikedPosts);
+            // info('-------------------------');
+            // info($mergedPosts);
              // Sort the merged posts by the 'created_at' field in descending order (latest first)
             $sortedPosts = $mergedPosts->sortByDesc(function ($post) {
-                return $post->created_at;
+                return $post->ordered_date;
             })->values();
 
            
