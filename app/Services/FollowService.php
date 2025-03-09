@@ -118,6 +118,7 @@ class FollowService
         {
             $request = Follow::findOrFail($id);
             $request->is_pending = false;
+            $request->updated_at = now();
             if($request->save())
             {
                 $this->clear_posts_cache();
