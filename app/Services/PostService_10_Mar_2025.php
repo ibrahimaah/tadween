@@ -70,7 +70,14 @@ class PostService
 
     //DONE
     private function filterPostsByFollowings($query, $my_followings)
-    { 
+    {
+        // foreach ($my_followings as $follow) {
+        //     $query->orWhere(function ($q) use ($follow) {
+        //         $q->where('user_id', $follow->following_id)
+        //             ->where('created_at', '>', $follow->created_at);
+        //     });
+        // }
+
         $query->where(function ($q) use ($my_followings) {
             foreach ($my_followings as $follow) {
                 $q->orWhere(function ($subQuery) use ($follow) {
@@ -92,23 +99,51 @@ class PostService
                 // Check if the follow request is accepted (i.e., is_pending is false)
                 if (!$follow->is_pending) 
                 {
-                    $follow_date = DB::table('follows')
-                                    ->where('following_id', $follow->following_id)
-                                    ->where('follower_id', $follow->follower_id)
-                                    ->value('updated_at'); 
-                    
+                    $q->orWhere(function ($subQuery) use ($follow) {
 
-                    $q->orWhere(function ($subQuery) use ($follow,$follow_date) 
-                    { 
+                        // Ensure the like is after the follow request is accepted
                         $subQuery->where('user_id', $follow->following_id)
-                                 ->where('created_at', '>', $follow_date);
-                    }); 
+                            ->where('created_at', '>', function ($query) use ($follow) {
+                                $query->select('updated_at')
+                                    ->from('follows')
+                                    ->whereColumn('following_id', 'posts.user_id') // Ensure it's the post owner's approval date
+                                    ->where('follower_id', $follow->follower_id)
+                                    ->latest() // Get the most recent approval
+                                    ->limit(1);
+                            });
+                    });
+
+                    // Likes from the current user
+
+                    // $q->orWhere(function ($subQuery) use ($follow) 
+                    // {
+                    //     // Ensure it's the current user liking
+                    //     $subQuery->where('user_id', Auth::id())
+                    //         ->where('created_at', '>', $follow->updated_at); // Like after follow
+                    // });
                 }
             }
         });
     }
 
- 
+
+
+
+    // private function filterByAccountPrivacy($query, $followingIds_arr)
+    // {
+    //     $query->where('account_privacy', AccountPrivacy::PUBLIC)
+    //         ->orWhere(function ($q) use ($followingIds_arr) {
+    //             $q->where('account_privacy', AccountPrivacy::PRIVATE)->whereIn('id', $followingIds_arr);
+    //         });
+    // }
+    // private function filterByAccountPrivacy($query, $followingIds_arr)
+    // {
+    //     $query->whereIn('id', $followingIds_arr) // Only include users I follow
+    //         ->where(function ($q) {
+    //             $q->where('account_privacy', AccountPrivacy::PUBLIC) // Public accounts in followings
+    //                 ->orWhere('account_privacy', AccountPrivacy::PRIVATE); // Private accounts in followings
+    //         });
+    // }
     private function filterByAccountPrivacy($query, $followingIds_arr)
     {
         $query->where('account_privacy', AccountPrivacy::PUBLIC) 
@@ -122,12 +157,15 @@ class PostService
 
     private function fetchPosts($my_followings, $followingIds_arr)
     {
-        /*************************************************************************************/
+        /*****************************************************************/
         $postsFromFollowings = Post::with(['user', 'userPostLike', 'poll', 'postLikes'])
             ->withCount(['replies', 'postLikes'])
             ->where(function ($query) use ($my_followings) {
                 $this->filterPostsByFollowings($query, $my_followings);
-            }) 
+            })
+            // ->whereHas('user', function ($query) use ($followingIds_arr) {
+            //     $this->filterByAccountPrivacy($query, $followingIds_arr);
+            // })
             ->orWhere('user_id', Auth::id()) // Include own posts 
             ->get();
 
@@ -135,13 +173,11 @@ class PostService
         $postsFromFollowings->each(function ($post) {
             $post->ordered_date = $post->created_at;
         });
-        /*************************************************************************************/
+        /*****************************************************************/
 
 
         $postsFromFollowings = collect();
 
-
-        /*************************************************************************************/
         $postsFromLikes = Post::with(['user', 'userPostLike', 'poll', 'postLikes'])
             ->withCount(['replies', 'postLikes'])
             ->whereHas('postLikes', function ($query) use ($my_followings) {
@@ -151,8 +187,10 @@ class PostService
             //     $this->filterByAccountPrivacy($query, $followingIds_arr);
             // })
             ->get();
-        /*************************************************************************************/
-        // info($postsFromLikes);
+
+        info($postsFromLikes);
+
+
 
         // $postsFromLikes = collect();
 
