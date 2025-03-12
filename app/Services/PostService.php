@@ -18,6 +18,7 @@ class PostService
     use CacheClearable;
     
 
+    //have liked after accept follow request
     private $final_followings = [];
 
     
@@ -26,31 +27,60 @@ class PostService
     {
         // info($posts->count());
         $formattedPosts = collect();
+    
+        foreach ($posts as $post) 
+        {
+            // $likedByFollowings = $post->postLikes->filter(function ($post_like) use ($followingIds_arr) 
+            // {
+            //     return (in_array($post_like->user_id, $this->final_followings));
+            // });
 
-        foreach ($posts as $post) {
-            $likedByFollowingsAndMe = $post->postLikes->filter(function ($post_like) use ($followingIds_arr) {
-                return in_array($post_like->user_id, $this->final_followings) || $post_like->user_id == Auth::id();
-            });
-            // info( $likedByFollowingsAndMe->count());
-            // info($this->following_ids_arr);
-            if ($likedByFollowingsAndMe->isNotEmpty()) 
+            $likedByFollowingsAndMe = $post->postLikes->filter(function ($post_like) use ($followingIds_arr) 
             {
-                foreach ($likedByFollowingsAndMe as $like) {
-                    // info(111111);
+                return (in_array($post_like->user_id, $this->final_followings) || $post_like->user_id == Auth::id());
+            });
+
+            $groupedLikes = $likedByFollowingsAndMe->groupBy('post_id');
+
+            // Filter likes, removing the auth user's like if there are other users who liked the same post
+            $filteredLikes = $groupedLikes->map(function ($likes) {
+                if ($likes->count() > 1) {
+                    return $likes->reject(fn ($like) => $like->user_id == Auth::id());
+                } 
+                return $likes;
+            })->flatten();
+
+
+            // info( $filteredLikes);
+            // info($this->following_ids_arr);
+            // info('f '.$likedByFollowingsAndMe->count());
+
+            if ($filteredLikes->isNotEmpty()) 
+            {
+                // info($likedByFollowingsAndMe);
+                foreach ($filteredLikes as $like) 
+                {
+                    
                     $name = $like->user->name;
                     $username = $like->user->username;
+                    $user_id = $like->user->id;
 
                     // Clone the post to avoid modifying the original reference
                     $clonedPost = clone $post;
-                    if ($like->user->id !== Auth::id()) {
+
+                    if ($user_id !== Auth::id()) 
+                    {
                         $clonedPost->likedByPhrase = __('messages.like_post', [
                             'user' => "<a href='" . route('profile', ['username' => $username]) . "' class='text-orange-color text-decoration-none' target='_blank'>$name</a>"
                         ]);
                     }
+                    
+                     
                     ////////////////////////////////////////////////
                     // the following code is wrong but it is neccessary for sorting
                     $clonedPost->ordered_date = $like->created_at;
                     ///////////////////////////////////////////
+
                     $formattedPosts->push($clonedPost);
                 }
             } 
@@ -102,10 +132,10 @@ class PostService
                 foreach ($my_followings as $follow) 
                 { 
                     // Check if the follow request is accepted (i.e., is_pending is false)
-                    if (!$follow->is_pending && $follow->following->account_privacy == "private") 
+                    // if (!$follow->is_pending && $follow->following->account_privacy == "private") 
+                    // {
+                    if (!$follow->is_pending)
                     {
-                        
-
                         $follow_date = DB::table('follows')
                                         ->where('following_id', $follow->following_id)
                                         ->where('follower_id', $follow->follower_id)
@@ -119,7 +149,6 @@ class PostService
                             $subQuery->where('user_id', $follow->following_id)
                                      ->where('created_at', '>', $follow_date);
                         }); 
-
                        
                     } 
                 }
@@ -150,8 +179,8 @@ class PostService
         $query->where('account_privacy', AccountPrivacy::PUBLIC) 
               ->orWhere(function ($q) use ($followingIds_arr)
               {
-                $q->where('account_privacy', AccountPrivacy::PRIVATE)
-                  ->whereIn('id', array_merge($followingIds_arr,[Auth::id()]));
+                $q->where('account_privacy', AccountPrivacy::PRIVATE) 
+                  ->whereIn('id', array_merge($this->final_followings,[Auth::id()]));
               });  
     }
 
@@ -181,7 +210,7 @@ class PostService
 
         /*************************************/
         // info($posts_From_Current_User_And_His_Followings);
-        $posts_From_Current_User_And_His_Followings = collect();
+        // $posts_From_Current_User_And_His_Followings = collect();
         /*************************************/
 
         /*************************************************************************************/
@@ -191,14 +220,14 @@ class PostService
             {
                 $query->whereHas('postLikes', function ($query) use ($my_followings) {
                     $this->filterPostsByLikes($query, $my_followings);
+                })
+                ->orWhereHas('postLikes', function ($query) {
+                    $this->filterPostsByCurrentUserLikes($query);
                 });
-                // ->orWhereHas('postLikes', function ($query) {
-                //     $this->filterPostsByCurrentUserLikes($query);
-                // });
             })
-            // ->whereHas('user', function ($query) use ($followingIds_arr) {
-            //     $this->filterByAccountPrivacy($query, $followingIds_arr);
-            // })
+            ->whereHas('user', function ($query) use ($followingIds_arr) {
+                $this->filterByAccountPrivacy($query, $followingIds_arr);
+            })
             ->get();
 
            
@@ -235,11 +264,11 @@ class PostService
             // info($postsFromFollowings);
             $postsFromLikes = $postsData['likes'];
 
-            info($postsFromLikes->count());
+            // info($postsFromLikes->count());
 
             // Apply formatLikedByPosts ONLY to posts from likes
             $formattedLikedPosts = $this->formatLikedByPosts($postsFromLikes, $followingIds_arr);
-            info($formattedLikedPosts->count());
+            // info($formattedLikedPosts->count());
             // info('-------------------------');
             // info($formattedLikedPosts);
 
