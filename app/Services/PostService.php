@@ -101,10 +101,6 @@ class PostService
         ]);
     }
 
-
-
-
-
     private function filterPostsByLikes($query, $my_followings,$followingIds_arr)
     {
         if ($my_followings->isNotEmpty()) {
@@ -115,13 +111,21 @@ class PostService
                         ->where('follower_id', $follow->follower_id)
                         ->value('updated_at');
 
-                    $q->orWhere(function ($subQuery) use ($follow, $follow_date) {
+                    $q->orWhere(function ($subQuery) use ($follow, $follow_date) 
+                    {
                         $subQuery->where('user_id', $follow->following_id)
                             ->where('created_at', '>', $follow_date);
-                    })->whereHas('post.user',function($qu) use ($followingIds_arr)
+                    })
+                    ->whereHas('post.user', function($qu) use ($followingIds_arr) 
                     {
-                        $qu->where('account_privacy','private')->whereIn('user_id',$followingIds_arr);
+                        $qu->where('account_privacy', 'public')
+                           ->orWhere(function($query) use ($followingIds_arr) 
+                            {
+                               $query->where('account_privacy', 'private')
+                                     ->whereIn('user_id', $followingIds_arr);
+                            });
                     });
+                    
                 }
 
                 //we just need those followings to apply last filter on them (formatLikedByPosts)
@@ -137,20 +141,6 @@ class PostService
         }
     }
 
-
-
-    private function filterByAccountPrivacy($query, $followingIds_arr)
-    {
-        $query->where('account_privacy', AccountPrivacy::PUBLIC)
-            ->orWhere(function ($q) use ($followingIds_arr) {
-                // info($this->final_followings);
-                $q->where('account_privacy', AccountPrivacy::PRIVATE)
-                    ->whereIn('id', array_merge($this->final_followings, [Auth::id()]));
-            });
-    }
-
-
-
     //DONE
     private function filterPostsByFollowings($query, $my_followings)
     {
@@ -164,6 +154,18 @@ class PostService
         });
     }
 
+    private function get_posts_from_followings_likes($my_followings,$followingIds_arr)
+    {
+        $postsFromLikes = Post::with(['user', 'userPostLike', 'poll', 'postLikes'])
+        ->withCount(['replies', 'postLikes'])
+
+        ->whereHas('postLikes', function ($query) use ($my_followings,$followingIds_arr) {
+            $this->filterPostsByLikes($query, $my_followings,$followingIds_arr);
+        })
+        ->get();
+
+        return $postsFromLikes;
+    }
 
     private function get_posts_from_current_user_likes()
     {
@@ -215,36 +217,20 @@ class PostService
         return $posts_From_Current_User_And_His_Followings;
     }
 
-
-
     private function fetchPosts()
     {
         $my_followings = Follow::getFollowings(Auth::id());
         $followingIds_arr = $my_followings->isNotEmpty() ? $my_followings->pluck('following_id')->toArray() : [];
 
-
         $posts_From_Current_User_And_His_Followings = $this->get_posts_from_current_user_and_his_followings($my_followings, $followingIds_arr);
 
         $posts_From_Current_User_Likes = $this->get_posts_from_current_user_likes();
 
+        $postsFromLikes = $this->get_posts_from_followings_likes($my_followings,$followingIds_arr);
 
+        // $posts_From_Current_User_And_His_Followings = collect();
 
-        $postsFromLikes = Post::with(['user', 'userPostLike', 'poll', 'postLikes'])
-            ->withCount(['replies', 'postLikes'])
-
-            ->whereHas('postLikes', function ($query) use ($my_followings,$followingIds_arr) {
-                $this->filterPostsByLikes($query, $my_followings,$followingIds_arr);
-            })
-            // ->whereHas('user', function ($query) use ($followingIds_arr) {
-            //     $this->filterByAccountPrivacy($query, $followingIds_arr);
-            // })
-            ->get();
-
-
-
-        $posts_From_Current_User_And_His_Followings = collect();
-
-        $posts_From_Current_User_Likes = collect();
+        // $posts_From_Current_User_Likes = collect();
 
         // $postsFromLikes = collect();
         return [
