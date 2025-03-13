@@ -17,11 +17,8 @@ class PostService
 {
     use CacheClearable;
 
-
     //have liked after accept follow request
     private $final_followings = [];
-
-
 
     private function formatLikedByPosts($posts)
     {
