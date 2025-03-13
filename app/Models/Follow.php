@@ -36,4 +36,10 @@ class Follow extends Model
             ]);
         });
     }
+
+
+    public static function getFollowings($user_id)
+    {
+        return self::where(['follower_id' => $user_id, 'is_pending' => false])->get(); 
+    }
 }
