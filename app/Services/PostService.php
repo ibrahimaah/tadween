@@ -52,11 +52,39 @@ class PostService
 
             if ($filteredLikes->isNotEmpty()) {
                 // info($likedByFollowingsAndMe);
-                foreach ($filteredLikes as $like) {
+                foreach ($filteredLikes as $like) 
+                {
+                    
+                
+////////////////////////////////////////////////////////////////////////////////////                                    
+                    
+                   if($post->user->account_privacy == AccountPrivacy::PRIVATE)
+                   {
 
+                        $owner_post_been_liked_follow_date = DB::table('follows')
+                                    ->where('following_id', $post->user_id)
+                                    ->where('follower_id',Auth::id())
+                                    ->value('updated_at');
+
+                          //if owner one of my followings           
+                        if($owner_post_been_liked_follow_date)
+                        {
+                            //info('follow date : '.$owner_post_been_liked_follow_date);
+                            //info("**********************************");
+                            //info('like date : '.$like->created_at);
+                            if ($owner_post_been_liked_follow_date > $like->created_at)
+                            {
+                                continue;
+                            }
+                        }
+                   }
+////////////////////////////////////////////////////////////////////////////////////
+
+                    //we are in post_likes table
                     $name = $like->user->name;
                     $username = $like->user->username;
                     $user_id = $like->user->id;
+
 
                     // Clone the post to avoid modifying the original reference
                     $clonedPost = clone $post;
@@ -98,45 +126,7 @@ class PostService
         ]);
     }
 
-    private function filterPostsByLikes($query, $my_followings,$followingIds_arr)
-    {
-        if ($my_followings->isNotEmpty()) {
-            $query->where(function ($q) use ($my_followings,$followingIds_arr) {
-                foreach ($my_followings as $follow) {
-                    $follow_date = DB::table('follows')
-                        ->where('following_id', $follow->following_id)
-                        ->where('follower_id', $follow->follower_id)
-                        ->value('updated_at');
-
-                    $q->orWhere(function ($subQuery) use ($follow, $follow_date) 
-                    {
-                        $subQuery->where('user_id', $follow->following_id)
-                            ->where('created_at', '>', $follow_date);
-                    })
-                    ->whereHas('post.user', function($qu) use ($followingIds_arr) 
-                    {
-                        $qu->where('account_privacy', 'public')
-                           ->orWhere(function($query) use ($followingIds_arr) 
-                            {
-                               $query->where('account_privacy', 'private')
-                                     ->whereIn('user_id', $followingIds_arr);
-                            });
-                    });
-                    
-                }
-
-                //we just need those followings to apply last filter on them (formatLikedByPosts)
-                $data = json_decode($q->get(), true);
-                $this->final_followings = array_column($data, 'user_id');
-                // info($this->final_followings);
-
-                // Ensure the post owner has 'public' privacy or the owner is one of the followings if private
-               
-            });
-        } else {
-            $query->whereRaw('1 = 0');
-        }
-    }
+   
 
     
 
@@ -188,6 +178,52 @@ class PostService
         });
     }
 
+
+    private function filterPostsByLikes($query, $my_followings,$followingIds_arr)
+    {
+        if ($my_followings->isNotEmpty()) {
+            $query->where(function ($q) use ($my_followings,$followingIds_arr) {
+                foreach ($my_followings as $follow) 
+                {
+                    $follow_date = DB::table('follows')
+                        ->where('following_id', $follow->following_id)
+                        ->where('follower_id', $follow->follower_id)
+                        ->value('updated_at');
+ 
+
+                    $q->orWhere(function ($subQuery) use ($follow, $follow_date) 
+                    {
+                        $subQuery->where('user_id', $follow->following_id)
+                            ->where('created_at', '>', $follow_date);
+                    })
+                    ->whereHas('post.user', function($qu) use ($followingIds_arr) 
+                    {
+                        $qu->where('account_privacy', 'public')
+                           ->orWhere(function($query) use ($followingIds_arr) 
+                            {
+                               $query->where('account_privacy', 'private')
+                                     ->whereIn('id', $followingIds_arr);
+                            });
+                    });
+                    
+                }
+
+                //we just need those followings to apply last filter on them (formatLikedByPosts)
+                $data = json_decode($q->get(), true);
+                $this->final_followings = array_column($data, 'user_id');
+                // info($this->final_followings);
+
+                // Ensure the post owner has 'public' privacy or the owner is one of the followings if private
+               
+            });
+        } else {
+            $query->whereRaw('1 = 0');
+        }
+    }
+
+ 
+
+
     private function get_posts_from_followings_likes($my_followings,$followingIds_arr)
     {
         $postsFromLikes = Post::with(['user', 'userPostLike', 'poll', 'postLikes'])
@@ -195,9 +231,10 @@ class PostService
 
         ->whereHas('postLikes', function ($query) use ($my_followings,$followingIds_arr) {
             $this->filterPostsByLikes($query, $my_followings,$followingIds_arr);
-        })
+        }) 
         ->get();
 
+   
         return $postsFromLikes;
     }
 
@@ -252,8 +289,8 @@ class PostService
 
         $postsFromLikes = $this->get_posts_from_followings_likes($my_followings,$followingIds_arr);
 
-        // $posts_From_Current_User_And_His_Followings = collect();
-        // $posts_From_Current_User_Likes = collect();
+        $posts_From_Current_User_And_His_Followings = collect();
+        $posts_From_Current_User_Likes = collect();
         // $postsFromLikes = collect();
 
         return [
