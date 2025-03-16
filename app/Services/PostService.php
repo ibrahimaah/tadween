@@ -50,7 +50,8 @@ class PostService
             // info($this->following_ids_arr);
             // info('f '.$likedByFollowingsAndMe->count());
 
-            if ($filteredLikes->isNotEmpty()) {
+            if ($filteredLikes->isNotEmpty()) 
+            {
                 // info($likedByFollowingsAndMe);
                 foreach ($filteredLikes as $like) 
                 {
@@ -289,8 +290,8 @@ class PostService
 
         $postsFromLikes = $this->get_posts_from_followings_likes($my_followings,$followingIds_arr);
 
-        $posts_From_Current_User_And_His_Followings = collect();
-        $posts_From_Current_User_Likes = collect();
+        // $posts_From_Current_User_And_His_Followings = collect();
+        // $posts_From_Current_User_Likes = collect();
         // $postsFromLikes = collect();
 
         return [
