@@ -12,6 +12,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\BlockedUserController;
 use App\Models\Follow;
 use App\Models\Post;
 use Illuminate\Support\Facades\Cookie;
@@ -156,6 +157,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('{username}/followings', [FollowController::class, 'getFollowings'])->name('followings.index');
     Route::get('{username}/followings/load-followings', [FollowController::class, 'loadFollowings']);
 
+
+    Route::post('block-user',[BlockedUserController::class,'block'])->name('users.block');
+    Route::post('unblock-user',[BlockedUserController::class,'unblock'])->name('users.unblock');
 });
 
 ///////////////////////Admin Routes//////////////////////////

@@ -5,6 +5,20 @@
 @endsection
 
 @section('content')
+<style>
+    .dots-btn {
+        background: none;
+        border: none;
+        font-size: 24px;
+        padding: 5px;
+        cursor: pointer;
+        transition: opacity 0.2s ease-in-out;
+    }
+    .dots-btn:hover,
+    .dots-btn:focus {
+        opacity: 0.7;
+    }
+</style>
 <div class="profile">
     <div id="pullToRefreshIndicator" class="text-center d-none justify-content-center">
         <i class="fa fa-spinner fa-spin text-orange-color h1 py-3"></i>
@@ -40,16 +54,60 @@
                 @if (Auth::check() && !$data['is_owner'])
                 <div id="follow{{$data['username']}}" class="col-12 follow_btn_margin text-{{ app()->getLocale() == 'ar' ? 'start' : 'end' }}">
                     
-                    <a href="{{ route('messages.chat', ['username' => $data['username']]) }}" class="btn text-light">
-                        <i class="fa-regular fa-comments text-orange-color"></i>
-                    </a>
-                    
-                    <button type="button" class="btn btn-orange text-light" onclick="followUser('{{$data['username']}}')">
-                        <span class="follow_text_btn">
-                            {{ $data['follow_btn_status_text'] }}
-                        </span>
-                    </button>
-                    
+                    <div class="d-flex justify-content-end align-items-center">
+                        <div class="dropdown">
+                            <button class="dots-btn text-orange-color" 
+                                    type="button" 
+                                    id="dropdownMenuButton" 
+                                    data-bs-toggle="dropdown">
+                                &#x22EF; <!-- Horizontal Ellipsis -->
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end py-0">
+                                <li>
+                                    @if($data['is_blocked'])
+                                        <form action="{{ route('users.unblock') }}" method="POST" class="unblock-user-form">
+                                            @csrf
+                                            <input type="hidden" name="username" value="{{ $data['username'] }}" required>
+                                            <button type="submit" class="dropdown-item unblock-button">
+                                                <i class="fas fa-ban text-orange-color"></i> {{ __('profile.unblock_this_user') }}
+                                            </button>
+                                        </form>
+                                    @else
+                                        <form action="{{ route('users.block') }}" method="POST" class="block-user-form">
+                                            @csrf
+                                            <input type="hidden" name="username" value="{{ $data['username'] }}" required>
+                                            <button type="submit" class="dropdown-item block-button">
+                                                <i class="fas fa-ban text-orange-color"></i> {{ __('profile.block_this_user') }}
+                                            </button>
+                                        </form>
+                                    @endif
+                                    
+                                </li>
+                            </ul>
+                            
+                        </div>
+    
+                        @if($data['is_blocked'])
+                            <form action="{{ route('users.unblock') }}" method="POST" class="unblock-user-form">
+                                @csrf
+                                <input type="hidden" name="username" value="{{ $data['username'] }}" required>
+                                <button type="submit" class="btn btn-orange text-white unblock-button">
+                                    <i class="fas fa-ban text-white"></i> {{ __('profile.unblock_this_user') }}
+                                </button>
+                            </form>
+                        @else 
+                        <a href="{{ route('messages.chat', ['username' => $data['username']]) }}" class="btn text-light">
+                            <i class="fa-regular fa-comments text-orange-color"></i>
+                        </a>
+                        
+                        <button type="button" class="btn btn-orange text-light" onclick="followUser('{{$data['username']}}')">
+                            <span class="follow_text_btn">
+                                {{ $data['follow_btn_status_text'] }}
+                            </span>
+                        </button>
+                        @endif 
+                    </div>
+                
                 </div>
                 @endif
             </div>
@@ -182,6 +240,32 @@
 
     @auth 
         <script src="{{asset('js/users/follow_user.js?version=1.0')}}"></script>
+        <script>
+             
+             $(document).ready(function() {
+                // Block button click event
+                $('.block-button').on('click', function(event) {
+                    event.preventDefault();  // Prevent form submission
+
+                    // Show confirmation prompt
+                    if (confirm("{{ __('profile.are_you_sure_block') }}")) {
+                        $('.block-user-form').submit();  // Submit the form if confirmed
+                    }
+                });
+
+                // Unblock button click event
+                $('.unblock-button').on('click', function(event) {
+                    event.preventDefault();  // Prevent form submission
+
+                    // Show confirmation prompt
+                    if (confirm("{{ __('profile.are_you_sure_unblock') }}")) {
+                        $('.unblock-user-form').submit();  // Submit the form if confirmed
+                    }
+                });
+            });
+
+                          
+        </script>
     @endauth 
 
 @endsection

@@ -70,6 +70,7 @@ class ProfileController extends Controller
             // 'is_public' => $user->account_privacy == 'public' ? true : false,
             'is_profile_locked' => $is_profile_locked,
             'is_private' => $user->account_privacy == AccountPrivacy::PRIVATE,
+            'is_blocked' => $user->isBlockedBy(Auth::user()),
         ]; 
         return view('profile.profile', ['data' => $data]);
     }

@@ -16,4 +16,8 @@ return [
     'profile_media' => 'الوسائط',
     'profile_likes' => 'الأعجابات',
     'profile_user_not_found' => 'اسم المستخدم غير موجود',
+    'block_this_user' => 'حظر هذا المستخدم',
+    'unblock_this_user' => 'إلغاء الحظر',
+    'are_you_sure_block' => 'هل أنت متأكد أنك تريد حظر هذا المستخدم؟',
+    'are_you_sure_unblock' => 'هل أنت متأكد أنك تريد إلغاء الحظر؟',
 ];

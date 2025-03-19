@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -139,7 +140,7 @@ class User extends Authenticatable
     }
 
     public function isFollower(User $user)
-    { 
+    {
         return $this->followers()
             ->wherePivot('follower_id', $user->id)
             ->exists();
@@ -161,8 +162,8 @@ class User extends Authenticatable
 
     public function acceptAllFollowRequests()
     {
-        $followers = Follow::where('following_id',$this->id)->where('is_pending',true)->pluck('follower_id'); 
-        Follow::whereIn('follower_id', $followers)->update(['is_pending' => false]); 
+        $followers = Follow::where('following_id', $this->id)->where('is_pending', true)->pluck('follower_id');
+        Follow::whereIn('follower_id', $followers)->update(['is_pending' => false]);
     }
 
 
@@ -191,5 +192,45 @@ class User extends Authenticatable
         return $this->account_privacy == AccountPrivacy::PRIVATE;
     }
 
-     
+
+
+    ///////////////////////////////////////////////////////////////////////
+    /**
+     * Blocked Users
+     */
+
+    public function blockedUsers(): HasMany
+    {
+        return $this->hasMany(BlockedUser::class);
+    }
+
+    public function blockedByUsers(): HasMany
+    {
+        return $this->hasMany(BlockedUser::class, 'blocked_user_id');
+    }
+
+    public function isBlockedBy(User $user): bool
+    {
+        return $this->blockedByUsers()->where('user_id', $user->id)->exists();
+    }
+
+    public function hasBlocked(User $user): bool
+    {
+        return $this->blockedUsers()->where('blocked_user_id', $user->id)->exists();
+    }
+
+    public function unblock(User $user): bool
+    {
+        // Check if the user has blocked the given user
+        if ($this->hasBlocked($user)) {
+            // Find the block record and delete it
+            return $this->blockedUsers()->where('blocked_user_id', $user->id)->delete() > 0;
+        }
+
+        return false;
+    }
+
+
+    //////////////////////////////////////////////////////////////////////
+
 }

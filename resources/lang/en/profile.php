@@ -18,4 +18,8 @@ return [
     'profile_media' => 'Media',
     'profile_likes' => 'Likes',
     'profile_user_not_found' => 'User not found',
+    'block_this_user' => 'Block this user',
+    'unblock_this_user' => 'Unblock',
+    'are_you_sure_block' => 'Are you sure you want to block this user?',
+    'are_you_sure_unblock' => 'Are you sure you want to unblock this user?',
 ];
