@@ -102,5 +102,6 @@
     @yield('java_scripts')
     <script src="{{asset('js/home.js?version=1.0')}}"></script>
 
+    @stack('js')
 </body>
 </html>

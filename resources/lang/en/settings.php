@@ -43,4 +43,6 @@ return [
     'password_now_incorrect' => 'Incorrect password.',
     'delete_account_success' => 'Your account has been deleted successfully.',
     'unexpected_error' => 'An unexpected error occurred, please try again later.',
+    'blocked_users' => 'Blocked Users',
+    'manage_blocked_users' => 'Click to manage blocked users',
 ];

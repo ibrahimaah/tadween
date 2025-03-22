@@ -7,4 +7,5 @@ return [
     'not_found_messages' => 'لا توجد رسائل',
     'unknown_user' => 'مستخدم غير معروف',
     'like_post' => 'أعجب :user بهذا المنشور',
+    'no_blocked_users' => 'لا يوجد مستخدمين محجوبين.',
 ];

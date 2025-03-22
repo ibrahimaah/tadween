@@ -25,7 +25,7 @@ body{
 }
 
 /* Home Page Style */
-.text-orange-color { color: #ff7701 !important; }
+.text-orange-color { color: var(--primary-color) !important; }
 #rightPageHome {
     z-index: 1000;
     position: sticky;
@@ -91,4 +91,9 @@ body{
 /* Follow Page Style */
 .follow .bio {
     font-size: 15px;
+}
+.alert-orange {
+    color: #ff7701;
+    background-color: #ffe0cc;
+    border-color: #ff7701;
 }

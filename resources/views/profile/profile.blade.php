@@ -19,11 +19,16 @@
         opacity: 0.7;
     }
 </style>
+
+
+
+
 <div class="profile">
     <div id="pullToRefreshIndicator" class="text-center d-none justify-content-center">
         <i class="fa fa-spinner fa-spin text-orange-color h1 py-3"></i>
     </div>
     <div class="bg-white rounded-top-4 p-3">
+
         <div class="row mb-2">
             <div class="col">
                 <a href="{{route('home')}}" class="text-decoration-none text-orange-color">
@@ -51,68 +56,66 @@
                 src="{{ asset($data['cover_image']) }}"
                 alt="Tadween logo..." width="100">
             
-                @if (Auth::check() && !$data['is_owner'])
-                <div id="follow{{$data['username']}}" class="col-12 follow_btn_margin text-{{ app()->getLocale() == 'ar' ? 'start' : 'end' }}">
-                    
-                    <div class="d-flex justify-content-end align-items-center">
-                        <div class="dropdown">
-                            <button class="dots-btn text-orange-color" 
-                                    type="button" 
-                                    id="dropdownMenuButton" 
-                                    data-bs-toggle="dropdown">
-                                &#x22EF; <!-- Horizontal Ellipsis -->
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end py-0">
-                                <li>
-                                    @if($data['is_blocked'])
-                                        <form action="{{ route('users.unblock') }}" method="POST" class="unblock-user-form">
-                                            @csrf
-                                            <input type="hidden" name="username" value="{{ $data['username'] }}" required>
-                                            <button type="submit" class="dropdown-item unblock-button">
-                                                <i class="fas fa-ban text-orange-color"></i> {{ __('profile.unblock_this_user') }}
-                                            </button>
-                                        </form>
-                                    @else
-                                        <form action="{{ route('users.block') }}" method="POST" class="block-user-form">
-                                            @csrf
-                                            <input type="hidden" name="username" value="{{ $data['username'] }}" required>
-                                            <button type="submit" class="dropdown-item block-button">
-                                                <i class="fas fa-ban text-orange-color"></i> {{ __('profile.block_this_user') }}
-                                            </button>
-                                        </form>
-                                    @endif
-                                    
-                                </li>
-                            </ul>
-                            
-                        </div>
-    
-                        @if($data['is_blocked'])
-                            <form action="{{ route('users.unblock') }}" method="POST" class="unblock-user-form">
-                                @csrf
-                                <input type="hidden" name="username" value="{{ $data['username'] }}" required>
-                                <button type="submit" class="btn btn-orange text-white unblock-button">
-                                    <i class="fas fa-ban text-white"></i> {{ __('profile.unblock_this_user') }}
-                                </button>
-                            </form>
-                        @else 
-                        <a href="{{ route('messages.chat', ['username' => $data['username']]) }}" class="btn text-light">
-                            <i class="fa-regular fa-comments text-orange-color"></i>
-                        </a>
+                @if (!$data['is_owner'])
+                    <div id="follow{{$data['username']}}" class="col-12 follow_btn_margin text-{{ app()->getLocale() == 'ar' ? 'start' : 'end' }}">
                         
-                        <button type="button" class="btn btn-orange text-light" onclick="followUser('{{$data['username']}}')">
-                            <span class="follow_text_btn">
-                                {{ $data['follow_btn_status_text'] }}
-                            </span>
-                        </button>
-                        @endif 
+                        <div class="d-flex justify-content-end align-items-center">
+                            <div class="dropdown">
+                                <button class="dots-btn text-orange-color" 
+                                        type="button" 
+                                        id="dropdownMenuButton" 
+                                        data-bs-toggle="dropdown">
+                                    &#x22EF; <!-- Horizontal Ellipsis -->
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end py-0">
+                                    <li>
+                                        @if($data['is_blocked'])
+                                            <form action="{{ route('users.unblock') }}" method="POST" class="unblock-user-form">
+                                                @csrf
+                                                <input type="hidden" name="username" value="{{ $data['username'] }}" required>
+                                                <button type="submit" class="dropdown-item unblock-button">
+                                                    <i class="fas fa-ban text-orange-color"></i> {{ __('profile.unblock_this_user') }}
+                                                </button>
+                                            </form>
+                                        @else
+                                            <form action="{{ route('users.block') }}" method="POST" class="block-user-form">
+                                                @csrf
+                                                <input type="hidden" name="username" value="{{ $data['username'] }}" required>
+                                                <button type="submit" class="dropdown-item block-button">
+                                                    <i class="fas fa-ban text-orange-color"></i> {{ __('profile.block_this_user') }}
+                                                </button>
+                                            </form>
+                                        @endif
+                                        
+                                    </li>
+                                </ul>
+                                
+                            </div>
+        
+                            @if($data['is_blocked'])
+                                <form action="{{ route('users.unblock') }}" method="POST" class="unblock-user-form">
+                                    @csrf
+                                    <input type="hidden" name="username" value="{{ $data['username'] }}" required>
+                                    <button type="submit" class="btn btn-orange text-white unblock-button">
+                                        <i class="fas fa-ban text-white"></i> {{ __('profile.unblock_this_user') }}
+                                    </button>
+                                </form>
+                            @else 
+                                <a href="{{ route('messages.chat', ['username' => $data['username']]) }}" class="btn text-light">
+                                    <i class="fa-regular fa-comments text-orange-color"></i>
+                                </a>
+                                
+                                <button type="button" class="btn btn-orange text-light" onclick="followUser('{{$data['username']}}')">
+                                    <span class="follow_text_btn">
+                                        {{ $data['follow_btn_status_text'] }}
+                                    </span>
+                                </button>
+                            @endif 
+                        </div>
+                    
                     </div>
-                
-                </div>
                 @endif
             </div>
-            
-            
         </div>
 
         <div class="row mt-3">
@@ -178,7 +181,7 @@
 
 
 
-        @if(!$data['is_profile_locked'])
+        @if(!$data['is_profile_locked'] && !$data['is_blocked'])
             <div class="row text-center">
                 
                 <ul class="nav nav-pills nav-fill">
@@ -201,7 +204,7 @@
 
     </div>
 
-    @if(!$data['is_profile_locked'])
+    @if(!$data['is_profile_locked'] && !$data['is_blocked'])
         <!-- HTML to display posts -->
         <p class="text-center text-muted empty_posts d-none my-5 p-3">{{__('home.posts_empty')}}</p>
 
@@ -215,15 +218,32 @@
 
 
         <!-- Bootstrap Delete Confirmation Post Modal -->
-        @include('posts.delete_post_modal')
-    @else    
+        @include('posts.delete_post_modal')  
+       
+    @endif
+
+    @if($data['is_profile_locked'] && !$data['is_blocked'])
         <div class="container text-center">
             <div class="card p-4">
-                <h4 class="text-orange-color">هذه المنشورات محمية</h4>
-                <p class="mt-3">المتابعون المؤكدون فقط من يمكنهم الوصول إلى منشورات  <span>{{ $data['username'] }}</span> وملفه الشخصي الكامل. انقر على زر "متابعة" لإرسال طلب متابعة.</p>
-                
+                <h3 class="text-center"><i class="fas fa-lock text-orange-color"></i></h3>
+                <h4 class="text-orange-color">{{ __('profile.protected_posts') }}</h4>
+                <p class="mt-3">
+                    {{ __('profile.only_followers_can_access', ['username' => $data['username']]) }}
+                </p>
             </div>
         </div>
+    @endif 
+
+    @if($data['is_blocked'])
+    <div class="container text-center">
+        <div class="card p-4">
+            <h3 class="text-center"><i class="fas fa-ban text-orange-color"></i></h3>
+            <h4 class="text-orange-color">{{ __('profile.user_blocked') }}</h4>
+            <p class="mt-3">
+                {{ __('profile.blocked_user_message') }}
+            </p>
+        </div>
+    </div>
     @endif
 </div>
 @endsection
@@ -238,34 +258,38 @@
             @endauth
     @endif
 
-    @auth 
-        <script src="{{asset('js/users/follow_user.js?version=1.0')}}"></script>
-        <script>
-             
-             $(document).ready(function() {
-                // Block button click event
-                $('.block-button').on('click', function(event) {
-                    event.preventDefault();  // Prevent form submission
+    
+    
+    @push('js')
+    <script src="{{asset('js/users/follow_user.js?version=1.0')}}"></script>
+    <script>
+                
+        $(document).ready(function() {
+            // Block button click event
+            $('.block-button').on('click', function(event) {
+                event.preventDefault();  // Prevent form submission
 
-                    // Show confirmation prompt
-                    if (confirm("{{ __('profile.are_you_sure_block') }}")) {
-                        $('.block-user-form').submit();  // Submit the form if confirmed
-                    }
-                });
-
-                // Unblock button click event
-                $('.unblock-button').on('click', function(event) {
-                    event.preventDefault();  // Prevent form submission
-
-                    // Show confirmation prompt
-                    if (confirm("{{ __('profile.are_you_sure_unblock') }}")) {
-                        $('.unblock-user-form').submit();  // Submit the form if confirmed
-                    }
-                });
+                // Show confirmation prompt
+                if (confirm("{{ __('profile.are_you_sure_block') }}")) {
+                    $('.block-user-form').submit();  // Submit the form if confirmed
+                }
             });
 
-                          
-        </script>
-    @endauth 
+            // Unblock button click event
+            $('.unblock-button').on('click', function(event) {
+                event.preventDefault();  // Prevent form submission
+
+                // Show confirmation prompt
+                if (confirm("{{ __('profile.are_you_sure_unblock') }}")) {
+                    $('.unblock-user-form').submit();  // Submit the form if confirmed
+                }
+            });
+        });
+
+                        
+    </script>
+    @endpush
+   
+    
 
 @endsection

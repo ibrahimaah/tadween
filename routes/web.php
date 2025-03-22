@@ -139,6 +139,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/update_personal', [SettingController::class, 'updatePersonalInformation'])->name('settings.update.personal.information');
         Route::post('/update_profile', [SettingController::class, 'updateProfileInformation'])->name('settings.update.profile.information');
         Route::delete('/delete_account', [SettingController::class, 'deleteMyAccount'])->name('settings.account.delete');
+        Route::get('/blocked-users', [SettingController::class, 'blockedUsers'])->name('settings.blocked_users');
+
     });
 
     ////////////// Routes for Profile (Dynamic Username) ////////////////

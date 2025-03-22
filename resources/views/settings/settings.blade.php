@@ -6,19 +6,9 @@
 
 @section('content')
 <div class="settings">
-    <div class="bg-white rounded-top-4 p-3">
-        <div class="row">
-            <div class="col">
-                <a href="{{route('home')}}" class="text-decoration-none text-orange-color">
-                    <i class="fa-solid fa-arrow-{{ app()->getLocale() == 'ar' ? 'right' : 'left' }}" id="backPrev"></i>
-                </a>
-            </div>
+    
+    <x-page-header title="settings.settings" route="home" />
 
-            <div class="col text-{{ app()->getLocale() == 'ar' ? 'start' : 'end' }}">
-                <h3 class="h5">{{ __('settings.settings') }}</h3>
-            </div>
-        </div>
-    </div>
 
     <!-- Personal Information -->
     <h3 class="my-3 text-muted h5">{{ __('settings.settings_title') }}</h3>
@@ -186,13 +176,26 @@
     </form>
 
     <!-- account verification Settings -->
-    <h3 class="my-3 text-muted h5">{{ __('settings.account_verification') }}</h3>
+    {{-- <h3 class="my-3 text-muted h5">{{ __('settings.account_verification') }}</h3>
     <div class="bg-white p-3">
         <a href="settings/verfication" class="row text-decoration-none text-dark">
             <div class="col">
                 <i class="fa-regular fa-circle-check position"></i>
                 <span class="mx-2 h6">{{ __('settings.account_verification') }}</span>
                 <p class="mx-4 mt-1 text-grey">{{ __('settings.account_verification_desc') }}</p>
+            </div>
+            <div class="col-2 text-{{ app()->getLocale() == 'ar' ? 'start' : 'end' }}">
+                <i class="fa-solid fa-chevron-{{ app()->getLocale() == 'ar' ? 'left' : 'right' }} mt-3 text-orange-color"></i>
+            </div>
+        </a>
+    </div> --}}
+    <h3 class="my-3 text-muted h5">{{ __('settings.blocked_users') }}</h3>
+    <div class="bg-white p-3">
+        <a href="{{ route('settings.blocked_users') }}" class="row text-decoration-none text-dark">
+            <div class="col">
+                <i class="fas fa-ban position"></i>
+                <span class="mx-2 h6">{{ __('settings.blocked_users') }}</span>
+                <p class="mx-4 mt-1 text-grey mb-1">{{ __('settings.manage_blocked_users') }}</p>
             </div>
             <div class="col-2 text-{{ app()->getLocale() == 'ar' ? 'start' : 'end' }}">
                 <i class="fa-solid fa-chevron-{{ app()->getLocale() == 'ar' ? 'left' : 'right' }} mt-3 text-orange-color"></i>

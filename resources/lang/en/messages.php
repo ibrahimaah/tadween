@@ -7,4 +7,5 @@ return [
     'not_found_messages' => 'No messages',
     'unknown_user' => 'Unknown user',
     'like_post' => ':user likes this post',
+    'no_blocked_users' => 'No blocked users found.',
 ];

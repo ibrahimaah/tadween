@@ -26,10 +26,13 @@ class ProfileController extends Controller
             return redirect()->route('home')->with('error', __('profile.profile_user_not_found'));
         }
         // Check follow status
-        $is_following = Auth::user()->isFollowing($user);
-        $is_pending = Auth::user()->hasPendingFollowRequest($user);
-        $is_follower = Auth::user()->isFollower($user);
-       
+        /** @var \App\Models\User $current_user */
+        $current_user = Auth::user();
+        $is_following = $current_user->isFollowing($user);
+        $is_pending = $current_user->hasPendingFollowRequest($user);
+
+        // $is_follower = $current_user->isFollower($user); 
+        
         // Determine button text
         $follow_btn_status_text = '';
         if ($is_following) 

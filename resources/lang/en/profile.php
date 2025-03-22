@@ -22,4 +22,8 @@ return [
     'unblock_this_user' => 'Unblock',
     'are_you_sure_block' => 'Are you sure you want to block this user?',
     'are_you_sure_unblock' => 'Are you sure you want to unblock this user?',
+    'protected_posts' => 'These posts are protected',
+    'only_followers_can_access' => 'Only confirmed followers can access :username’s posts and full profile. Click the "Follow" button to send a follow request.',
+    'user_blocked' => 'You have blocked this user.',
+    'blocked_user_message' => 'You will not see posts from this user, receive notifications, comments, messages, etc.',
 ];

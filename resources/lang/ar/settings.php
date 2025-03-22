@@ -44,5 +44,7 @@ return [
     'password_now_incorrect' => 'كلمة مرور غير صحيحة.',
     'delete_account_success' => 'تم حذف حسابك بنجاح.',
     'unexpected_error' => 'حدث خطأ غير متوقع، يرجى المحاولة لاحقاً.',
+    'blocked_users' => 'المستخدمون المحظورون',
+    'manage_blocked_users' => 'انقر لإدارة المستخدمين المحظورين',
 
 ];

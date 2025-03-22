@@ -226,7 +226,6 @@ class User extends Authenticatable
             // Find the block record and delete it
             return $this->blockedUsers()->where('blocked_user_id', $user->id)->delete() > 0;
         }
-
         return false;
     }
 

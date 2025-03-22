@@ -324,4 +324,12 @@ class SettingController extends Controller
             ], 200);
         }
     }
+
+    public function blockedUsers()
+    {
+        /** @var \App\Models\User $current_user */
+        $current_user = Auth::user();
+        $blockedUsers = $current_user->blockedUsers()->orderBy('created_at', 'desc')->get();
+        return view('settings.blocked-users.index',compact('blockedUsers'));
+    }
 }
