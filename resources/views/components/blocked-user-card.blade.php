@@ -1,10 +1,10 @@
 <div class="bg-white rounded-4 p-3 my-2">
     <div class="d-flex justify-content-between">
         <a href="{{ route('profile', $blockedUsername) }}" class="d-flex text-decoration-none text-dark" target="_blank">
-            <img src="{{ $blockedUser->blockedUser->profile->cover_image_or_logo }}" class="rounded-circle logo-main" alt="User Image">
+            <img src="{{ $blockedUser->profile->cover_image_or_logo }}" class="rounded-circle logo-main" alt="User Image">
             <div class="px-1">
                 <p class="mx-1 mb-0">
-                    {{ $blockedUser->blockedUser->name }}
+                    {{ $blockedUser->name }}
                     <i class="fa-solid fa-lock text-orange-color me-1"></i>
                 </p>
                 <p class="mx-1 my-0 text-grey">

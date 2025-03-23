@@ -181,7 +181,7 @@
 
 
 
-        @if(!$data['is_profile_locked'] && !$data['is_blocked'])
+        @if(!$data['is_profile_locked'] && !$data['is_blocked'] && !$data['is_been_blocked'])
             <div class="row text-center">
                 
                 <ul class="nav nav-pills nav-fill">
@@ -204,7 +204,7 @@
 
     </div>
 
-    @if(!$data['is_profile_locked'] && !$data['is_blocked'])
+    @if(!$data['is_profile_locked'] && !$data['is_blocked'] && !$data['is_been_blocked'])
         <!-- HTML to display posts -->
         <p class="text-center text-muted empty_posts d-none my-5 p-3">{{__('home.posts_empty')}}</p>
 
@@ -222,7 +222,7 @@
        
     @endif
 
-    @if($data['is_profile_locked'] && !$data['is_blocked'])
+    @if($data['is_profile_locked'] && !$data['is_blocked'] && !$data['is_been_blocked'])
         <div class="container text-center">
             <div class="card p-4">
                 <h3 class="text-center"><i class="fas fa-lock text-orange-color"></i></h3>
@@ -241,6 +241,18 @@
             <h4 class="text-orange-color">{{ __('profile.user_blocked') }}</h4>
             <p class="mt-3">
                 {{ __('profile.blocked_user_message') }}
+            </p>
+        </div>
+    </div>
+    @endif
+
+    @if($data['is_been_blocked'])
+    <div class="container text-center">
+        <div class="card p-4">
+            <h3 class="text-center"><i class="fas fa-ban text-orange-color"></i></h3>
+            <h4 class="text-orange-color">{{ __('profile.blocked_title') }}</h4>
+            <p class="mt-3">
+                {{ __('profile.blocked_message') }}
             </p>
         </div>
     </div>

@@ -26,4 +26,6 @@ return [
     'only_followers_can_access' => 'Only confirmed followers can access :username’s posts and full profile. Click the "Follow" button to send a follow request.',
     'user_blocked' => 'You have blocked this user.',
     'blocked_user_message' => 'You will not see posts from this user, receive notifications, comments, messages, etc.',
+    'blocked_title' => 'You are blocked!',
+    'blocked_message' => 'Sorry, access to this profile is denied! You have been blocked by this user.',
 ];

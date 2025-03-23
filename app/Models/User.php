@@ -13,6 +13,7 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
+
     /**
      * The attributes that are mass assignable.
      *
@@ -197,36 +198,37 @@ class User extends Authenticatable
     ///////////////////////////////////////////////////////////////////////
     /**
      * Blocked Users
-     */
+    */
 
-    public function blockedUsers(): HasMany
+
+    public function blockedUsers()
     {
-        return $this->hasMany(BlockedUser::class);
+        return $this->belongsToMany(User::class, 'blocked_users', 'user_id', 'blocked_user_id')->withTimestamps();
     }
-
-    public function blockedByUsers(): HasMany
+    public function blockedByUsers()
     {
-        return $this->hasMany(BlockedUser::class, 'blocked_user_id');
+        return $this->belongsToMany(User::class, 'blocked_users', 'blocked_user_id', 'user_id')->withTimestamps();
     }
-
     public function isBlockedBy(User $user): bool
     {
         return $this->blockedByUsers()->where('user_id', $user->id)->exists();
     }
-
     public function hasBlocked(User $user): bool
     {
         return $this->blockedUsers()->where('blocked_user_id', $user->id)->exists();
     }
-
+    public function getBlockedUsersIds(): array
+    {
+        return $this->blockedUsers()->pluck('blocked_user_id')->toArray();
+    }
     public function unblock(User $user): bool
     {
-        // Check if the user has blocked the given user
-        if ($this->hasBlocked($user)) {
-            // Find the block record and delete it
-            return $this->blockedUsers()->where('blocked_user_id', $user->id)->delete() > 0;
+        if (!$this->hasBlocked($user)) {
+            return false; // User is not blocked
         }
-        return false;
+
+        $this->blockedUsers()->detach($user->id);
+        return true; // Successfully unblocked
     }
 
 

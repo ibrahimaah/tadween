@@ -35,6 +35,8 @@ function loadFollows() {
                     var bioTextMargin = $('html').attr('lang') === 'ar' ? 'me-5' : 'ms-5';
                     var bioTextMargin = $('html').attr('lang') === 'ar' ? 'me-5' : 'ms-5';
                     var is_private = follow.is_private;
+                    var is_blocked_by_current_user = follow.is_blocked_by_current_user;
+                    var blocked_btn_txt = follow.blocked_btn_txt;
                     if (userName === '') {
                         //Load Posts At Home Page
                         var user_image = follow.cover_image != null ? '../' + follow.cover_image : '../img/logo.png';
@@ -46,6 +48,20 @@ function loadFollows() {
                         var followLink = `/${follow.username}`;
                     }
                     
+                    var btn = `<button type="button" class="btn btn-sm btn-orange text-light" onclick="followUser('${follow.username}')">
+                                    <span class="follow_text_btn">
+                                        ${ follow.follower_btn_text }
+                                    </span>
+                                </button>`;
+                    
+                    if(is_blocked_by_current_user)
+                    {
+                        btn = `<button type="button" class="btn btn-sm btn-outline-danger disabled">
+                                    <span class="follow_text_btn">
+                                        ${blocked_btn_txt}
+                                    </span>
+                                </button>`;
+                    }
                     var followHtml = `
                         <div class="bg-white rounded-4 p-3 mb-2" id="follow${follow.username}">
                             
@@ -62,11 +78,7 @@ function loadFollows() {
                                 </a>
 
                                 <div>
-                                    <button type="button" class="btn btn-sm btn-orange text-light" onclick="followUser('${follow.username}')">
-                                        <span class="follow_text_btn">
-                                            ${ follow.follower_btn_text }
-                                        </span>
-                                    </button>
+                                    ${btn}
                                 </div>
                             </div>
                             <div class=" bio mt-1 ${bioTextMargin}">${ follow.user_bio ?? '' }</div>

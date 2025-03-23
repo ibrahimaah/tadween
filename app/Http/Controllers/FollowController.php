@@ -90,10 +90,24 @@ class FollowController extends Controller
         }
 
         // Load the followers with the follower's user data
-        $followers = Follow::where('following_id', $user->id)->where('is_pending',false)
-        ->with('follower')
-        ->paginate(10);
-
+        /** @var \App\Models\User $current_user */
+        $current_user = Auth::user();
+        
+        //followers of $user
+        $followersQuery = Follow::where('following_id', $user->id)
+                                ->where('is_pending', false)
+                                ->with('follower');
+        
+        // if ($user->id == Auth::id()) 
+        // {
+        //     // info('aa');
+        //     $blocked_users_ids_arr = $current_user->getBlockedUsersIds();
+        //     $followersQuery->whereNotIn('follower_id', $blocked_users_ids_arr);
+        // }
+        
+        $followers = $followersQuery->paginate(10);
+        
+        
         // Map the followers to include follower details
         $followsData = $followers->map(function ($follower) {
             $followerUser = $follower->follower;
@@ -106,6 +120,7 @@ class FollowController extends Controller
             // التحقق إذا كان المستخدم الحالي يتابع هذا المتابع
             $is_following_follower = Auth::check() && Auth::user()->following->contains($followerUser->id);
 
+            $is_blocked_by_current_user = $followerUser->isBlockedBy(Auth::user());
             return [
                 'name' => $user_name,
                 'username' => $user_username,
@@ -113,7 +128,9 @@ class FollowController extends Controller
                 'user_bio' => $user_bio,
                 'follower_btn_text' => $is_following_follower ? __('follows.user_cancel_follow') : __('profile.user_follow'),
                 'is_following' => $is_following_follower, // إضافة حالة المتابعة
-                'is_private' => $followerUser->account_privacy == AccountPrivacy::PRIVATE ? true : false
+                'is_private' => $followerUser->account_privacy == AccountPrivacy::PRIVATE ? true : false,
+                'is_blocked_by_current_user' => $is_blocked_by_current_user,
+                'blocked_btn_txt' => __('follows.blocked')
             ];
         });
 

@@ -8,13 +8,13 @@ class BlockedUser extends Model
 {
     protected $fillable = ['user_id', 'blocked_user_id'];
 
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
+    // public function user()
+    // {
+    //     return $this->belongsTo(User::class);
+    // }
 
-    public function blockedUser()
-    {
-        return $this->belongsTo(User::class, 'blocked_user_id');
-    }
+    // public function blockedUser()
+    // {
+    //     return $this->belongsTo(User::class, 'blocked_user_id');
+    // }
 }

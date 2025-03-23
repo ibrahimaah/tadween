@@ -11,7 +11,7 @@
 
     @forelse ($blockedUsers as $blockedUser)
         @php 
-            $blockedUsername = $blockedUser->blockedUser->username;
+            $blockedUsername = $blockedUser->username;
         @endphp 
     
     <x-blocked-user-card :blockedUser="$blockedUser" :blockedUsername="$blockedUsername" />
@@ -40,8 +40,6 @@
                 $('.unblock-user-form').submit();  // Submit the form if confirmed
             }
         });
-    });
-
-                    
+    });                    
 </script>
 @endpush

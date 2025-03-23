@@ -30,37 +30,15 @@ Route::get('lang/{locale}', function ($locale, Request $request) {
 })->name('lang.switch');
 
  
-Route::get('/', function () {
-    abort(404);
-});
+// Route::get('/', function () {
+//     abort(404);
+// });
 Route::get('tmp',function(){
-  
-    $followings = Follow::where('follower_id', Auth::id())
-                                    ->where('is_pending',false)
-                                    ->get(['following_id', 'created_at']);
-   
-    $posts= Post::with(['user', 'userPostLike', 'poll'])
-                ->withCount(['replies', 'postLikes'])
-                ->where(function ($query) use ($followings) 
-                {
-                    foreach ($followings as $follow) 
-                    {
-                        $query->orWhere(function ($q) use ($follow) {
-                            $q->where('user_id', $follow->following_id)
-                            ->where('created_at', '>', $follow->created_at);
-                        });
-                    }
-                })
-                ->orWhereHas('postLikes', function ($query) 
-                {
-                    $query->where('user_id', Auth::id());
-                })
-                ->orderBy('created_at', 'desc')
-                ->get();
-
-                dd($posts);
-    
-
+    /** @var \App\Models\User $current_user */
+    $current_user = Auth::user();
+    $blocked_users_ids_arr = $current_user->getBlockedUsersIds();
+//    dd(Auth::user()->following->whereNotIn('id',$blocked_users_ids_arr));
+   dd(Auth::user()->followers->whereNotIn('id',$blocked_users_ids_arr));
 });
 
 // Route::get('/', [PostController::class, 'index'])->name('home')->middleware('auth');

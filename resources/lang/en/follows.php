@@ -15,4 +15,5 @@ return [
     'pending' => 'Pending',
     'user_follow_request_successfully' => 'You have successfully send follow request',
     'user_follow_request_removed_successfully' => 'You have successfully removed the follow request.',
+    'blocked' => 'blocked',
 ];
