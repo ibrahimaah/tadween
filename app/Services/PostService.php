@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\AccountPrivacy;
 use App\Models\Follow;
 use App\Models\Post;
+use App\Models\User;
 use App\Traits\CacheClearable;
 use Exception;
 use Illuminate\Support\Facades\Auth;
@@ -23,9 +24,20 @@ class PostService
     private function formatLikedByPosts($posts)
     {
         // info($posts->count());
+        /** @var \App\Models\User $current_user */
+        $current_user = Auth::user();
         $formattedPosts = collect();
 
-        foreach ($posts as $post) {
+        foreach ($posts as $post) 
+        {
+            /////////////////////////////////////////////////////////////////////////////////////////////
+            /**  Remove posts related to blocked users **/
+            if($current_user->hasBlocked($post->user))
+            {
+                continue;
+            }
+            /////////////////////////////////////////////////////////////////////////////////////////////
+            
             // $likedByFollowings = $post->postLikes->filter(function ($post_like) use ($followingIds_arr) 
             // {
             //     return (in_array($post_like->user_id, $this->final_followings));
@@ -86,6 +98,9 @@ class PostService
                     $username = $like->user->username;
                     $user_id = $like->user->id;
 
+                    
+
+                    
 
                     // Clone the post to avoid modifying the original reference
                     $clonedPost = clone $post;
@@ -133,7 +148,8 @@ class PostService
 
     private function filterPostsByCurrentUserLikes($query, $my_followings,$followingIds_arr)
     {
-        if ($my_followings->isNotEmpty()) {
+        if ($my_followings->isNotEmpty()) 
+        {
             $query->where(function ($q) use ($my_followings,$followingIds_arr) {
                 foreach ($my_followings as $follow) 
                 {
@@ -318,6 +334,16 @@ class PostService
             $current_user_likes = $postsData['current_user_likes'];
             $postsFromLikes = $postsData['user_followings_likes'];
 
+            /////////////////////////////////////////////////////////////////////////////////////////////
+            /**  Remove posts related to blocked users **/
+            /** @var \App\Models\User $current_user */
+            $current_user = Auth::user();
+
+            $current_user_likes = $current_user_likes->reject(function ($post) use ($current_user) 
+            { 
+                return in_array($post->user_id, $current_user->getBlockedUsersIds());
+            });
+            /////////////////////////////////////////////////////////////////////////////////////////////
             $formattedLikedPosts = $this->formatLikedByPosts($postsFromLikes);
 
             $mergedPosts = collect($postsFromFollowings)
