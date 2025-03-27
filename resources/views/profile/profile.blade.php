@@ -24,39 +24,27 @@
 
 
 <div class="profile">
+
     <div id="pullToRefreshIndicator" class="text-center d-none justify-content-center">
         <i class="fa fa-spinner fa-spin text-orange-color h1 py-3"></i>
     </div>
-    <div class="bg-white rounded-top-4 p-3">
 
-        <div class="row mb-2">
-            <div class="col">
-                <a href="{{route('home')}}" class="text-decoration-none text-orange-color">
-                    <i class="fa-solid fa-arrow-{{ app()->getLocale() == 'ar' ? 'right' : 'left' }}" id="backPrev"></i>
-                </a>
-            </div>
+    <x-page-header title="{{$data['name']}}" route="home" />
 
-            <div class="col text-{{ app()->getLocale() == 'ar' ? 'start' : 'end' }}">
-                <h3 class="h5 mb-1">{{$data['name']}}</h3>
-                {{-- <p class="text-grey">
-                    {{ __('profile.profile_blogs') }} : {{$data['post_count']}}
-                </p> --}}
-            </div>
+   <div class="container bg-white">
+    <div class="row">
+
+        <div class="col-12">
+            <img class="profile_background_image"
+                style="object-fit:contain"
+                src="{{ $data['background_image'] }}"
+                alt="Tadween logo..."
+            >
         </div>
 
-        <div class="row">
-            <div class="col-12">
-                <img class="profile_background_image"
-                    src="{{ $data['background_image'] }}"
-                    alt="Tadween logo..."
-                >
-            </div>
-            <div class="col">
-                <img class="cover_image border border-4 border-white rounded-circle mx-3"
-                src="{{ asset($data['cover_image']) }}"
-                alt="Tadween logo..." width="100">
-            
-                @if (!$data['is_owner'])
+        <div class="col-12">
+            @if (!$data['is_owner'])
+                @if(!$data['is_been_blocked'])
                     <div id="follow{{$data['username']}}" class="col-12 follow_btn_margin text-{{ app()->getLocale() == 'ar' ? 'start' : 'end' }}">
                         
                         <div class="d-flex justify-content-end align-items-center">
@@ -114,14 +102,25 @@
                         </div>
                     
                     </div>
-                @endif
-            </div>
+                @endif 
+            @endif
         </div>
+    </div>
+   </div>
 
-        <div class="row mt-3">
-            <div class="col-12 mb-3">
+
+
+
+    <div class="container bg-white pb-2">
+        <div class="row gap-2">
+        
+            <div class="col-12">
+                <img class="cover_image border border-4 border-white rounded-circle mx-3 mb-1"
+                     src="{{ asset($data['cover_image']) }}"
+                     alt="Tadween logo..." 
+                     width="100">
+    
                 <h3 class="h5">
-                    
                     {{$data['name']}} 
                     {!! $data['is_private'] ? '<i class="fa-solid fa-lock text-orange-color"></i>' : '' !!}
                 </h3>
@@ -130,40 +129,32 @@
                     {{ app()->getLocale() == 'ar' ? $data['username'].'@' : '@'.$data['username'] }}
                 </span>
             </div>
-
+    
             <div class="col-12">
-                <div class="row">
-                    <div class="col">
-                        <a href="{{ $data['is_profile_locked'] ? '#' : route('followings.index', $data['username']) }}" class="text-decoration-none">
-                            <p class="text-orange-color">
-                                {{ $data['following_count'] }}
-                                <span class="text-grey fw-bold">{{ __('profile.profile_following') }}</span>
-                            </p>
-                        </a>
-                    </div>
-                    <div class="col">
-                        <a href="{{ $data['is_profile_locked'] ? '#' : route('followers.index', $data['username']) }}" class="text-decoration-none">
-                            <p class="text-orange-color">
-                                <span class="follower_count">{{ $data['follower_count'] }}</span>
-                                <span class="text-grey fw-bold">{{ __('profile.profile_followers') }}</span>
-                            </p>
-                        </a>
-                    </div>
-                    <div class="col-3 d-none">
-                        <h3 class="text-grey fw-bold">{{ __('profile.profile_gift') }}</h3>
+                <div class="d-flex gap-3">
+
+                    <a href="{{ ($data['is_been_blocked']) ? '#' : route('followings.index', $data['username']) }}" class="text-decoration-none">
                         <p class="text-orange-color">
-                            100
-                            <span class="text-grey fw-bold">{{ __('profile.profile_gift') }}</span>
+                            {{ $data['following_count'] }}
+                            <span class="text-grey fw-bold">{{ __('profile.profile_following') }}</span>
                         </p>
-                    </div>
+                    </a>
+                
+                    <a href="{{ ($data['is_been_blocked']) ? '#' : route('followers.index', $data['username']) }}" class="text-decoration-none">
+                        <p class="text-orange-color">
+                            <span class="follower_count">{{ $data['follower_count'] }}</span>
+                            <span class="text-grey fw-bold">{{ __('profile.profile_followers') }}</span>
+                        </p>
+                    </a>
+                    
                 </div>
             </div>
-
-            <div class="col-12 mb-3">
+    
+            <div class="col-12">
                 <h3 class="text-grey lh-base">{{$data['bio']}}</h3>
             </div>
-
-            <div class="col-12 mb-3">
+    
+            <div class="col-12">
                 <div class="row">
                     <div class="col-md-6">
                         <i class="fa-solid fa-earth-americas text-grey"></i>
@@ -175,15 +166,14 @@
                     </div>
                 </div>
             </div>
-
+    
         </div>
+    </div>
 
-
-
-
-        @if(!$data['is_profile_locked'] && !$data['is_blocked'] && !$data['is_been_blocked'])
+    @if(!$data['is_profile_locked'] && !$data['is_blocked'] && !$data['is_been_blocked'])
+        <div class="container bg-white">
             <div class="row text-center">
-                
+            
                 <ul class="nav nav-pills nav-fill">
                     <li class="nav-item">
                         <button class="nav-link tab-link active" data-tab="userPosts">{{ __('profile.profile_blogs') }}</button>
@@ -199,10 +189,11 @@
                     </li>
                 </ul>
             </div>
-        @endif
+        </div>
+    @endif
 
 
-    </div>
+    
 
     @if(!$data['is_profile_locked'] && !$data['is_blocked'] && !$data['is_been_blocked'])
         <!-- HTML to display posts -->
@@ -223,7 +214,7 @@
     @endif
 
     @if($data['is_profile_locked'] && !$data['is_blocked'] && !$data['is_been_blocked'])
-        <div class="container text-center">
+        <div class="text-center">
             <div class="card p-4">
                 <h3 class="text-center"><i class="fas fa-lock text-orange-color"></i></h3>
                 <h4 class="text-orange-color">{{ __('profile.protected_posts') }}</h4>
@@ -234,28 +225,30 @@
         </div>
     @endif 
 
+
+
     @if($data['is_blocked'])
-    <div class="container text-center">
-        <div class="card p-4">
-            <h3 class="text-center"><i class="fas fa-ban text-orange-color"></i></h3>
-            <h4 class="text-orange-color">{{ __('profile.user_blocked') }}</h4>
-            <p class="mt-3">
-                {{ __('profile.blocked_user_message') }}
-            </p>
+        <div class="text-center">
+            <div class="card p-4">
+                <h3 class="text-center"><i class="fas fa-ban text-orange-color"></i></h3>
+                <h4 class="text-orange-color">{{ __('profile.user_blocked') }}</h4>
+                <p class="mt-3">
+                    {{ __('profile.blocked_user_message') }}
+                </p>
+            </div>
         </div>
-    </div>
     @endif
 
     @if($data['is_been_blocked'])
-    <div class="container text-center">
-        <div class="card p-4">
-            <h3 class="text-center"><i class="fas fa-ban text-orange-color"></i></h3>
-            <h4 class="text-orange-color">{{ __('profile.blocked_title') }}</h4>
-            <p class="mt-3">
-                {{ __('profile.blocked_message') }}
-            </p>
+        <div class="text-center">
+            <div class="card p-4">
+                <h3 class="text-center"><i class="fas fa-ban text-orange-color"></i></h3>
+                <h4 class="text-orange-color">{{ __('profile.blocked_title') }}</h4>
+                <p class="mt-3">
+                    {{ __('profile.blocked_message') }}
+                </p>
+            </div>
         </div>
-    </div>
     @endif
 </div>
 @endsection

@@ -84,9 +84,7 @@ body{
 .follow_btn_margin{
     margin-top: -35px;
 }
-.nav-pills .nav-link.active, .nav-pills .show>.nav-link{
-    background: var(--primary-color);
-}
+
 
 /* Follow Page Style */
 .follow .bio {
@@ -96,4 +94,11 @@ body{
     color: #ff7701;
     background-color: #ffe0cc;
     border-color: #ff7701;
+}
+.nav-link {
+    color: var(--primary-color);
+}
+.nav-pills .nav-link.active, .nav-pills .show>.nav-link{
+    background: var(--primary-color);
+    color:white ;
 }
