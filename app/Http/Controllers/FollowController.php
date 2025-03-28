@@ -75,6 +75,7 @@ class FollowController extends Controller
     }
     
 
+    
     //Fetch Followers By UserName
     public function loadFollowers(String $username)
     {
@@ -89,48 +90,44 @@ class FollowController extends Controller
             ], 200);
         }
 
-        // Load the followers with the follower's user data
         /** @var \App\Models\User $current_user */
         $current_user = Auth::user();
-        
-        //followers of $user
+
+        // Get followers while excluding users who blocked the current user
         $followersQuery = Follow::where('following_id', $user->id)
-                                ->where('is_pending', false)
-                                ->with('follower');
-        
-        // if ($user->id == Auth::id()) 
-        // {
-        //     // info('aa');
-        //     $blocked_users_ids_arr = $current_user->getBlockedUsersIds();
-        //     $followersQuery->whereNotIn('follower_id', $blocked_users_ids_arr);
-        // }
-        
+            ->where('is_pending', false)
+            ->whereHas('follower', function ($query) use ($current_user) {
+                $query->whereDoesntHave('blockedUsers', function ($blockQuery) use ($current_user) {
+                    $blockQuery->where('blocked_user_id', $current_user->id);
+                });
+            })
+            ->with('follower');
+
         $followers = $followersQuery->paginate(10);
-        
-        
-        // Map the followers to include follower details
-        $followsData = $followers->map(function ($follower) {
+
+        $followsData = $followers->map(function ($follower) use ($current_user) {
             $followerUser = $follower->follower;
-            
+
             $user_name = $followerUser->name ? htmlspecialchars($followerUser->name, ENT_QUOTES, 'UTF-8') : null;
             $user_username = $followerUser->username ? htmlspecialchars($followerUser->username, ENT_QUOTES, 'UTF-8') : null;
             $user_cover_image = $followerUser->profile->cover_image ? htmlspecialchars($followerUser->profile->cover_image, ENT_QUOTES, 'UTF-8') : null;
             $user_bio = $followerUser->profile->bio ? htmlspecialchars($followerUser->profile->bio, ENT_QUOTES, 'UTF-8') : null;
 
-            // التحقق إذا كان المستخدم الحالي يتابع هذا المتابع
             $is_following_follower = Auth::check() && Auth::user()->following->contains($followerUser->id);
+            $is_blocked_by_current_user = $followerUser->isBlockedBy($current_user);
+            $is_same_as_current_user = $current_user->id == $followerUser->id ? true : false;
 
-            $is_blocked_by_current_user = $followerUser->isBlockedBy(Auth::user());
             return [
                 'name' => $user_name,
                 'username' => $user_username,
                 'cover_image' => $user_cover_image,
                 'user_bio' => $user_bio,
                 'follower_btn_text' => $is_following_follower ? __('follows.user_cancel_follow') : __('profile.user_follow'),
-                'is_following' => $is_following_follower, // إضافة حالة المتابعة
+                'is_following' => $is_following_follower,
                 'is_private' => $followerUser->account_privacy == AccountPrivacy::PRIVATE ? true : false,
                 'is_blocked_by_current_user' => $is_blocked_by_current_user,
-                'blocked_btn_txt' => __('follows.blocked')
+                'blocked_btn_txt' => __('follows.blocked'),
+                'is_same_as_current_user' => $is_same_as_current_user
             ];
         });
 
@@ -140,6 +137,7 @@ class FollowController extends Controller
             'follows' => $followsData,
             'next_page' => $followers->hasMorePages() ? $followers->currentPage() + 1 : null,
         ]);
+
     }
 
     //Fetch Followings By UserName
@@ -147,7 +145,8 @@ class FollowController extends Controller
     {
         // Fetch the user by username
         $user = User::where('username', $username)->first();
-
+        /** @var \App\Models\User $current_user */
+        $current_user = Auth::user();
         // Check if the user exists
         if (!$user) {
             return response()->json([
@@ -157,12 +156,23 @@ class FollowController extends Controller
         }
         
         // Load the followings with the followings user data
-        $followings = Follow::where('follower_id', $user->id)->where('is_pending',false)
-        ->with('following')
-        ->paginate(10);
+        // $followings = Follow::where('follower_id', $user->id)->where('is_pending',false)
+        // ->with('following')
+        // ->paginate(10);
+
+        $followings = Follow::where('follower_id', $user->id)
+                                ->where('is_pending', false)
+                                ->whereHas('following', function ($query) use ($current_user) {
+                                    $query->whereDoesntHave('blockedUsers', function ($blockQuery) use ($current_user) {
+                                        $blockQuery->where('blocked_user_id', $current_user->id);
+                                    });
+                                })
+                                ->with('following')
+                                ->paginate(10);
+
 
         // Map the followings to include followings details
-        $followingsData = $followings->map(function ($following) {
+        $followingsData = $followings->map(function ($following) use($current_user) {
             $followingUser = $following->following;
             
             $user_name = $followingUser->name ? htmlspecialchars($followingUser->name, ENT_QUOTES, 'UTF-8') : null;
@@ -172,6 +182,9 @@ class FollowController extends Controller
 
             // التحقق إذا كان المستخدم الحالي يتابع هذا المتابع
             $is_following_follower = Auth::check() && Auth::user()->following->contains($followingUser->id);
+            $is_blocked_by_current_user = $followingUser->isBlockedBy($current_user);
+            $is_same_as_current_user = $current_user->id == $followingUser->id ? true : false;
+            
 
             return [
                 'name' => $user_name,
@@ -180,7 +193,10 @@ class FollowController extends Controller
                 'user_bio' => $user_bio,
                 'follower_btn_text' => $is_following_follower ? __('follows.user_cancel_follow') : __('follows.user_follow'),
                 'is_following' => $is_following_follower, // إضافة حالة المتابعة
-                'is_private' => $followingUser->account_privacy == AccountPrivacy::PRIVATE ? true : false
+                'is_private' => $followingUser->account_privacy == AccountPrivacy::PRIVATE ? true : false,
+                'is_blocked_by_current_user' => $is_blocked_by_current_user,
+                'blocked_btn_txt' => __('follows.blocked'),
+                'is_same_as_current_user' => $is_same_as_current_user
             ];
         });
 

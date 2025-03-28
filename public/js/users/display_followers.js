@@ -36,6 +36,8 @@ function loadFollows() {
                     var bioTextMargin = $('html').attr('lang') === 'ar' ? 'me-5' : 'ms-5';
                     var is_private = follow.is_private;
                     var is_blocked_by_current_user = follow.is_blocked_by_current_user;
+                    var is_same_as_current_user = follow.is_same_as_current_user;
+                    
                     var blocked_btn_txt = follow.blocked_btn_txt;
                     if (userName === '') {
                         //Load Posts At Home Page
@@ -61,6 +63,11 @@ function loadFollows() {
                                         ${blocked_btn_txt}
                                     </span>
                                 </button>`;
+                    }
+                    
+                    if(is_same_as_current_user)
+                    {
+                        btn = '';
                     }
                     var followHtml = `
                         <div class="bg-white rounded-4 p-3 mb-2" id="follow${follow.username}">
