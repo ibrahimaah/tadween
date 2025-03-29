@@ -57,6 +57,7 @@ return [
     'not_authorized_to_delete_reply' => 'غير مصرح لك بحذف هذا الرد.',
     'post_reply_deleted_successfully' => 'تم حذف الرد بنجاح',
     'follow_up_requests' => 'طلبات المتابعة',
+    'yes' => 'نعم',
 
 ];
 

@@ -31,6 +31,7 @@
 
     <x-page-header title="{{$data['name']}}" route="home" />
 
+
    <div class="container bg-white">
     <div class="row">
 
@@ -58,22 +59,22 @@
                                 <ul class="dropdown-menu dropdown-menu-end py-0">
                                     <li>
                                         @if($data['is_blocked'])
-                                            <form action="{{ route('users.unblock') }}" method="POST" class="unblock-user-form">
-                                                @csrf
-                                                <input type="hidden" name="username" value="{{ $data['username'] }}" required>
-                                                <button type="submit" class="dropdown-item unblock-button">
-                                                    <i class="fas fa-ban text-orange-color"></i> {{ __('profile.unblock_this_user') }}
-                                                </button>
-                                            </form>
-                                        @else
-                                            <form action="{{ route('users.block') }}" method="POST" class="block-user-form">
-                                                @csrf
-                                                <input type="hidden" name="username" value="{{ $data['username'] }}" required>
-                                                <button type="submit" class="dropdown-item block-button">
-                                                    <i class="fas fa-ban text-orange-color"></i> {{ __('profile.block_this_user') }}
-                                                </button>
-                                            </form>
-                                        @endif
+                                        <form action="{{ route('users.unblock') }}" method="POST" class="unblock-user-form">
+                                            @csrf
+                                            <input type="hidden" name="username" value="{{ $data['username'] }}" required>
+                                            <button type="button" class="dropdown-item unblock-button" data-bs-toggle="modal" data-bs-target="#confirmUnblockModal">
+                                                <i class="fas fa-ban text-orange-color"></i> {{ __('profile.unblock_this_user') }}
+                                            </button>
+                                        </form>
+                                    @else
+                                        <form action="{{ route('users.block') }}" method="POST" class="block-user-form">
+                                            @csrf
+                                            <input type="hidden" name="username" value="{{ $data['username'] }}" required>
+                                            <button type="button" class="dropdown-item block-button" data-bs-toggle="modal" data-bs-target="#confirmBlockModal">
+                                                <i class="fas fa-ban text-orange-color"></i> {{ __('profile.block_this_user') }}
+                                            </button>
+                                        </form>
+                                    @endif
                                         
                                     </li>
                                 </ul>
@@ -84,8 +85,8 @@
                                 <form action="{{ route('users.unblock') }}" method="POST" class="unblock-user-form">
                                     @csrf
                                     <input type="hidden" name="username" value="{{ $data['username'] }}" required>
-                                    <button type="submit" class="btn btn-orange text-white unblock-button">
-                                        <i class="fas fa-ban text-white"></i> {{ __('profile.unblock_this_user') }}
+                                    <button type="button" class="btn btn-orange text-white unblock-button" data-bs-toggle="modal" data-bs-target="#confirmUnblockModal">
+                                        <i class="fas fa-ban text-orange-color"></i> {{ __('profile.unblock_this_user') }}
                                     </button>
                                 </form>
                             @else 
@@ -209,7 +210,8 @@
 
 
         <!-- Bootstrap Delete Confirmation Post Modal -->
-        @include('posts.delete_post_modal')  
+        @include('posts.delete_post_modal') 
+
        
     @endif
 
@@ -250,6 +252,23 @@
             </div>
         </div>
     @endif
+
+ 
+    <x-modal 
+        id="confirmBlockModal" 
+        title="{{ __('profile.are_you_sure_block') }}" 
+        message="{{ __('profile.block_confirmation_message') }}" 
+        confirmButtonId="confirmBlockButton" 
+    />
+
+    <x-modal 
+        id="confirmUnblockModal" 
+        title="{{ __('profile.are_you_sure_unblock') }}" 
+        message="{{ __('profile.unblock_confirmation_message') }}" 
+        confirmButtonId="confirmUnblockButton" 
+    />
+
+
 </div>
 @endsection
 
@@ -269,27 +288,18 @@
     <script src="{{asset('js/users/follow_user.js?version=1.0')}}"></script>
     <script>
                 
-        $(document).ready(function() {
-            // Block button click event
-            $('.block-button').on('click', function(event) {
-                event.preventDefault();  // Prevent form submission
-
-                // Show confirmation prompt
-                if (confirm("{{ __('profile.are_you_sure_block') }}")) {
-                    $('.block-user-form').submit();  // Submit the form if confirmed
-                }
-            });
-
-            // Unblock button click event
-            $('.unblock-button').on('click', function(event) {
-                event.preventDefault();  // Prevent form submission
-
-                // Show confirmation prompt
-                if (confirm("{{ __('profile.are_you_sure_unblock') }}")) {
-                    $('.unblock-user-form').submit();  // Submit the form if confirmed
-                }
-            });
+    $(document).ready(function() {
+        // Handle block confirmation
+        $('#confirmBlockButton').on('click', function() 
+        {
+            $('.block-user-form').submit();
         });
+
+        // Handle unblock confirmation
+        $('#confirmUnblockButton').on('click', function() {
+            $('.unblock-user-form').submit();
+        });
+    });
 
                         
     </script>
