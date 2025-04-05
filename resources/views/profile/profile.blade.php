@@ -5,6 +5,10 @@
 @endsection
 
 @section('content')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+
 <style>
     .dots-btn {
         background: none;
@@ -56,9 +60,11 @@
                                         data-bs-toggle="dropdown">
                                     &#x22EF; <!-- Horizontal Ellipsis -->
                                 </button>
-                                <ul class="dropdown-menu dropdown-menu-end py-0">
+                                <ul class="dropdown-menu dropdown-menu-end text-{{ app()->getLocale() == 'ar' ? 'end' : 'start' }}">
+                                    
+                                    
+                                    @if($data['is_blocked'])
                                     <li>
-                                        @if($data['is_blocked'])
                                         <form action="{{ route('users.unblock') }}" method="POST" class="unblock-user-form">
                                             @csrf
                                             <input type="hidden" name="username" value="{{ $data['username'] }}" required>
@@ -66,7 +72,27 @@
                                                 <i class="fas fa-ban text-orange-color"></i> {{ __('profile.unblock_this_user') }}
                                             </button>
                                         </form>
+                                    </li>
                                     @else
+                                    <li>
+                                        <a href="{{ $data['can_not_see_followings'] ? '#' : route('followings.index', $data['username']) }}" class="dropdown-item">
+                                            <i class="fa fa-users text-orange-color"></i>
+                                            {{ __('profile.view_following') }}
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ $data['can_not_see_followers'] ? '#' : route('followers.index', $data['username']) }}" class="dropdown-item">
+                                            <i class="fa fa-users text-orange-color"></i>
+                                            {{ __('profile.view_followers') }}
+                                        </a>
+                                    </li>
+                                    <li id="copy-link" class="border border-start-0 border-end-0" style="cursor: pointer">
+                                        <p class="dropdown-item mb-1">
+                                            <i class="fa fa-copy text-orange-color"></i>
+                                            <span>{{ __('messages.copy_link') }}</span>
+                                        </p>
+                                    </li>
+                                    <li>
                                         <form action="{{ route('users.block') }}" method="POST" class="block-user-form">
                                             @csrf
                                             <input type="hidden" name="username" value="{{ $data['username'] }}" required>
@@ -74,9 +100,11 @@
                                                 <i class="fas fa-ban text-orange-color"></i> {{ __('profile.block_this_user') }}
                                             </button>
                                         </form>
+                                    </li>
                                     @endif
                                         
-                                    </li>
+                                    
+                                    
                                 </ul>
                                 
                             </div>
@@ -134,14 +162,14 @@
             <div class="col-12">
                 <div class="d-flex gap-3">
 
-                    <a href="{{ ($data['is_been_blocked']) ? '#' : route('followings.index', $data['username']) }}" class="text-decoration-none">
+                    <a href="{{ $data['can_not_see_followings'] ? '#' : route('followings.index', $data['username']) }}" class="text-decoration-none">
                         <p class="text-orange-color">
                             {{ $data['following_count'] }}
                             <span class="text-grey fw-bold">{{ __('profile.profile_following') }}</span>
                         </p>
                     </a>
                 
-                    <a href="{{ ($data['is_been_blocked']) ? '#' : route('followers.index', $data['username']) }}" class="text-decoration-none">
+                    <a href="{{ $data['can_not_see_followers'] ? '#' : route('followers.index', $data['username']) }}" class="text-decoration-none">
                         <p class="text-orange-color">
                             <span class="follower_count">{{ $data['follower_count'] }}</span>
                             <span class="text-grey fw-bold">{{ __('profile.profile_followers') }}</span>
@@ -299,8 +327,35 @@
         $('#confirmUnblockButton').on('click', function() {
             $('.unblock-user-form').submit();
         });
+
+        $('#copy-link').on('click', function () {
+            const profileLink = "{{ route('profile', $data['username']) }}"; // or however you get the profile link
+            
+
+            navigator.clipboard.writeText(profileLink).then(() => {
+                toastr.options = {
+                                    "closeButton": true,
+                                    "debug": false,
+                                    "newestOnTop": false,
+                                    "progressBar": true,
+                                    "positionClass": "toast-bottom-left",  // Position the toast bottom-left
+                                    "preventDuplicates": true,
+                                    "onclick": null,
+                                    "showDuration": "300",
+                                    "hideDuration": "1000",
+                                    "timeOut": "5000",
+                                    "extendedTimeOut": "1000",
+                                    "showEasing": "swing",
+                                    "hideEasing": "linear",
+                                    "showMethod": "fadeIn",
+                                    "hideMethod": "fadeOut"
+                                };
+                toastr.success("{{ __('messages.link_copied') }}");
+            });
+        });
     });
 
+     
                         
     </script>
     @endpush

@@ -9,12 +9,13 @@ use Illuminate\View\Component;
 class BlockedUserCard extends Component
 {
     public $blockedUser;
-    public $blockedUsername;
+    // public $blockedUsername;
 
-    public function __construct($blockedUser, $blockedUsername)
+    // public function __construct($blockedUser, $blockedUsername)
+    public function __construct($blockedUser)
     {
         $this->blockedUser = $blockedUser;
-        $this->blockedUsername = $blockedUsername;
+        // $this->blockedUsername = $blockedUsername;
     }
 
     /**

@@ -30,4 +30,6 @@ return [
     'blocked_message' => 'Sorry, access to this profile is denied! You have been blocked by this user.',
     'block_confirmation_message' => 'Are you sure you want to block this user? They will no longer be able to interact with you.',
     'unblock_confirmation_message' => 'Are you sure you want to unblock this user? They will be able to interact with you again.',
+    'view_following' => 'View Following',
+    'view_followers' => 'View Followers',
 ];

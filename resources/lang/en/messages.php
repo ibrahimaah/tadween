@@ -8,4 +8,6 @@ return [
     'unknown_user' => 'Unknown user',
     'like_post' => ':user likes this post',
     'no_blocked_users' => 'No blocked users found.',
+    'copy_link' => 'Copy link to profile',
+    'link_copied' => 'Link copied!',
 ];
