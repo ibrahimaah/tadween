@@ -33,8 +33,8 @@ class UserProfile extends Model
     }
 
     public function getCoverImageOrLogoAttribute()
-    {
-        return Auth::user()->profile->cover_image ?? asset('img/user.jpg');
+    { 
+        return asset($this->user->profile->cover_image) ?? asset('img/user.jpg');
     }
 
 }

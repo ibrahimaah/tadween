@@ -54,7 +54,7 @@
                     <tr>
                         <td>{{ $loop->iteration }}</td>
                         <td>
-                            <a href="{{ route('profile', $request->follower->username) }}" class="text-primary text-decoration-none" target="_blank">
+                            <a href="{{ route('profile', $request->follower->username) }}" class="text-primary text-decoration-none">
                                 {{ $request->follower->name }}
                             </a>
                         </td>

@@ -57,7 +57,7 @@ return [
     'not_authorized_to_delete_reply' => 'You are not authorized to delete this reply.',
     'post_reply_deleted_successfully' => 'Reply deleted successfully',
     'follow_up_requests' => 'Follow up requests',
-    'yes' => 'yes',
+    'yes' => 'Yes',
 
 
 ];

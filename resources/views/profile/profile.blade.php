@@ -74,19 +74,24 @@
                                         </form>
                                     </li>
                                     @else
+                                    @if(!$data['can_not_see_followings'])
                                     <li>
-                                        <a href="{{ $data['can_not_see_followings'] ? '#' : route('followings.index', $data['username']) }}" class="dropdown-item">
+                                        <a href="{{ route('followings.index', $data['username']) }}" class="dropdown-item">
                                             <i class="fa fa-users text-orange-color"></i>
                                             {{ __('profile.view_following') }}
                                         </a>
                                     </li>
+                                    @endif
+                                    @if(!$data['can_not_see_followers'])
                                     <li>
-                                        <a href="{{ $data['can_not_see_followers'] ? '#' : route('followers.index', $data['username']) }}" class="dropdown-item">
+                                        <a href="{{ route('followers.index', $data['username']) }}" class="dropdown-item">
                                             <i class="fa fa-users text-orange-color"></i>
                                             {{ __('profile.view_followers') }}
                                         </a>
                                     </li>
-                                    <li id="copy-link" class="border border-start-0 border-end-0" style="cursor: pointer">
+                                    @endif
+                                    
+                                    <li id="copy-link" class="{{ !$data['can_not_see_followers'] ? 'border border-start-0 border-end-0' : '' }}" style="cursor: pointer">
                                         <p class="dropdown-item mb-1">
                                             <i class="fa fa-copy text-orange-color"></i>
                                             <span>{{ __('messages.copy_link') }}</span>
@@ -162,19 +167,33 @@
             <div class="col-12">
                 <div class="d-flex gap-3">
 
+                    @if(!$data['can_not_see_followings'])
                     <a href="{{ $data['can_not_see_followings'] ? '#' : route('followings.index', $data['username']) }}" class="text-decoration-none">
                         <p class="text-orange-color">
                             {{ $data['following_count'] }}
                             <span class="text-grey fw-bold">{{ __('profile.profile_following') }}</span>
                         </p>
                     </a>
+                    @else    
+                        <p class="text-orange-color">
+                            {{ $data['following_count'] }}
+                            <span class="text-grey fw-bold">{{ __('profile.profile_following') }}</span>
+                        </p>
+                    @endif
                 
-                    <a href="{{ $data['can_not_see_followers'] ? '#' : route('followers.index', $data['username']) }}" class="text-decoration-none">
+                    @if(!$data['can_not_see_followers'])
+                    <a href="{{ route('followers.index', $data['username']) }}" class="text-decoration-none">
                         <p class="text-orange-color">
                             <span class="follower_count">{{ $data['follower_count'] }}</span>
                             <span class="text-grey fw-bold">{{ __('profile.profile_followers') }}</span>
                         </p>
                     </a>
+                    @else    
+                    <p class="text-orange-color">
+                        <span class="follower_count">{{ $data['follower_count'] }}</span>
+                        <span class="text-grey fw-bold">{{ __('profile.profile_followers') }}</span>
+                    </p>
+                    @endif
                     
                 </div>
             </div>
