@@ -29,6 +29,9 @@ class UserService
 
             Auth::logout();
       
+            $user->is_scheduled_for_deletion = true;
+            $user->save();
+            
             if($user->delete())
             {
                 return ['code' => 1, 'data' => true];
@@ -45,7 +48,10 @@ class UserService
     {
         try 
         {
-            $user = User::with(['profile', 'posts', 'replies'])->findOrFail($id);
+            $user = User::with(['profile', 'posts', 'replies'])
+            ->withTrashed() // Include trashed (soft-deleted) users
+            ->findOrFail($id);
+
 
             DB::beginTransaction();
  

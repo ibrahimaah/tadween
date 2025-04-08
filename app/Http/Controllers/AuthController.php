@@ -72,7 +72,7 @@ class AuthController extends Controller
         $field = filter_var($credentials['login'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
 
         // Find user by email or username
-        $user = User::where($field, $credentials['login'])->first();
+        $user = User::withTrashed()->where($field, $credentials['login'])->first();
 
         if (!$user) {
             return back()->withErrors([
@@ -87,6 +87,13 @@ class AuthController extends Controller
             ])->withInput();
         }
 
+         // If the user was soft-deleted, restore them
+        if ($user->trashed()) 
+        {
+            $user->restore();
+            $user->is_scheduled_for_deletion = false;
+            $user->save();
+        }
         // Regenerate session and redirect if login is successful
         $request->session()->regenerate();
         return redirect()->intended('/');

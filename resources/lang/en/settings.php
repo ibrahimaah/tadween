@@ -40,7 +40,7 @@ return [
     'confirm_delete' => 'Confirm Deletion',
     'cancel' => 'Cancel',
     'delete' => 'Yes, Delete',
-    'user_confirm_message_delete' => 'Are you sure you want to delete your account? This action is irreversible.',
+    'user_confirm_message_delete' => 'Are you sure you want to delete your account? You can retrieve it within 30 days only, after that it will be permanently deleted.',
     'password_now_incorrect' => 'Incorrect password.',
     'delete_account_success' => 'Your account has been deleted successfully.',
     'unexpected_error' => 'An unexpected error occurred, please try again later.',
@@ -49,4 +49,5 @@ return [
     'must_be_user' => 'Just user with role `user` can delete his account',
     'account_scheduled_for_deletion' => 'Your account has been scheduled for deletion.',
     'delete_account_temp' => 'Your account has been temporarily deleted. You can only recover it within 30 days, after which it will be permanently deleted.',
+    'delete_note' => 'You can retrieve it within 30 days only, after that it will be permanently deleted',
 ];

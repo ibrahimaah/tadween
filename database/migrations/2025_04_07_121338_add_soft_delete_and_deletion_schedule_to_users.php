@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->softDeletes(); // Adds 'deleted_at'
-            $table->timestamp('deletion_scheduled_at')->nullable();
+            $table->boolean('is_scheduled_for_deletion')->default(false); 
         });
     }
 

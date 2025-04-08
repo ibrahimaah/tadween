@@ -221,18 +221,19 @@
         
         <!-- Bootstrap Delete Confirmation User Account Modal -->
         <div class="modal fade" id="deleteAccountByUserModal">
+            
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">{{__('settings.confirm_delete')}}</h5>
                     </div>
                     <div class="modal-body">
-                        <p class="text-danger my-4">{{__('settings.user_confirm_message_delete')}}
-                        </p>
+                        <p class="alert alert-danger my-1">{{__('settings.user_confirm_message_delete')}}</p>
                         <form id="deleteAccountByUser" method="POST" action="{{ route('settings.account.delete') }}">
                             @csrf
                             @method('DELETE')
                         
+                            
                             <div class="mb-3">
                                 <label for="account_password" class="form-label">{{ __('settings.password_now') }}</label>
                                 <div class="input-group">

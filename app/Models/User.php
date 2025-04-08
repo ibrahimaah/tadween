@@ -31,6 +31,7 @@ class User extends Authenticatable
         'remember_token',
         'account_privacy',
         'last_activity',
+        'is_scheduled_for_deletion'
     ];
 
     /**
