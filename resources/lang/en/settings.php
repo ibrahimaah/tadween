@@ -33,6 +33,7 @@ return [
     'user_not_found' => 'User not found',
 
     'password_old_invalid' => 'The old password is invalid',
+    'password_new_invalid' => 'Please choose a new password',
     'update_success' => 'Your details have been updated',
 
     'account_delete_desc' => 'Click to confirm deletion of your account.',
@@ -45,4 +46,7 @@ return [
     'unexpected_error' => 'An unexpected error occurred, please try again later.',
     'blocked_users' => 'Blocked Users',
     'manage_blocked_users' => 'Click to manage blocked users',
+    'must_be_user' => 'Just user with role `user` can delete his account',
+    'account_scheduled_for_deletion' => 'Your account has been scheduled for deletion.',
+    'delete_account_temp' => 'Your account has been temporarily deleted. You can only recover it within 30 days, after which it will be permanently deleted.',
 ];

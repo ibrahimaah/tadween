@@ -71,7 +71,7 @@
                     <i class="fa-solid fa-shield"></i>
                 </span>
                 <select class="form-select text-grey {{ app()->getLocale() == 'ar' ? 'rounded-0 rounded-start' : '' }}" id="account_privacy" name="account_privacy">
-                    <option value=""></option>
+                    {{-- <option value=""></option> --}}
                     <option value="public" {{$userData['account_privacy']=='public' ? 'selected' : ''}}>{{ __('settings.account_privacy_public') }}</option>
                     <option value="private" {{$userData['account_privacy']=='private' ? 'selected' : ''}}>{{ __('settings.account_privacy_private') }}</option>
                 </select>
@@ -139,7 +139,7 @@
                     <i class="fa-solid fa-user-tie"></i>
                 </span>
                 <select class="form-select text-grey {{ app()->getLocale() == 'ar' ? 'rounded-0 rounded-start' : '' }}" id="gender" name="gender">
-                    <option value=""></option>
+                    {{-- <option value=""></option> --}}
                     <option value="male" {{$userData['gender']=='male' ? 'selected' : ''}}>{{ __('settings.gender_male') }}</option>
                     <option value="female" {{$userData['gender']=='female' ? 'selected' : ''}}>{{ __('settings.gender_female') }}</option>
                 </select>
@@ -203,64 +203,66 @@
         </a>
     </div>
 
-    <!-- delete account Settings -->
-    <h3 class="my-3 text-muted h5">{{ __('settings.delete_account') }}</h3>
-    <div class="bg-white p-3">
-        <a href="" data-bs-toggle="modal" data-bs-target="#deleteAccountByUserModal" class="row text-decoration-none text-dark">
-            <div class="col">
-                <i class="fa-solid fa-trash-can position"></i>
-                <span class="mx-2 h6">{{__('settings.delete_account')}}</span>
-                <p class="mx-4 mt-1 text-grey">{{ __('settings.account_delete_desc') }}</p>
-            </div>
-            <div class="col-2 text-{{ app()->getLocale() == 'ar' ? 'start' : 'end' }}">
-                <i class="fa-solid fa-chevron-{{ app()->getLocale() == 'ar' ? 'left' : 'right' }} mt-3 text-orange-color"></i>
-            </div>
-        </a>
-    </div>
-    
-    <!-- Bootstrap Delete Confirmation User Account Modal -->
-    <div class="modal fade" id="deleteAccountByUserModal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">{{__('settings.confirm_delete')}}</h5>
+    @if(auth()->user()->role == 'user')
+        <!-- delete account Settings -->
+        <h3 class="my-3 text-muted h5">{{ __('settings.delete_account') }}</h3>
+        <div class="bg-white p-3">
+            <a href="" data-bs-toggle="modal" data-bs-target="#deleteAccountByUserModal" class="row text-decoration-none text-dark">
+                <div class="col">
+                    <i class="fa-solid fa-trash-can position"></i>
+                    <span class="mx-2 h6">{{__('settings.delete_account')}}</span>
+                    <p class="mx-4 mt-1 text-grey">{{ __('settings.account_delete_desc') }}</p>
                 </div>
-                <div class="modal-body">
-                    <p class="text-danger my-4">{{__('settings.user_confirm_message_delete')}}
-                    </p>
-                    <form id="deleteAccountByUser" method="POST" action="{{ route('settings.account.delete') }}">
-                        @csrf
-                        @method('DELETE')
-                    
-                        <div class="mb-3">
-                            <label for="account_password" class="form-label">{{ __('settings.password_now') }}</label>
-                            <div class="input-group">
-                                <span class="input-group-text {{ app()->getLocale() == 'ar' ? 'rounded-0 rounded-end' : '' }}">
-                                    <i class="fa-solid fa-key"></i>
-                                </span>
-                                <input type="password" autocomplete="off" class="form-control text-grey {{ app()->getLocale() == 'ar' ? 'rounded-0 rounded-start' : '' }}" name="account_password" id="account_password" value="">
+                <div class="col-2 text-{{ app()->getLocale() == 'ar' ? 'start' : 'end' }}">
+                    <i class="fa-solid fa-chevron-{{ app()->getLocale() == 'ar' ? 'left' : 'right' }} mt-3 text-orange-color"></i>
+                </div>
+            </a>
+        </div>
+        
+        <!-- Bootstrap Delete Confirmation User Account Modal -->
+        <div class="modal fade" id="deleteAccountByUserModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{{__('settings.confirm_delete')}}</h5>
+                    </div>
+                    <div class="modal-body">
+                        <p class="text-danger my-4">{{__('settings.user_confirm_message_delete')}}
+                        </p>
+                        <form id="deleteAccountByUser" method="POST" action="{{ route('settings.account.delete') }}">
+                            @csrf
+                            @method('DELETE')
+                        
+                            <div class="mb-3">
+                                <label for="account_password" class="form-label">{{ __('settings.password_now') }}</label>
+                                <div class="input-group">
+                                    <span class="input-group-text {{ app()->getLocale() == 'ar' ? 'rounded-0 rounded-end' : '' }}">
+                                        <i class="fa-solid fa-key"></i>
+                                    </span>
+                                    <input type="password" autocomplete="off" class="form-control text-grey {{ app()->getLocale() == 'ar' ? 'rounded-0 rounded-start' : '' }}" name="account_password" id="account_password" value="">
+                                </div>
                             </div>
-                        </div>
 
-                        <div id="deleteMessage"></div>
-            
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{__('home.cancel')}}</button>
-                            
-                            <button type="submit" id="submitBtnDeleteAccount" class="btn btn-danger">{{ __('settings.delete_account') }}</button>
-                        </div>
-                        <!-- إشارة التحميل باستخدام Bootstrap (تكون مخفية افتراضيًا) -->
-                        <div id="loadingIndicatorDeleteAccount">
-                            <div class="spinner-border text-danger" role="status">
-                                <span class="visually-hidden">loading ...</span>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+                            <div id="deleteMessage"></div>
                 
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{__('home.cancel')}}</button>
+                                
+                                <button type="submit" id="submitBtnDeleteAccount" class="btn btn-danger">{{ __('settings.delete_account') }}</button>
+                            </div>
+                            <!-- إشارة التحميل باستخدام Bootstrap (تكون مخفية افتراضيًا) -->
+                            <div id="loadingIndicatorDeleteAccount">
+                                <div class="spinner-border text-danger" role="status">
+                                    <span class="visually-hidden">loading ...</span>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    
+                </div>
             </div>
         </div>
-    </div>
+    @endif
 
 </div>
 

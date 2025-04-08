@@ -103,13 +103,17 @@ $(document).ready(function() {
     //Delete Account By User
     $('#deleteAccountByUser').on('submit', function(e) {
         e.preventDefault();
-
-        var formData = new FormData(this);
-        var csrfToken = $('input[name="_token"]').val();
-
-        $('#submitBtnDeleteAccount').hide();
-        $('#loadingIndicatorDeleteAccount').show();
-        
+    
+        const formData = new FormData(this);
+        const csrfToken = $('input[name="_token"]').val();
+        const $submitBtn = $('#submitBtnDeleteAccount');
+        const $loadingIndicator = $('#loadingIndicatorDeleteAccount');
+        const $deleteMessage = $('#deleteMessage');
+    
+        // Toggle visibility of buttons
+        $submitBtn.hide();
+        $loadingIndicator.show();
+    
         $.ajax({
             url: $(this).attr('action'),
             method: 'POST',
@@ -118,21 +122,31 @@ $(document).ready(function() {
             contentType: false,
             processData: false,
             success: function(data) {
-                // إخفاء إشارة التحميل وعرض زر النشر
-                $('#loadingIndicatorDeleteAccount').hide();
-                $('#submitBtnDeleteAccount').show();
-                
+                // Toggle visibility of buttons
+                $loadingIndicator.hide();
+                $submitBtn.show();
+    
+                // Display success or error message
+                const messageClass = data.success ? 'alert-success' : 'alert-danger';
+                $deleteMessage.html(`<p class="alert ${messageClass}">${data.message}</p>`);
+    
+                // Redirect if successful
                 if (data.success) {
-                    $('#deleteMessage').html(`<p class="alert alert-success">${data.message}</p>`);
-
-                    setTimeout(function () {
-                        window.location.href='/';
-                    }, 1000);
-                } else {
-                    $('#deleteMessage').html(`<p class="alert alert-danger">${data.message}</p>`);
+                    setTimeout(() => window.location.href = '/', 1000);
                 }
             },
-            
+            error: function(xhr, status, error) {
+                // Toggle visibility of buttons in case of error
+                $loadingIndicator.hide();
+                $submitBtn.show();
+    
+                // Display error message
+                const errorMessage = xhr.responseJSON && xhr.responseJSON.message 
+                    ? xhr.responseJSON.message 
+                    : 'An unexpected error occurred.';
+                $deleteMessage.html(`<p class="alert alert-danger">${errorMessage}</p>`);
+            }
         });
     });
+    
 });

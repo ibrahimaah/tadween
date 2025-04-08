@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\Role;
 use App\Models\AccountPrivacy;
 use App\Models\User;
 use App\Models\UserProfile;
+use App\Services\UserService;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
 class SettingController extends Controller
@@ -90,6 +94,15 @@ class SettingController extends Controller
                     'message' => __('settings.password_old_invalid'),
                 ], 200);  // Send an error if the old password is incorrect
             }
+
+            if ($request->password_old && $request->password_new && Hash::check($request->password_new, $user->password)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => __('settings.password_new_invalid'),
+                ], 200);  // Send an error if the old password is incorrect
+            }
+
+
 
             $old_account_privacy = $user->account_privacy;
             // Update the user's information
@@ -237,93 +250,7 @@ class SettingController extends Controller
         }
     }
 
-    //Delete My Account User
-    public function deleteMyAccount(Request $request)
-    {
-        // Ensure the user is authenticated
-        if (!Auth::check()) {
-            return redirect()->route('login');
-        }
-
-        $request->validate([
-            'account_password' => 'required',
-        ]);
-            
-        $user = User::find(Auth::id());
-
-        // Verify the password
-        if (!Hash::check($request->account_password, $user->password)) {
-            return response()->json([
-                'success' => false,
-                'message' => __('settings.password_now_incorrect')
-            ], 200);
-        }
-
-        try {
-            // Start a database transaction
-            DB::beginTransaction();
-
-            // Collect all related files to delete
-            $userProfile = $user->profile;
-            $posts = $user->posts;
-            $replies = $user->replies;
-            
-            // Delete files for user profile
-            if ($userProfile) {
-                if ($userProfile->background_image) {
-                    $backgroundImagePath = public_path('background_images/' . basename($userProfile->background_image));  // تحديد المسار الكامل للصورة
-                    if (file_exists($backgroundImagePath)) {
-                        unlink($backgroundImagePath);  // حذف الصورة إذا كانت موجودة
-                    }
-                }
-                if ($userProfile->cover_image) {
-                    $coverImagePath = public_path('cover_images/' . basename($userProfile->cover_image));  // تحديد المسار الكامل للصورة
-                    if (file_exists($coverImagePath)) {
-                        unlink($coverImagePath);  // حذف الصورة إذا كانت موجودة
-                    }
-                }
-            }
-
-            // Delete files for posts
-            foreach ($posts as $post) {
-                if ($post->image) {
-                    $imagePath = public_path('posts/' . basename($post->image));  // تحديد المسار الكامل للصورة
-                    if (file_exists($imagePath)) {
-                        unlink($imagePath);  // حذف الصورة إذا كانت موجودة
-                    }
-                }
-            }
-
-            // Delete files for replies
-            foreach ($replies as $reply) {
-                if ($reply->reply_image) {
-                    $replyImagePath = public_path('replies/' . basename($reply->reply_image));  // تحديد المسار الكامل للصورة
-                    if (file_exists($replyImagePath)) {
-                        unlink($replyImagePath);  // حذف الصورة إذا كانت موجودة
-                    }
-                }
-            }
-
-
-            // Log out the user before deleting the account
-            Auth::logout();
-    
-            // Delete the user's account
-            $user->delete();
-            // Commit the transaction
-            DB::commit();
-    
-            return response()->json([
-                'success' => true,
-                'message' => __('settings.delete_account_success')
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => __('settings.unexpected_error')
-            ], 200);
-        }
-    }
+   
 
     public function blockedUsers()
     {

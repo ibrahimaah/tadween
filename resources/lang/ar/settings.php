@@ -34,6 +34,7 @@ return [
     'user_not_found' => 'المستخدم ليس موجود',
     
     'password_old_invalid' => 'كلمة المرور القديمة غير صالحة',
+    'password_new_invalid' => 'الرجاء اختيار كلمة مرور جديدة',
     'update_success' => 'تم تحديث بياناتك',
 
     'account_delete_desc' => 'انقر لتأكيد حذف حسابك.',
@@ -46,5 +47,8 @@ return [
     'unexpected_error' => 'حدث خطأ غير متوقع، يرجى المحاولة لاحقاً.',
     'blocked_users' => 'المستخدمون المحظورون',
     'manage_blocked_users' => 'انقر لإدارة المستخدمين المحظورين',
+    'must_be_user' => 'يمكن فقط للمستخدمين أن يحذفو حساباتهم',
+    'account_scheduled_for_deletion' => 'تم جدولة حذف حسابك.',
+    'delete_account_temp' => 'تم حذف حسابك مؤقتًا. يمكنك استرجاعه خلال 30 يومًا فقط، وبعد ذلك سيتم حذفه نهائيًا.',
 
 ];

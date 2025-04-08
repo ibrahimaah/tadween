@@ -13,6 +13,7 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BlockedUserController;
+use App\Http\Controllers\UserController;
 use App\Models\Follow;
 use App\Models\Post;
 use Illuminate\Support\Facades\Cookie;
@@ -116,7 +117,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/', [SettingController::class, 'index'])->name('settings');
         Route::post('/update_personal', [SettingController::class, 'updatePersonalInformation'])->name('settings.update.personal.information');
         Route::post('/update_profile', [SettingController::class, 'updateProfileInformation'])->name('settings.update.profile.information');
-        Route::delete('/delete_account', [SettingController::class, 'deleteMyAccount'])->name('settings.account.delete');
+        Route::delete('/delete', [UserController::class, 'delete'])->name('settings.account.delete');
         Route::get('/blocked-users', [SettingController::class, 'blockedUsers'])->name('settings.blocked_users');
 
     });
