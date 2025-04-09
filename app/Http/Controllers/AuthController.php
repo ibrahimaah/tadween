@@ -73,7 +73,7 @@ class AuthController extends Controller
 
         // Find user by email or username
         $user = User::withTrashed()->where($field, $credentials['login'])->first();
-
+        
         if (!$user) {
             return back()->withErrors([
                 'login' => __('auth.invalid_username_or_email'), // Custom error for invalid username/email
@@ -81,9 +81,15 @@ class AuthController extends Controller
         }
 
         // Check password separately
-        if (!Auth::attempt([$field => $credentials['login'], 'password' => $credentials['password']])) {
+        // if (!Auth::attempt([$field => $credentials['login'], 'password' => $credentials['password']])) {
+        //     return back()->withErrors([
+        //         'password' => __('auth.invalid_password'), // Custom error for wrong password
+        //     ])->withInput();
+        // }
+
+        if (!Hash::check($credentials['password'], $user->password)) {
             return back()->withErrors([
-                'password' => __('auth.invalid_password'), // Custom error for wrong password
+                'password' => __('auth.invalid_password'),
             ])->withInput();
         }
 
@@ -94,7 +100,8 @@ class AuthController extends Controller
             $user->is_scheduled_for_deletion = false;
             $user->save();
         }
-        // Regenerate session and redirect if login is successful
+        
+        Auth::login($user);
         $request->session()->regenerate();
         return redirect()->intended('/');
     }

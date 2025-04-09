@@ -42,9 +42,9 @@ class UserController extends Controller
         }
 
         return response()->json([
-        'success' => true,
-        'message' => __('settings.delete_account_temp')
-    ]);
+            'success' => true,
+            'message' => __('settings.delete_account_temp')
+        ]);
 
      }
 }

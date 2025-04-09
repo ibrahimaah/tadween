@@ -32,21 +32,29 @@ class ForceDeleteArchiveUsers extends Command
         $date_passed = Carbon::now()->subMinute();
 
         $users_ids = User::onlyTrashed()
-                    ->where('is_scheduled_for_deletion', true)
-                    ->where('deleted_at', '<=', $date_passed)
-                    ->pluck('id');
+                         ->where('is_scheduled_for_deletion', true)
+                         ->where('deleted_at', '<=', $date_passed)
+                         ->pluck('id')
+                         ->toArray();
 
 
-        foreach($users_ids as $user_id)
+        if(!empty($users_ids))
         {
-            // info($user_id);
-            $res_removeUser = (new UserService)->removeUser($user_id);
-            if($res_removeUser['code'] == 0)
+            foreach($users_ids as $user_id)
             {
-                info('user_id = '.$user_id.' error in force delete '.$res_removeUser['msg']);
+                // info($user_id);
+                $res_removeUser = (new UserService)->removeUser($user_id);
+                if($res_removeUser['code'] == 0)
+                {
+                    info('user_id = '.$user_id.' error in force delete '.$res_removeUser['msg']);
+                }
             }
+            info('force-delete-archive-users is done');
         }
-
-        info('force-delete-archive-users is done');
+        else 
+        {
+            info('force-delete-archive-users is done with no archive users');      
+        }
+          
     }
 }
