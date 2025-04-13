@@ -37,6 +37,8 @@
 
 @endsection
 
+
+
 @section('java_scripts')
     <script src="{{asset('js/posts/display_posts.js?version=1.0')}}"></script>
     <script src="{{asset('js/posts/post_like.js?version=1.0')}}"></script>
@@ -44,4 +46,9 @@
     <script src="{{asset('js/posts/delete_post.js?version=1.0')}}"></script>
     
     @endauth
+    @if (session('account_restored'))
+    <script>
+        toastr.success("{{ session('account_restored') }}");
+    </script>
+    @endif
 @endsection

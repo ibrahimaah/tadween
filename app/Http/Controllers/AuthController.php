@@ -99,6 +99,7 @@ class AuthController extends Controller
             $user->restore();
             $user->is_scheduled_for_deletion = false;
             $user->save();
+            session()->flash('account_restored', __('messages.account_restored'));
         }
         
         Auth::login($user);

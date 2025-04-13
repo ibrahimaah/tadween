@@ -10,4 +10,5 @@ return [
     'no_blocked_users' => 'No blocked users found.',
     'copy_link' => 'Copy link to profile',
     'link_copied' => 'Link copied!',
+    'account_restored' => 'Your account has been restored',
 ];

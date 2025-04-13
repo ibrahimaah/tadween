@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Schedule;
 
 //force-delete-archive-users
 
-// Schedule::command('force-delete-archive-users')->daily();
-Schedule::command('force-delete-archive-users')->everyMinute();
+Schedule::command('force-delete-archive-users')->daily();
+// Schedule::command('force-delete-archive-users')->everyMinute();
+// Schedule::command('force-delete-archive-users')->everyHour();
 

@@ -28,8 +28,9 @@ class ForceDeleteArchiveUsers extends Command
      */
     public function handle()
     {
-        // $date_passed = Carbon::now()->subDays(30);
-        $date_passed = Carbon::now()->subMinute();
+        $date_passed = Carbon::now()->subDays(30);
+        // $date_passed = Carbon::now()->subMinute();
+        // $date_passed = Carbon::now()->subHour();
 
         $users_ids = User::onlyTrashed()
                          ->where('is_scheduled_for_deletion', true)

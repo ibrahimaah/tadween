@@ -10,4 +10,5 @@ return [
     'no_blocked_users' => 'لا يوجد مستخدمين محجوبين.',
     'copy_link' => 'نسخ الرابط إلى الملف الشخصي',
     'link_copied' => 'تم نسخ الرابط!',
+    'account_restored' => 'تم استعادة حسابك',
 ];
