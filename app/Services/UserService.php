@@ -124,5 +124,24 @@ class UserService
         }
     }
 
+    public function getUserByUsername($username)
+    {
+        try 
+        { 
+            $user = User::where('username', $username)->first();
+
+            if(!$user)
+            {
+                throw new Exception(__('profile.profile_user_not_found'));
+            }
+
+            return ['code' => 1, 'data' => $user];
+        }
+        catch(Exception $ex)
+        {
+            return ['code' => 0 , 'msg' => $ex->getMessage()];
+        }
+    }
+
     
 }

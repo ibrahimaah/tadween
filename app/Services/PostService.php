@@ -13,7 +13,10 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
-
+use App\Enums\Role;  
+use Illuminate\Support\Facades\Hash;
+use App\Helpers\TextHelper; 
+use Carbon\Carbon;
 class PostService
 {
     use CacheClearable;
@@ -365,6 +368,182 @@ class PostService
             return ['code' => 1, 'data' => $paginatedPosts];
         } catch (Exception $ex) {
             return ['code' => 0, 'msg' => $ex->getMessage()];
+        }
+    }
+
+
+    public function formatePosts($posts)
+    {
+        try 
+        { 
+            $maxLength = 200; // الحد الأقصى لطول النص الذي سيتم عرضه
+            $postsData = $posts->map(function ($post) use ($maxLength) {
+                $post_text = $post->text ? htmlspecialchars($post->text, ENT_QUOTES, 'UTF-8') : null;
+                if ($post_text) {
+                    $post_text = TextHelper::processMentions($post_text);
+                }
+                $post_image = $post->image ?json_decode( $post->image) : null;
+                $user_name = $post->user->name ? htmlspecialchars($post->user->name, ENT_QUOTES, 'UTF-8') : null;
+                $user_username = $post->user->username ? htmlspecialchars($post->user->username, ENT_QUOTES, 'UTF-8') : null;
+                $user_cover_image = $post->user->profile->cover_image ? htmlspecialchars($post->user->profile->cover_image, ENT_QUOTES, 'UTF-8') : null;
+                $is_private = $post->user->account_privacy == AccountPrivacy::PRIVATE ? true : false;
+    
+                $pollData = null;
+                if ($post->poll) {
+                    $pollData = [
+                        'expires_at' => $post->poll->expires_at->format('Y-m-d H:i:s'),
+                        'options' => [
+                            [
+                                'option_text' => $post->poll->option1_text,
+                                'votes'       => $post->poll->option1_votes,
+                            ],
+                            [
+                                'option_text' => $post->poll->option2_text,
+                                'votes'       => $post->poll->option2_votes,
+                            ],
+                            [
+                                'option_text' => $post->poll->option3_text,
+                                'votes'       => $post->poll->option3_votes,
+                            ],
+                            [
+                                'option_text' => $post->poll->option4_text,
+                                'votes'       => $post->poll->option4_votes,
+                            ],
+                        ],
+                    ];
+                }
+                
+                return [
+                    'is_owner' => Auth::id() === $post->user_id,
+                    'slug_id' => $post->slug_id,
+    
+                    'user' => [
+                        'name' => $user_name,
+                        'username' => $user_username,
+                        'cover_image' => $user_cover_image,
+                        'is_private' => $is_private
+                    ],
+                    'poll' => $pollData,
+                    'post_type' => $post->post_type,
+                    'text' => mb_strlen($post_text) > $maxLength
+                        ? mb_substr($post_text, 0, $maxLength) . '...'
+                        : $post_text,
+                    'image' => $post_image,
+                    'created_at' => Carbon::parse($post->created_at)->diffForHumans(),
+                    'comments_count' => $post->replies_count ?? 0,
+                    'reposts_count' => $post->reposts_count ?? 0,
+                    'post_likes_count' => $post->post_likes_count  ?? 0,
+                    // إضافة حالة الإعجاب
+                    'is_post_liked' => $post->userPostLike !== null,
+    
+                ];
+            });
+
+            return ['code' => 1, 'data' => $postsData];
+        }
+        catch(Exception $ex)
+        {
+            return ['code' => 0 , 'msg' => $ex->getMessage()];
+        }
+    }
+
+
+    public function getPostsByUserId($user_id)
+    {
+        try 
+        {
+            $posts = Post::where('user_id', $user_id)
+                         ->with(['user', 'userPostLike', 'poll']) // تضمين علاقة الإعجاب للمستخدم الحالي
+                         ->withCount('replies')
+                         ->withCount('postLikes')
+                         ->orderBy('created_at', 'desc')
+                         ->paginate(10);
+
+            return ['code' => 1, 'data' => $posts];
+        }
+        catch(Exception $ex)
+        {
+            return ['code' => 0 , 'msg' => $ex->getMessage()];
+        }
+    }
+
+
+    public function getLikedPostsByUsername(String $username)
+    {
+        try 
+        {
+            $res_getUserByUsername = (new UserService)->getUserByUsername($username);
+
+            if($res_getUserByUsername['code'] == 0)
+            {
+                throw new Exception($res_getUserByUsername['msg']);
+            }
+           
+            $user = $res_getUserByUsername['data'];
+
+            $likedPostIds = DB::table('post_likes')
+                              ->where('user_id', $user->id)
+                              ->pluck('post_id');
+
+            $posts = Post::whereIn('id', $likedPostIds)
+                ->with(['user', 'userPostLike', 'poll'])
+                ->withCount(['replies', 'postLikes'])
+                ->orderBy('created_at', 'desc')
+                ->paginate(10);
+
+            $res_formatePosts = $this->formatePosts($posts);
+
+            if($res_formatePosts['code'] ==0)
+            {
+                throw new Exception($res_formatePosts['msg']);
+            }
+
+            return ['code' => 1, 
+                    'data' => $res_formatePosts['data'],
+                    'next_page' => $posts->hasMorePages() ? $posts->currentPage() + 1 : null]; 
+
+        }
+        catch(Exception $ex)
+        {
+            return ['code' => 0 , 'msg' => $ex->getMessage()];
+        }
+    }
+    public function getPostsByUsername($username)
+    {
+        try 
+        {
+            $res_getUserByUsername = (new UserService)->getUserByUsername($username);
+
+            if($res_getUserByUsername['code'] == 0)
+            {
+                throw new Exception($res_getUserByUsername['msg']);
+            }
+           
+            $user = $res_getUserByUsername['data'];
+
+            $res_getPostsByUserId = $this->getPostsByUserId($user->id);
+
+            if($res_getPostsByUserId['code'] == 0)
+            {
+                throw new Exception($res_getPostsByUserId['msg']);
+            }
+
+            $posts = $res_getPostsByUserId['data'];
+
+            $res_formatePosts = $this->formatePosts($posts);
+
+            if($res_formatePosts['code'] ==0)
+            {
+                throw new Exception($res_formatePosts['msg']);
+            }
+
+            return ['code' => 1, 
+                    'data' => $res_formatePosts['data'],
+                    'next_page' => $posts->hasMorePages() ? $posts->currentPage() + 1 : null]; 
+        }
+        catch(Exception $ex)
+        {
+            return ['code' => 0 , 'msg' => $ex->getMessage()];
         }
     }
 }

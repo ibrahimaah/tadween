@@ -6,6 +6,8 @@ use App\Helpers\TextHelper;
 use App\Models\AccountPrivacy;
 use App\Models\User;
 use App\Models\Post;
+use App\Services\PostService;
+use App\Services\ProfileService;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 class ProfileController extends Controller
@@ -84,92 +86,20 @@ class ProfileController extends Controller
     // عرض المنشورات الخاصة بالمستخدم
     public function getPostsByUsername(String $username)
     {
-        $maxLength = 200; // الحد الأقصى لطول النص الذي سيتم عرضه
+        $res_getPostsByUsername = (new PostService)->getPostsByUsername($username);
 
-        $user = User::where('username', $username)->first();
-
-        if (!$user) {
+        if ($res_getPostsByUsername['code'] == 0) 
+        {
             return response()->json([
                 'success' => false,
-                'message' => __('profile.profile_user_not_found')
+                'message' => $res_getPostsByUsername['msg']
             ], 200);
         }
-
-        // استرجاع المنشورات مع بيانات المستخدم والإعجابات
-        $posts = Post::where('user_id', $user->id)->with(['user', 'userPostLike', 'poll']) // تضمين علاقة الإعجاب للمستخدم الحالي
-        ->withCount('replies')
-                    ->withCount('postLikes')
-                    ->orderBy('created_at', 'desc')
-                    ->paginate(10);
-
-        // تعديل البيانات التي سيتم إرجاعها
-        $postsData = $posts->map(function ($post) use ($maxLength) {
-            $post_text = $post->text ? htmlspecialchars($post->text, ENT_QUOTES, 'UTF-8') : null;
-            if ($post_text) {
-                $post_text = TextHelper::processMentions($post_text);
-            }
-            $post_image = $post->image ?json_decode( $post->image) : null;
-            $user_name = $post->user->name ? htmlspecialchars($post->user->name, ENT_QUOTES, 'UTF-8') : null;
-            $user_username = $post->user->username ? htmlspecialchars($post->user->username, ENT_QUOTES, 'UTF-8') : null;
-            $user_cover_image = $post->user->profile->cover_image ? htmlspecialchars($post->user->profile->cover_image, ENT_QUOTES, 'UTF-8') : null;
-            $is_private = $post->user->account_privacy == AccountPrivacy::PRIVATE ? true : false;
-
-            $pollData = null;
-            if ($post->poll) {
-                $pollData = [
-                    'expires_at' => $post->poll->expires_at->format('Y-m-d H:i:s'),
-                    'options' => [
-                        [
-                            'option_text' => $post->poll->option1_text,
-                            'votes'       => $post->poll->option1_votes,
-                        ],
-                        [
-                            'option_text' => $post->poll->option2_text,
-                            'votes'       => $post->poll->option2_votes,
-                        ],
-                        [
-                            'option_text' => $post->poll->option3_text,
-                            'votes'       => $post->poll->option3_votes,
-                        ],
-                        [
-                            'option_text' => $post->poll->option4_text,
-                            'votes'       => $post->poll->option4_votes,
-                        ],
-                    ],
-                ];
-            }
-            
-            return [
-                'is_owner' => Auth::id() === $post->user_id,
-                'slug_id' => $post->slug_id,
-
-                'user' => [
-                    'name' => $user_name,
-                    'username' => $user_username,
-                    'cover_image' => $user_cover_image,
-                    'is_private' => $is_private
-                ],
-                'poll' => $pollData,
-                'post_type' => $post->post_type,
-                'text' => mb_strlen($post_text) > $maxLength
-                    ? mb_substr($post_text, 0, $maxLength) . '...'
-                    : $post_text,
-                'image' => $post_image,
-                'created_at' => Carbon::parse($post->created_at)->diffForHumans(),
-                'comments_count' => $post->replies_count ?? 0,
-                'reposts_count' => $post->reposts_count ?? 0,
-                'post_likes_count' => $post->post_likes_count  ?? 0,
-                // إضافة حالة الإعجاب
-                'is_post_liked' => $post->userPostLike !== null,
-
-            ];
-        });
-
         // إرجاع النتيجة كـ JSON
         return response()->json([
             'success' => true,
-            'posts' => $postsData,
-            'next_page' => $posts->hasMorePages() ? $posts->currentPage() + 1 : null,
+            'posts' => $res_getPostsByUsername['data'],
+            'next_page' => $res_getPostsByUsername['next_page']
         ]);
     }
 
@@ -328,88 +258,20 @@ class ProfileController extends Controller
     // عرض المنشورات التي أُعجب بها المستخدم
     public function getLikedPostsByUsername(String $username)
     {
-        $maxLength = 200; // الحد الأقصى لطول النص الذي سيتم عرضه
-        $user = User::where('username', $username)->first();
+        $res_getLikedPostsByUsername = (new PostService)->getLikedPostsByUsername($username);
 
-        if (!$user) {
+        if ($res_getLikedPostsByUsername['code'] == 0) 
+        {
             return response()->json([
                 'success' => false,
-                'message' => __('profile.profile_user_not_found')
+                'message' => $res_getLikedPostsByUsername['msg']
             ], 200);
         }
-
-        $posts = Post::where('user_id', $user->id)->whereHas('userPostLike')->with(['user', 'userPostLike', 'poll']) // تضمين علاقة الإعجاب للمستخدم الحالي
-        ->withCount('replies')
-                    ->withCount('postLikes')
-                    ->orderBy('created_at', 'desc')
-                    ->paginate(10);
-
-        // تعديل البيانات التي سيتم إرجاعها
-        $postsData = $posts->map(function ($post) use ($maxLength) {
-            $post_text = $post->text ? htmlspecialchars($post->text, ENT_QUOTES, 'UTF-8') : null;
-            if ($post_text) {
-                $post_text = TextHelper::processMentions($post_text);
-            }
-            $post_image = $post->image ?json_decode( $post->image) : null;
-            $user_name = $post->user->name ? htmlspecialchars($post->user->name, ENT_QUOTES, 'UTF-8') : null;
-            $user_username = $post->user->username ? htmlspecialchars($post->user->username, ENT_QUOTES, 'UTF-8') : null;
-            $user_cover_image = $post->user->profile->cover_image ? htmlspecialchars($post->user->profile->cover_image, ENT_QUOTES, 'UTF-8') : null;
-            $is_private = $post->user->account_privacy == AccountPrivacy::PRIVATE ? true : false;
-            $pollData = null;
-            if ($post->poll) {
-                $pollData = [
-                    'expires_at' => $post->poll->expires_at->format('Y-m-d H:i:s'),
-                    'options' => [
-                        [
-                            'option_text' => $post->poll->option1_text,
-                            'votes'       => $post->poll->option1_votes,
-                        ],
-                        [
-                            'option_text' => $post->poll->option2_text,
-                            'votes'       => $post->poll->option2_votes,
-                        ],
-                        [
-                            'option_text' => $post->poll->option3_text,
-                            'votes'       => $post->poll->option3_votes,
-                        ],
-                        [
-                            'option_text' => $post->poll->option4_text,
-                            'votes'       => $post->poll->option4_votes,
-                        ],
-                    ],
-                ];
-            }
-            return [
-                'is_owner' => Auth::id() === $post->user_id,
-                'slug_id' => $post->slug_id,
-
-                'user' => [
-                    'name' => $user_name,
-                    'username' => $user_username,
-                    'cover_image' => $user_cover_image,
-                    'is_private' => $is_private ,
-                ],
-                'poll' => $pollData,
-                'post_type' => $post->post_type,
-                'text' => mb_strlen($post_text) > $maxLength
-                    ? mb_substr($post_text, 0, $maxLength) . '...'
-                    : $post_text,
-                'image' => $post_image,
-                'created_at' => Carbon::parse($post->created_at)->diffForHumans(),
-                'comments_count' => $post->replies_count ?? 0,
-                'reposts_count' => $post->reposts_count ?? 0,
-                'post_likes_count' => $post->post_likes_count  ?? 0,
-                // إضافة حالة الإعجاب
-                'is_post_liked' => $post->userPostLike !== null,
-
-            ];
-        });
-
         // إرجاع النتيجة كـ JSON
         return response()->json([
             'success' => true,
-            'posts' => $postsData,
-            'next_page' => $posts->hasMorePages() ? $posts->currentPage() + 1 : null,
+            'posts' => $res_getLikedPostsByUsername['data'],
+            'next_page' => $res_getLikedPostsByUsername['next_page']
         ]);
     }
 }
