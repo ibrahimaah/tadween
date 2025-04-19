@@ -467,7 +467,45 @@ class PostService
         }
     }
 
+    public function getMediaPostsByUsername($username)
+    {
+        try 
+        {
+            $res_getUserByUsername = (new UserService)->getUserByUsername($username);
 
+            if($res_getUserByUsername['code'] == 0)
+            {
+                throw new Exception($res_getUserByUsername['msg']);
+            }
+           
+            $user = $res_getUserByUsername['data'];
+
+            $posts = Post::where('user_id', $user->id)
+                         ->whereNotNull('image')
+                         ->where('image', '!=', json_encode([]))
+                         ->with(['user', 'userPostLike']) // تضمين علاقة الإعجاب للمستخدم الحالي
+                         ->withCount('replies')
+                         ->withCount('postLikes')
+                         ->orderBy('created_at', 'desc')
+                         ->paginate(10);
+
+            $res_formatePosts = $this->formatePosts($posts);
+
+            if($res_formatePosts['code'] == 0)
+            {
+                throw new Exception($res_formatePosts['msg']);
+            }
+
+            return ['code' => 1, 
+                    'data' => $res_formatePosts['data'],
+                    'next_page' => $posts->hasMorePages() ? $posts->currentPage() + 1 : null]; 
+
+        }
+        catch(Exception $ex)
+        {
+            return ['code' => 0 , 'msg' => $ex->getMessage()];
+        }
+    }
     public function getLikedPostsByUsername(String $username)
     {
         try 

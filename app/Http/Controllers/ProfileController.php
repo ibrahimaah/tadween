@@ -194,65 +194,21 @@ class ProfileController extends Controller
     // عرض المنشورات التي تحتوي على وسائط
     public function getMediaPostsByUsername(String $username)
     {
-        $maxLength = 200; // الحد الأقصى لطول النص الذي سيتم عرضه
+        $res_getMediaPostsByUsername = (new PostService)->getMediaPostsByUsername($username);
 
-        $user = User::where('username', $username)->first();
-
-        if (!$user) {
+        if ($res_getMediaPostsByUsername['code'] == 0) 
+        {
             return response()->json([
                 'success' => false,
-                'message' => __('profile.profile_user_not_found')
+                'message' => $res_getMediaPostsByUsername['msg']
             ], 200);
         }
-
-            $posts = Post::where('user_id', $user->id)->whereNotNull('image')->with(['user', 'userPostLike']) // تضمين علاقة الإعجاب للمستخدم الحالي
-            ->withCount('replies')
-                        ->withCount('postLikes')
-                        ->orderBy('created_at', 'desc')
-                        ->paginate(10);
-    
-            // تعديل البيانات التي سيتم إرجاعها
-            $postsData = $posts->map(function ($post) use ($maxLength) {
-                $post_text = $post->text ? htmlspecialchars($post->text, ENT_QUOTES, 'UTF-8') : null;
-                if ($post_text) {
-                    $post_text = TextHelper::processMentions($post_text);
-                }
-                $post_image = $post->image ?json_decode( $post->image) : null;
-                $user_name = $post->user->name ? htmlspecialchars($post->user->name, ENT_QUOTES, 'UTF-8') : null;
-                $user_username = $post->user->username ? htmlspecialchars($post->user->username, ENT_QUOTES, 'UTF-8') : null;
-                $user_cover_image = $post->user->profile->cover_image ? htmlspecialchars($post->user->profile->cover_image, ENT_QUOTES, 'UTF-8') : null;
-                $is_private = $post->user->account_privacy == AccountPrivacy::PRIVATE ? true : false;
-                return [
-                    'is_owner' => Auth::id() === $post->user_id,
-                    'slug_id' => $post->slug_id,
-    
-                    'user' => [
-                        'name' => $user_name,
-                        'username' => $user_username,
-                        'cover_image' => $user_cover_image,
-                        'is_private' => $is_private,
-                    ],
-                    
-                    'text' => mb_strlen($post_text) > $maxLength
-                        ? mb_substr($post_text, 0, $maxLength) . '...'
-                        : $post_text,
-                    'image' => $post_image,
-                    'created_at' => Carbon::parse($post->created_at)->diffForHumans(),
-                    'comments_count' => $post->replies_count ?? 0,
-                    'reposts_count' => $post->reposts_count ?? 0,
-                    'post_likes_count' => $post->post_likes_count  ?? 0,
-                    // إضافة حالة الإعجاب
-                    'is_post_liked' => $post->userPostLike !== null,
-    
-                ];
-            });
-    
-            // إرجاع النتيجة كـ JSON
-            return response()->json([
-                'success' => true,
-                'posts' => $postsData,
-                'next_page' => $posts->hasMorePages() ? $posts->currentPage() + 1 : null,
-            ]);
+        // إرجاع النتيجة كـ JSON
+        return response()->json([
+            'success' => true,
+            'posts' => $res_getMediaPostsByUsername['data'],
+            'next_page' => $res_getMediaPostsByUsername['next_page']
+        ]);
     }
 
     // عرض المنشورات التي أُعجب بها المستخدم
