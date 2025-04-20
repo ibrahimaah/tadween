@@ -24,20 +24,25 @@ function toggleLoader(show) {
 function renderReplies(replies) {
     if (!replies || replies.length === 0) return '';
     return `
-        <div class="mt-3 border-top pt-2">
+        <div class="mt-3 pt-2">
             <h6 class="text-muted">${isArabic ? 'الردود' : 'Replies'}:</h6>
             ${replies.map(reply => `
-                <div class="d-flex mb-2">
-                    <img src="${reply.user.cover_image ?? 'img/user.jpg'}" class="rounded-circle logo-main me-2" alt="User Image">
-                    <div>
-                        <strong>${reply.user.name}</strong> <small class="text-muted">(@${reply.user.username})</small><br>
-                        <p class="mb-0">${reply.text}</p>
-                        <small class="text-muted">${reply.created_at}</small>
+                <div class="bg-light rounded-4 p-3 mb-2">
+                    <div class="d-flex justify-content-between">
+                        <a href="/${reply.user.username}" class="d-flex text-decoration-none text-dark">
+                            <img src="${reply.user.cover_image ?? 'img/user.jpg'}" class="rounded-circle logo-main me-2" alt="User Image">
+                            <div>
+                                <p class="mb-0 fw-bold">${reply.user.name}</p>
+                                <small class="text-muted">@${reply.user.username} (${reply.created_at})</small>
+                            </div>
+                        </a>
                     </div>
+                    <p class="mt-2 mb-0 text-dark">${reply.text}</p>
                 </div>
             `).join('')}
         </div>`;
 }
+
 
 function getPollOptionsHtml(options, postId) {
     const totalVotes = options.reduce((sum, o) => sum + o.votes, 0);

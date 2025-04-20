@@ -110,11 +110,21 @@ class ProfileController extends Controller
             ], 200);
         }
 
-        $posts = Post::whereHas('replies')
-            ->with(['user', 'userPostLike', 'poll', 'replies.user']) // include replies with user
+        $posts = Post::whereHas('replies', function ($query) {
+                $query->where('user_id', auth()->id());
+            })
+            ->with([
+                'user',
+                'userPostLike',
+                'poll',
+                'replies' => function ($query) {
+                    $query->where('user_id', auth()->id())->with('user');
+                },
+            ])
             ->withCount(['replies', 'postLikes'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
+    
 
         $postsData = $posts->map(function ($post) use ($maxLength) {
             $postData = [
