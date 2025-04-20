@@ -21,6 +21,24 @@ function toggleLoader(show) {
     $('#posts_loading_indicator').toggleClass('d-none', !show).toggleClass('d-flex', show);
 }
 
+function renderReplies(replies) {
+    if (!replies || replies.length === 0) return '';
+    return `
+        <div class="mt-3 border-top pt-2">
+            <h6 class="text-muted">${isArabic ? 'الردود' : 'Replies'}:</h6>
+            ${replies.map(reply => `
+                <div class="d-flex mb-2">
+                    <img src="${reply.user.cover_image ?? 'img/user.jpg'}" class="rounded-circle logo-main me-2" alt="User Image">
+                    <div>
+                        <strong>${reply.user.name}</strong> <small class="text-muted">(@${reply.user.username})</small><br>
+                        <p class="mb-0">${reply.text}</p>
+                        <small class="text-muted">${reply.created_at}</small>
+                    </div>
+                </div>
+            `).join('')}
+        </div>`;
+}
+
 function getPollOptionsHtml(options, postId) {
     const totalVotes = options.reduce((sum, o) => sum + o.votes, 0);
     return options.map(opt => {
@@ -104,6 +122,7 @@ function renderPost(post) {
                 ${getDeleteButton(post)}
             </div>
             ${getPostTypeHtml(post)}
+            
             <div class="row text-center mt-3">
                 <div class="col"><a href="posts/${post.slug_id}" class="text-decoration-none text-dark link_hover">${post.comments_count ?? 0} <i class="fa-regular fa-message"></i></a></div>
                 <div class="col">${post.reposts_count ?? 0} <i class="fa-solid fa-rotate"></i></div>
@@ -115,7 +134,9 @@ function renderPost(post) {
                 </div>
                 <div class="col"><i class="fa-regular fa-share-from-square"></i></div>
             </div>
-        </div>`;
+            ${renderReplies(post.replies)}
+        </div>
+        `;
 }
 
 function loadPosts() {
