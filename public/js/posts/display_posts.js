@@ -21,27 +21,7 @@ function toggleLoader(show) {
     $('#posts_loading_indicator').toggleClass('d-none', !show).toggleClass('d-flex', show);
 }
 
-function renderReplies(replies) {
-    if (!replies || replies.length === 0) return '';
-    return `
-        <div class="mt-3 pt-2">
-            <h6 class="text-muted">${isArabic ? 'الردود' : 'Replies'}:</h6>
-            ${replies.map(reply => `
-                <div class="bg-light rounded-4 p-3 mb-2">
-                    <div class="d-flex justify-content-between">
-                        <a href="/${reply.user.username}" class="d-flex text-decoration-none text-dark">
-                            <img src="${reply.user.cover_image ?? 'img/user.jpg'}" class="rounded-circle logo-main me-2" alt="User Image">
-                            <div>
-                                <p class="mb-0 fw-bold">${reply.user.name}</p>
-                                <small class="text-muted">@${reply.user.username} (${reply.created_at})</small>
-                            </div>
-                        </a>
-                    </div>
-                    <p class="mt-2 mb-0 text-dark">${reply.text}</p>
-                </div>
-            `).join('')}
-        </div>`;
-}
+
 
 
 function getPollOptionsHtml(options, postId) {
@@ -106,13 +86,66 @@ function getDeleteButton(post) {
         </div>`;
 }
 
-function renderPost(post) {
+function renderPost(post,hasReplies) {
     const user = post.user;
     const username = isArabic ? `${user.username}@` : `@${user.username}`;
     const userImage = user.cover_image ?? 'img/user.jpg';
     const profileLink = `/${user.username}`;
     const isPrivateIcon = user.is_private ? '<i class="fa-solid fa-lock text-orange-color me-1"></i>' : '';
 
+    if(hasReplies)
+        {
+            return  `${post.replies.map(reply => `
+                <div class="bg-white rounded-4 p-3 mb-2" id="post${post.slug_id}">
+                    <p class="text-orange-color">${post.likedByPhrase ?? ''}</p>
+                    <div class="d-flex justify-content-between">
+                        <a href="${profileLink}" class="d-flex text-decoration-none text-dark">
+                            <img src="${userImage}" class="rounded-circle logo-main" alt="User Image">
+                            <div class="px-1">
+                                <p class="mx-1 mb-0">${user.name} ${isPrivateIcon}</p>
+                                <p class="mx-1 mt-0 text-grey">${username} (${post.created_at})</p>
+                            </div>
+                        </a>
+                        ${getDeleteButton(post)}
+                    </div>
+                        ${getPostTypeHtml(post)}
+            
+                    <div class="row text-center mt-3">
+                        <div class="col">
+                            <a href="posts/${post.slug_id}" class="text-decoration-none text-dark link_hover">
+                                ${post.comments_count ?? 0} <i class="fa-regular fa-message"></i>
+                            </a>
+                        </div>
+                        <div class="col">
+                            ${post.reposts_count ?? 0} <i class="fa-solid fa-rotate"></i>
+                        </div>
+                        <div class="col" id="post-like-section" post-slug-data="${post.slug_id}">
+                            <span class="link_hover">
+                                <span id="post-like-count">${post.post_likes_count ?? 0}</span>
+                                <i class="fa-regular fa-thumbs-up ${post.is_post_liked ? 'text-orange-color' : ''}" id="post-like-btn"></i>
+                            </span>
+                        </div>
+                        <div class="col">
+                            <i class="fa-regular fa-share-from-square"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3 pt-2"> 
+                    <div class="bg-light rounded-4 p-3 mb-2">
+                        <div class="d-flex justify-content-between">
+                            <a href="/${reply.user.username}" class="d-flex text-decoration-none text-dark">
+                                <img src="${reply.user.cover_image ?? 'img/user.jpg'}" class="rounded-circle logo-main me-2" alt="User Image">
+                                <div>
+                                    <p class="mb-0 fw-bold">${reply.user.name}</p>
+                                    <small class="text-muted">@${reply.user.username} (${reply.created_at})</small>
+                                </div>
+                            </a>
+                        </div>
+                        <p class="mt-2 mb-0 text-dark">${reply.text}</p>
+                    </div>
+                
+                </div>`).join('')}
+            </div>`
+        }
     return `
         <div class="bg-white rounded-4 p-3 mb-2" id="post${post.slug_id}">
             <p class="text-orange-color">${post.likedByPhrase ?? ''}</p>
@@ -139,7 +172,6 @@ function renderPost(post) {
                 </div>
                 <div class="col"><i class="fa-regular fa-share-from-square"></i></div>
             </div>
-            ${renderReplies(post.replies)}
         </div>
         `;
 }
@@ -159,8 +191,17 @@ function loadPosts() {
                 return;
             }
 
-            if (data.posts.length > 0) {
-                data.posts.forEach(post => $('#display-posts-container').append(renderPost(post)));
+            if (data.posts.length > 0) 
+            {
+                
+                data.posts.forEach(post => {
+                    let hasReplies = true;
+                    if (!post.replies || post.replies.length === 0)
+                    {
+                        hasReplies = false;
+                    }
+                    $('#display-posts-container').append(renderPost(post,hasReplies))
+                });
                 page = data.next_page ?? page;
                 hasMorePosts = !!data.next_page;
             } else {

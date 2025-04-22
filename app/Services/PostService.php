@@ -447,6 +447,64 @@ class PostService
         }
     }
 
+    public function formatePostsWithReplies($posts)
+    {
+        try 
+        { 
+            $maxLength = 200; // الحد الأقصى لطول النص الذي سيتم عرضه
+            $postsData = $posts->map(function ($post) use ($maxLength) {
+                $postData = [
+                    'slug_id' => $post->slug_id,
+                    'text' => $post->text ? TextHelper::processMentions(htmlspecialchars($post->text, ENT_QUOTES, 'UTF-8')) : null,
+                    'image' => $post->image ? json_decode($post->image) : null,
+                    'created_at' => $post->created_at->diffForHumans(),
+                    'comments_count' => $post->replies_count,
+                    'post_likes_count' => $post->post_likes_count,
+                    'is_post_liked' => $post->userPostLike !== null,
+                    'likedByPhrase' => $post->likedByPhrase ?? null,
+                    'is_owner' => Auth::check() && Auth::id() === $post->user_id,
+                    'post_type' => $post->post_type,
+                    'poll' => $post->poll ? [
+                        'expires_at' => $post->poll->expires_at->format('Y-m-d H:i:s'),
+                        'options' => collect([
+                            ['option_text' => $post->poll->option1_text, 'votes' => $post->poll->option1_votes],
+                            ['option_text' => $post->poll->option2_text, 'votes' => $post->poll->option2_votes],
+                            ['option_text' => $post->poll->option3_text, 'votes' => $post->poll->option3_votes],
+                            ['option_text' => $post->poll->option4_text, 'votes' => $post->poll->option4_votes],
+                        ])->filter(fn($o) => !is_null($o['option_text']))->values(),
+                    ] : null,
+                    'user' => [
+                        'id' => $post->user->id,
+                        'name' => htmlspecialchars($post->user->name),
+                        'username' => htmlspecialchars($post->user->username),
+                        'cover_image' => optional($post->user->profile)->cover_image,
+                        'is_private' => $post->user->account_privacy == AccountPrivacy::PRIVATE,
+                    ],
+                    'reposts_count' => $post->reposts_count,
+                    'replies' => $post->replies->map(function ($reply) {
+                        return [
+                            'text' => TextHelper::processMentions(htmlspecialchars($reply->reply_text)),
+                            'created_at' => $reply->created_at->diffForHumans(),
+                            'user' => [
+                                'name' => htmlspecialchars($reply->user->name),
+                                'username' => htmlspecialchars($reply->user->username),
+                                'cover_image' => optional($reply->user->profile)->cover_image,
+                            ]
+                        ];
+                    })
+                ];
+    
+                return $postData;
+            });
+
+            return ['code' => 1, 'data' => $postsData];
+        }
+        catch(Exception $ex)
+        {
+            return ['code' => 0 , 'msg' => $ex->getMessage()];
+        }
+    }
+
 
     public function getPostsByUserId($user_id)
     {
@@ -467,6 +525,52 @@ class PostService
         }
     }
 
+
+    public function getRepliesByUsername($username)
+    {
+        try 
+        {
+            $res_getUserByUsername = (new UserService)->getUserByUsername($username);
+
+            if($res_getUserByUsername['code'] == 0)
+            {
+                throw new Exception($res_getUserByUsername['msg']);
+            }
+           
+            $user = $res_getUserByUsername['data'];
+
+            $posts = Post::whereHas('replies', function ($query) {
+                            $query->where('user_id', Auth::id());
+                        })
+                        ->with([
+                            'user',
+                            'userPostLike',
+                            'poll',
+                            'replies' => function ($query) {
+                                $query->where('user_id', Auth::id())->with('user');
+                            },
+                        ])
+                        ->withCount(['replies', 'postLikes'])
+                        ->orderBy('created_at', 'desc')
+                        ->paginate(10);
+
+            $res_formatePosts = $this->formatePostsWithReplies($posts);
+
+            if($res_formatePosts['code'] == 0)
+            {
+                throw new Exception($res_formatePosts['msg']);
+            }
+
+            return ['code' => 1, 
+                    'data' => $res_formatePosts['data'],
+                    'next_page' => $posts->hasMorePages() ? $posts->currentPage() + 1 : null]; 
+
+        }
+        catch(Exception $ex)
+        {
+            return ['code' => 0 , 'msg' => $ex->getMessage()];
+        }
+    }
     public function getMediaPostsByUsername($username)
     {
         try 

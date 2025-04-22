@@ -100,82 +100,21 @@ class ProfileController extends Controller
     // عرض المنشورات التي تحتوي على ردود
     public function getRepliesByUsername(String $username)
     {
-        $maxLength = 200;
-        $user = User::where('username', $username)->first();
+        $res_getRepliesByUsername = (new PostService)->getRepliesByUsername($username);
 
-        if (!$user) {
+        if ($res_getRepliesByUsername['code'] == 0) {
             return response()->json([
                 'success' => false,
-                'message' => __('profile.profile_user_not_found')
+                'message' => $res_getRepliesByUsername['msg']
             ], 200);
         }
-
-        $posts = Post::whereHas('replies', function ($query) {
-                $query->where('user_id', auth()->id());
-            })
-            ->with([
-                'user',
-                'userPostLike',
-                'poll',
-                'replies' => function ($query) {
-                    $query->where('user_id', auth()->id())->with('user');
-                },
-            ])
-            ->withCount(['replies', 'postLikes'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
-    
-
-        $postsData = $posts->map(function ($post) use ($maxLength) {
-            $postData = [
-                'slug_id' => $post->slug_id,
-                'text' => $post->text ? TextHelper::processMentions(htmlspecialchars($post->text, ENT_QUOTES, 'UTF-8')) : null,
-                'image' => $post->image ? json_decode($post->image) : null,
-                'created_at' => $post->created_at->diffForHumans(),
-                'comments_count' => $post->replies_count,
-                'post_likes_count' => $post->post_likes_count,
-                'is_post_liked' => $post->userPostLike !== null,
-                'likedByPhrase' => $post->likedByPhrase ?? null,
-                'is_owner' => auth()->check() && auth()->id() === $post->user_id,
-                'post_type' => $post->post_type,
-                'poll' => $post->poll ? [
-                    'expires_at' => $post->poll->expires_at->format('Y-m-d H:i:s'),
-                    'options' => collect([
-                        ['option_text' => $post->poll->option1_text, 'votes' => $post->poll->option1_votes],
-                        ['option_text' => $post->poll->option2_text, 'votes' => $post->poll->option2_votes],
-                        ['option_text' => $post->poll->option3_text, 'votes' => $post->poll->option3_votes],
-                        ['option_text' => $post->poll->option4_text, 'votes' => $post->poll->option4_votes],
-                    ])->filter(fn($o) => !is_null($o['option_text']))->values(),
-                ] : null,
-                'user' => [
-                    'id' => $post->user->id,
-                    'name' => htmlspecialchars($post->user->name),
-                    'username' => htmlspecialchars($post->user->username),
-                    'cover_image' => optional($post->user->profile)->cover_image,
-                    'is_private' => $post->user->account_privacy == AccountPrivacy::PRIVATE,
-                ],
-                'reposts_count' => $post->reposts_count,
-                'replies' => $post->replies->map(function ($reply) {
-                    return [
-                        'text' => TextHelper::processMentions(htmlspecialchars($reply->reply_text)),
-                        'created_at' => $reply->created_at->diffForHumans(),
-                        'user' => [
-                            'name' => htmlspecialchars($reply->user->name),
-                            'username' => htmlspecialchars($reply->user->username),
-                            'cover_image' => optional($reply->user->profile)->cover_image,
-                        ]
-                    ];
-                })
-            ];
-
-            return $postData;
-        });
-
+        // إرجاع النتيجة كـ JSON
         return response()->json([
             'success' => true,
-            'posts' => $postsData,
-            'next_page' => $posts->currentPage() < $posts->lastPage() ? $posts->currentPage() + 1 : null
+            'posts' => $res_getRepliesByUsername['data'],
+            'next_page' => $res_getRepliesByUsername['next_page']
         ]);
+
     }
 
 
