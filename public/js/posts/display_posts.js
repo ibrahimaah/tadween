@@ -108,7 +108,9 @@ function renderPost(post,hasReplies) {
                         </a>
                         ${getDeleteButton(post)}
                     </div>
-                        ${getPostTypeHtml(post)}
+                    <div class="me-4">
+                    ${getPostTypeHtml(post)}
+                    </div>
             
                     <div class="row text-center mt-3">
                         <div class="col">
@@ -130,17 +132,17 @@ function renderPost(post,hasReplies) {
                         </div>
                     </div>
                     <div class="mt-3 pt-2"> 
-                    <div class="bg-light rounded-4 p-3 mb-2">
+                    <div class="bg-white rounded-4 p-3 pe-0 mb-2">
                         <div class="d-flex justify-content-between">
                             <a href="/${reply.user.username}" class="d-flex text-decoration-none text-dark">
-                                <img src="${reply.user.cover_image ?? 'img/user.jpg'}" class="rounded-circle logo-main me-2" alt="User Image">
-                                <div>
-                                    <p class="mb-0 fw-bold">${reply.user.name}</p>
+                                <img src="${reply.user.cover_image ?? 'img/user.jpg'}" class="rounded-circle logo-main" alt="User Image">
+                                <div class="px-1">
+                                    <p class="mb-0">${reply.user.name}</p>
                                     <small class="text-muted">@${reply.user.username} (${reply.created_at})</small>
                                 </div>
                             </a>
                         </div>
-                        <p class="mt-2 mb-0 text-dark">${reply.text}</p>
+                        <p class="mt-2 mb-0 me-4">${reply.text}</p>
                     </div>
                 
                 </div>`).join('')}
