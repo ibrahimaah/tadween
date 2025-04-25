@@ -21,7 +21,10 @@ function toggleLoader(show) {
     $('#posts_loading_indicator').toggleClass('d-none', !show).toggleClass('d-flex', show);
 }
 
-function renderPollOptionsHtml(options, postId) {
+
+
+
+function getPollOptionsHtml(options, postId) {
     const totalVotes = options.reduce((sum, o) => sum + o.votes, 0);
     return options.map(opt => {
         if (!opt.option_text) return '';
@@ -41,55 +44,31 @@ function renderPollOptionsHtml(options, postId) {
     }).join('');
 }
 
-function renderPostBody(post,hasReplies) 
-{
-    return post.post_type === 'poll' ? renderPollPostHtml(post,hasReplies) : renderRegularPostHtml(post,hasReplies);
-}
-
-function renderPollPostHtml(post,hasReplies) 
-{
-    const pollHtml = renderPollOptionsHtml(post.poll.options, post.slug_id);
-    const totalVotes = post.poll.options.reduce((sum, o) => sum + o.votes, 0);
-    const verticalLineHTML = hasReplies ? renderVerticalLine() : '';
-    return `
-        <div class="text-dark row">
-            <div class="col-1 d-flex justify-content-center">
-            ${verticalLineHTML}
-            </div>
-            <div class="col-11">
+function getPostTypeHtml(post) {
+    if (post.post_type === 'poll') {
+        const pollHtml = getPollOptionsHtml(post.poll.options, post.slug_id);
+        const totalVotes = post.poll.options.reduce((sum, o) => sum + o.votes, 0);
+        return `
+            <div class="text-dark">
                 <h4 class="mb-4">${post.text}</h4>
                 <div class="mb-3">${pollHtml}</div>
                 <p class="mt-3 text-muted">📊 ${getText('totalVotes')} <strong>${totalVotes}</strong></p>
                 <p class="mt-4 text-muted">⏳ ${getText('voteEnds')} ${post.poll.expires_at}</p>
-            </div>
-        </div>
-    `;
-}
-
-function renderRegularPostHtml(post,hasReplies) 
-{
-    const verticalLineHTML = hasReplies ? renderVerticalLine() : '';
+            </div>`;
+    }
 
     const images = post.image?.map(img => `
-        <div class="col-11"><img src="${img}" class="img-fluid" alt="post Image"></div>
+        <div class="col"><img src="${img}" class="img-fluid w-75 mx-auto d-block" alt="post Image"></div>
     `).join('') ?? '';
 
     return `
-        <div class="text-dark row">
-            <div class="col-1 d-flex justify-content-center">
-            ${verticalLineHTML}
-            </div>
-            <div class="col-11">
-                <p class="post-text mb-3">${post.text ?? ''}</p>
-                <div class="row">
-                    ${images}
-                </div>
-            </div>
-        </div>
-    `;
+        <div class="text-dark">
+            <p class="post-text mb-3">${post.text ?? ''}</p>
+            <div class="row">${images}</div>
+        </div>`;
 }
 
-function renderDeleteButton(post) {
+function getDeleteButton(post) {
     if (!post.is_owner) return '';
     const dropMenuClass = isArabic ? 'text-end' : 'text-start';
     return `
@@ -107,15 +86,72 @@ function renderDeleteButton(post) {
         </div>`;
 }
 
-function renderPostHeader(post)
-{
+function renderPost(post,hasReplies) {
     const user = post.user;
     const username = isArabic ? `${user.username}@` : `@${user.username}`;
     const userImage = user.cover_image ?? 'img/user.jpg';
     const profileLink = `/${user.username}`;
     const isPrivateIcon = user.is_private ? '<i class="fa-solid fa-lock text-orange-color me-1"></i>' : '';
 
-    return `<div class="d-flex justify-content-between">
+    if(hasReplies)
+        {
+            return  `${post.replies.map(reply => `
+                <div class="bg-white rounded-4 p-3 mb-2" id="post${post.slug_id}">
+                    <p class="text-orange-color">${post.likedByPhrase ?? ''}</p>
+                    <div class="d-flex justify-content-between">
+                        <a href="${profileLink}" class="d-flex text-decoration-none text-dark">
+                            <img src="${userImage}" class="rounded-circle logo-main" alt="User Image">
+                            <div class="px-1">
+                                <p class="mx-1 mb-0">${user.name} ${isPrivateIcon}</p>
+                                <p class="mx-1 mt-0 text-grey">${username} (${post.created_at})</p>
+                            </div>
+                        </a>
+                        ${getDeleteButton(post)}
+                    </div>
+                    <div class="me-4">
+                    ${getPostTypeHtml(post)}
+                    </div>
+            
+                    <div class="row text-center mt-3">
+                        <div class="col">
+                            <a href="posts/${post.slug_id}" class="text-decoration-none text-dark link_hover">
+                                ${post.comments_count ?? 0} <i class="fa-regular fa-message"></i>
+                            </a>
+                        </div>
+                        <div class="col">
+                            ${post.reposts_count ?? 0} <i class="fa-solid fa-rotate"></i>
+                        </div>
+                        <div class="col" id="post-like-section" post-slug-data="${post.slug_id}">
+                            <span class="link_hover">
+                                <span id="post-like-count">${post.post_likes_count ?? 0}</span>
+                                <i class="fa-regular fa-thumbs-up ${post.is_post_liked ? 'text-orange-color' : ''}" id="post-like-btn"></i>
+                            </span>
+                        </div>
+                        <div class="col">
+                            <i class="fa-regular fa-share-from-square"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3 pt-2"> 
+                        <div class="bg-white rounded-4 p-3 pe-0 mb-2">
+                            <div class="d-flex justify-content-between">
+                                <a href="/${reply.user.username}" class="d-flex text-decoration-none text-dark">
+                                    <img src="${reply.user.cover_image ?? 'img/user.jpg'}" class="rounded-circle logo-main" alt="User Image">
+                                    <div class="px-1">
+                                        <p class="mb-0">${reply.user.name}</p>
+                                        <small class="text-muted">@${reply.user.username} (${reply.created_at})</small>
+                                    </div>
+                                </a>
+                            </div>
+                            <p class="mt-2 mb-0 me-4">${reply.text}</p>
+                        </div>
+                    
+                    </div><div style="height:30px" class="bg-secondary"></div>`).join('')}
+            </div>`
+        }
+    return `
+        <div class="bg-white rounded-4 p-3 mb-2" id="post${post.slug_id}">
+            <p class="text-orange-color">${post.likedByPhrase ?? ''}</p>
+            <div class="d-flex justify-content-between">
                 <a href="${profileLink}" class="d-flex text-decoration-none text-dark">
                     <img src="${userImage}" class="rounded-circle logo-main" alt="User Image">
                     <div class="px-1">
@@ -123,104 +159,25 @@ function renderPostHeader(post)
                         <p class="mx-1 mt-0 text-grey">${username} (${post.created_at})</p>
                     </div>
                 </a>
-                ${renderDeleteButton(post)}
-            </div>`;
-}
-
-function renderReplyHeader(reply)
-{
-    const user = reply.user;
-    const username = isArabic ? `${user.username}@` : `@${user.username}`;
-    const userImage = user.cover_image ?? 'img/user.jpg';
-    const profileLink = `/${user.username}`; 
-    const created_at = reply.created_at;
-
-    return ` 
-        <div class="d-flex justify-content-between">
-            <a href="${profileLink}" class="d-flex text-decoration-none text-dark">
-                <img src="${userImage}" class="rounded-circle logo-main" alt="User Image">
-                <div class="px-1"> 
-                    <p class="mx-1 mb-0">${user.name}</p>
-                    <p class="mx-1 mt-0 text-grey">${username} (${created_at})</p>
-                </div>
-            </a>  
-    </div>`;
-}
-
-function renderVerticalLine()
-{
-    return `<div class="bg-secondary h-100 border" style="width:2px"></div>`;
-}
-
-function renderPostActions(post,hasReplies)
-{
-    const verticalLineHTML = hasReplies ? renderVerticalLine() : '';
-    return `
-        <div class="row text-center">
-            <div class="col-1 d-flex justify-content-center">
-                ${verticalLineHTML}
+                ${getDeleteButton(post)}
             </div>
-            <div class="col-11 mt-3">
-                <div class="row">
-                    <div class="col"><a href="posts/${post.slug_id}" class="text-decoration-none text-dark link_hover">${post.comments_count ?? 0} <i class="fa-regular fa-message"></i></a></div>
-                    <div class="col">${post.reposts_count ?? 0} <i class="fa-solid fa-rotate"></i></div>
-                    <div class="col" id="post-like-section" post-slug-data="${post.slug_id}">
-                        <span class="link_hover">
-                            <span id="post-like-count">${post.post_likes_count ?? 0}</span>
-                            <i class="fa-regular fa-thumbs-up ${post.is_post_liked ? 'text-orange-color' : ''}" id="post-like-btn"></i>
-                        </span>
-                    </div>
-                    <div class="col"><i class="fa-regular fa-share-from-square"></i></div>
+            ${getPostTypeHtml(post)}
+            
+            <div class="row text-center mt-3">
+                <div class="col"><a href="posts/${post.slug_id}" class="text-decoration-none text-dark link_hover">${post.comments_count ?? 0} <i class="fa-regular fa-message"></i></a></div>
+                <div class="col">${post.reposts_count ?? 0} <i class="fa-solid fa-rotate"></i></div>
+                <div class="col" id="post-like-section" post-slug-data="${post.slug_id}">
+                    <span class="link_hover">
+                        <span id="post-like-count">${post.post_likes_count ?? 0}</span>
+                        <i class="fa-regular fa-thumbs-up ${post.is_post_liked ? 'text-orange-color' : ''}" id="post-like-btn"></i>
+                    </span>
                 </div>
+                <div class="col"><i class="fa-regular fa-share-from-square"></i></div>
             </div>
-        </div>
-    `;
-}
-
-function renderPosts(post,hasReplies) 
-{
-    let postHtml = renderPost(post,hasReplies);
-
-    if(hasReplies)
-    { 
-
-        const postAndRepliesHtml = post.replies.map(reply => `
-
-            ${postHtml}
-             
-            <div class="bg-white rounded-bottom rounded-right rounded-left p-3 mb-4">
-                ${renderReplyHeader(reply)}
-                <div class="row">
-                    <div class="col-1 d-flex justify-content-center"> 
-                    </div>
-                    <div class="col-11">
-                        <p class="post-text mb-3">${reply.text}</p>
-                    </div>
-                </div>
-            </div>     
-        `).join('');
-
-        return postAndRepliesHtml;
-    }
-    else 
-    {
-        return postHtml;
-    }
-     
-    
-    
-}
-
-function renderPost(post,hasReplies)
-{
-    return `
-        <div class="bg-white rounded-top rounded-right rounded-left p-3" id="post${post.slug_id}">
-            ${renderPostHeader(post)}
-            ${renderPostBody(post,hasReplies)}
-            ${renderPostActions(post,hasReplies)}
         </div>
         `;
 }
+
 function loadPosts() {
     if (loading || !hasMorePosts) return;
     loading = true;
@@ -245,7 +202,7 @@ function loadPosts() {
                     {
                         hasReplies = false;
                     }
-                    $('#display-posts-container').append(renderPosts(post,hasReplies))
+                    $('#display-posts-container').append(renderPost(post,hasReplies))
                 });
                 page = data.next_page ?? page;
                 hasMorePosts = !!data.next_page;
