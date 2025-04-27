@@ -41,8 +41,7 @@
 
         @if($data['background_image'])
         <div class="col-12">
-            <img class="profile_background_image"
-                style="object-fit:contain"
+            <img class="object-fit-cover profile_background_image" 
                 src="{{ $data['background_image'] }}"
                 alt="Tadween logo..."
             >
