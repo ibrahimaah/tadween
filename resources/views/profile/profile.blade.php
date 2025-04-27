@@ -39,6 +39,7 @@
    <div class="container bg-white">
     <div class="row">
 
+        @if($data['background_image'])
         <div class="col-12">
             <img class="profile_background_image"
                 style="object-fit:contain"
@@ -46,6 +47,11 @@
                 alt="Tadween logo..."
             >
         </div>
+        @else    
+        <div class="col-12 px-0">
+            <div class="bg-orange" style="height: 200px"></div>
+        </div>
+        @endif
 
         <div class="col-12">
             @if (!$data['is_owner'])
@@ -164,7 +170,7 @@
                 </span>
             </div>
     
-            <div class="col-12">
+            <div class="col-12 align-items-center">
                 <div class="d-flex gap-3">
 
                     @if(!$data['can_not_see_followings'])
@@ -198,9 +204,11 @@
                 </div>
             </div>
     
+            @if($data['bio'])
             <div class="col-12">
                 <h3 class="text-grey lh-base">{{$data['bio']}}</h3>
             </div>
+            @endif
     
             <div class="col-12">
                 <div class="row">
@@ -219,20 +227,20 @@
     </div>
 
     @if(!$data['is_profile_locked'] && !$data['is_blocked'] && !$data['is_been_blocked'])
-        <div class="container bg-white">
+        <div class="container bg-white py-2">
             <div class="row text-center">
             
-                <ul class="nav nav-pills nav-fill">
-                    <li class="nav-item">
+                <ul class="nav nav-pills nav-fill row">
+                    <li class="nav-item col-xs-12 col-sm-6 col-md-3">
                         <button class="nav-link tab-link active" data-tab="userPosts">{{ __('profile.profile_blogs') }}</button>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item col-xs-12 col-sm-6 col-md-3">
                         <button class="nav-link tab-link" data-tab="userPostsReplies">{{ __('profile.profile_replies') }}</button>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item col-xs-12 col-sm-6 col-md-3">
                         <button class="nav-link tab-link" data-tab="userPostsMedia">{{ __('profile.profile_media') }}</button>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item col-xs-12 col-sm-6 col-md-3">
                         <button class="nav-link tab-link" data-tab="userPostsLikes">{{ __('profile.profile_likes') }}</button>
                     </li>
                 </ul>

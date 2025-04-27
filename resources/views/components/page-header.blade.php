@@ -1,11 +1,13 @@
 <div class="bg-white rounded-top-4 p-3">
-    <div class="row align-items-center">
+    <div class="row align-items-center justify-content-between">
         <div class="col">
             <a href="{{ route($route) }}" class="text-decoration-none text-orange-color">
                 <i class="fa-solid fa-arrow-{{ app()->getLocale() == 'ar' ? 'right' : 'left' }}"></i>
             </a>
         </div>
-
+        <div class="col text-center">
+            <img src="{{ asset('img/logo.png') }}" class="img-fluid" style="width:50px" alt="logo">
+        </div>
         <div class="col text-{{ app()->getLocale() == 'ar' ? 'start' : 'end' }}">
             <h3 class="h5">{{ __($title) }}</h3>
         </div>

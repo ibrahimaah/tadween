@@ -188,7 +188,7 @@ function renderPosts(post,hasReplies)
 
             ${postHtml}
              
-            <div class="bg-white rounded-bottom rounded-right rounded-left p-3 mb-4">
+            <div class="bg-white rounded-bottom rounded-right rounded-left p-3 mb-2">
                 ${renderReplyHeader(reply)}
                 <div class="row">
                     <div class="col-1 d-flex justify-content-center"> 

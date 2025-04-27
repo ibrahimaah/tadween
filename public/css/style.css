@@ -1,5 +1,6 @@
 :root {
     --primary-color: #ff7701;
+    --primary-color-2: #ff8820;
     --secondary-color :#5b7083;
 }
 body{
@@ -26,6 +27,7 @@ body{
 
 /* Home Page Style */
 .text-orange-color { color: var(--primary-color) !important; }
+.bg-orange { background-color: var(--primary-color-2) !important; }
 #rightPageHome {
     z-index: 1000;
     position: sticky;
