@@ -39,18 +39,23 @@
    <div class="container bg-white">
     <div class="row">
 
-        @if($data['background_image'])
+        
         <div class="col-12">
-            <img class="object-fit-cover profile_background_image" 
-                src="{{ $data['background_image'] }}"
-                alt="Tadween logo..."
-            >
+           <div style="height: 200px !important">
+                @if($data['background_image'])
+                <img class="object-fit-cover profile_background_image" 
+                     src="{{ $data['background_image'] }}"
+                     alt="Cover Image"
+                >
+                @else  
+                <img class="object-fit-contain profile_background_image" 
+                     src="{{ asset('img/logo.png') }}"
+                     alt="Tadween logo..."
+                >
+                @endif
+           </div>
         </div>
-        @else    
-        <div class="col-12 px-0">
-            <div class="bg-orange" style="height: 200px"></div>
-        </div>
-        @endif
+       
 
         <div class="col-12">
             @if (!$data['is_owner'])
@@ -174,7 +179,7 @@
 
                     @if(!$data['can_not_see_followings'])
                     <a href="{{ $data['can_not_see_followings'] ? '#' : route('followings.index', $data['username']) }}" class="text-decoration-none">
-                        <p class="text-orange-color">
+                        <p class="text-orange-color mb-0">
                             {{ $data['following_count'] }}
                             <span class="text-grey fw-bold">{{ __('profile.profile_following') }}</span>
                         </p>
@@ -188,7 +193,7 @@
                 
                     @if(!$data['can_not_see_followers'])
                     <a href="{{ route('followers.index', $data['username']) }}" class="text-decoration-none">
-                        <p class="text-orange-color">
+                        <p class="text-orange-color mb-0">
                             <span class="follower_count">{{ $data['follower_count'] }}</span>
                             <span class="text-grey fw-bold">{{ __('profile.profile_followers') }}</span>
                         </p>
@@ -230,16 +235,16 @@
             <div class="row text-center">
             
                 <ul class="nav nav-pills nav-fill row">
-                    <li class="nav-item col-xs-12 col-sm-6 col-md-3">
+                    <li class="nav-item col-6 col-sm-3">
                         <button class="nav-link tab-link active" data-tab="userPosts">{{ __('profile.profile_blogs') }}</button>
                     </li>
-                    <li class="nav-item col-xs-12 col-sm-6 col-md-3">
+                    <li class="nav-item col-6 col-sm-3">
                         <button class="nav-link tab-link" data-tab="userPostsReplies">{{ __('profile.profile_replies') }}</button>
                     </li>
-                    <li class="nav-item col-xs-12 col-sm-6 col-md-3">
+                    <li class="nav-item col-6 col-sm-3">
                         <button class="nav-link tab-link" data-tab="userPostsMedia">{{ __('profile.profile_media') }}</button>
                     </li>
-                    <li class="nav-item col-xs-12 col-sm-6 col-md-3">
+                    <li class="nav-item col-6 col-sm-3">
                         <button class="nav-link tab-link" data-tab="userPostsLikes">{{ __('profile.profile_likes') }}</button>
                     </li>
                 </ul>
