@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nested Comment System</title>
+    <style>
+        .comment-section {
+            max-width: 800px;
+            margin: 0 auto;
+            font-family: Arial, sans-serif;
+        }
+        
+        .comment {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        .comment-content {
+            margin-bottom: 10px;
+        }
+        
+        .reply-btn, .submit-reply {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+        
+        .reply-btn:hover, .submit-reply:hover {
+            background-color: #45a049;
+        }
+        
+        .reply-form {
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .reply-form textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 5px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+        
+        .replies {
+            margin-left: 30px;
+            border-left: 2px solid #eee;
+            padding-left: 15px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="comment-section">
+        <h2>Comments</h2>
+        <div id="comments-container">
+            <div class="loading">Loading comments...</div>
+        </div>
+        
+        <h3>Add a New Comment</h3>
+        <div class="comment">
+            <textarea id="new-comment-content" placeholder="Write your comment here..." rows="3"></textarea>
+            <button id="submit-comment" class="submit-reply">Post Comment</button>
+        </div>
+    </div>
+
+    <!-- <script src="comments.js"></script> -->
+     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+    const commentsContainer = document.getElementById('comments-container');
+    const newCommentContent = document.getElementById('new-comment-content');
+    const submitCommentBtn = document.getElementById('submit-comment');
+    
+    // Local comments data (simulating a database)
+    let commentsDB = {
+        nextId: 5, // Starting ID for new comments
+        comments: [
+            {
+                id: 1,
+                parentId: null,
+                author: "John Doe",
+                content: "This is a great post!",
+                createdAt: "2023-05-15T10:30:00Z"
+            },
+            {
+                id: 2,
+                parentId: null,
+                author: "Jane Smith",
+                content: "I have a question about this topic.",
+                createdAt: "2023-05-16T14:45:00Z"
+            },
+            {
+                id: 3,
+                parentId: 1,
+                author: "Alice Johnson",
+                content: "I agree with you, John!",
+                createdAt: "2023-05-15T11:15:00Z"
+            },
+            {
+                id: 4,
+                parentId: 1,
+                author: "Bob Brown",
+                content: "Thanks for your comment, John.",
+                createdAt: "2023-05-15T12:20:00Z"
+            }
+        ]
+    };
+    
+    // Simulate API delay
+    function simulateAPIDelay() {
+        return new Promise(resolve => setTimeout(resolve, 300));
+    }
+    
+    // Get comments by parentId (null for top-level)
+    async function getComments(parentId = null) {
+        await simulateAPIDelay();
+        return commentsDB.comments.filter(comment => comment.parentId === parentId);
+    }
+    
+    // Add a new comment
+    async function addComment(commentData) {
+        await simulateAPIDelay();
+        const newComment = {
+            id: commentsDB.nextId++,
+            parentId: commentData.parentId || null,
+            author: commentData.author || "Anonymous",
+            content: commentData.content,
+            createdAt: new Date().toISOString()
+        };
+        
+        commentsDB.comments.push(newComment);
+        return newComment;
+    }
+    
+    // Count replies for a comment
+    async function countReplies(commentId) {
+        await simulateAPIDelay();
+        return commentsDB.comments.filter(comment => comment.parentId === commentId).length;
+    }
+    
+    // Fetch comments and render them
+    async function fetchComments() {
+        try {
+            const comments = await getComments(null);
+            commentsContainer.innerHTML = '';
+            
+            if (comments.length === 0) {
+                commentsContainer.innerHTML = '<p>No comments yet. Be the first to comment!</p>';
+                return;
+            }
+            
+            for (const comment of comments) {
+                const replyCount = await countReplies(comment.id);
+                await renderComment({...comment, replyCount}, commentsContainer);
+            }
+        } catch (error) {
+            console.error('Error fetching comments:', error);
+            commentsContainer.innerHTML = '<p>Error loading comments. Please try again later.</p>';
+        }
+    }
+    
+    // Render a comment and its replies
+    async function renderComment(comment, container) {
+        const commentElement = document.createElement('div');
+        commentElement.className = 'comment';
+        commentElement.dataset.commentId = comment.id;
+        
+        commentElement.innerHTML = `
+            <div class="comment-header">
+                <span class="comment-author">${comment.author}</span>
+                <span class="comment-date">${formatDate(comment.createdAt)}</span>
+            </div>
+            <div class="comment-content">${comment.content}</div>
+            <button class="reply-btn">Reply</button>
+            <div class="reply-form">
+                <textarea placeholder="Write your reply..." rows="2"></textarea>
+                <button class="submit-reply">Post Reply</button>
+            </div>
+            <div class="replies"></div>
+        `;
+        
+        container.appendChild(commentElement);
+        
+        // Add event listeners for reply functionality
+        const replyBtn = commentElement.querySelector('.reply-btn');
+        const replyForm = commentElement.querySelector('.reply-form');
+        const replyTextarea = replyForm.querySelector('textarea');
+        const submitReplyBtn = replyForm.querySelector('.submit-reply');
+        const repliesContainer = commentElement.querySelector('.replies');
+        
+        replyBtn.addEventListener('click', () => {
+            replyForm.style.display = replyForm.style.display === 'block' ? 'none' : 'block';
+        });
+        
+        submitReplyBtn.addEventListener('click', async () => {
+            const replyContent = replyTextarea.value.trim();
+            if (replyContent) {
+                await postReply(comment.id, replyContent, repliesContainer);
+                replyTextarea.value = '';
+                replyForm.style.display = 'none';
+            }
+        });
+        
+        // If this comment has replies, render them
+        if (comment.replyCount > 0) {
+            await fetchReplies(comment.id, repliesContainer);
+        }
+    }
+    
+    // Fetch replies for a specific comment
+    async function fetchReplies(commentId, container) {
+        try {
+            const replies = await getComments(commentId);
+            container.innerHTML = ''; // Clear any loading indicators
+            
+            for (const reply of replies) {
+                const replyCount = await countReplies(reply.id);
+                await renderComment({...reply, replyCount}, container);
+            }
+        } catch (error) {
+            console.error(`Error fetching replies for comment ${commentId}:`, error);
+            container.innerHTML = '<p>Error loading replies.</p>';
+        }
+    }
+    
+    // Post a new reply to a comment
+    async function postReply(parentId, content, repliesContainer) {
+        try {
+            const newReply = await addComment({
+                parentId,
+                content,
+                author: 'Current User'
+            });
+            
+            // If this is the first reply, we might need to create the replies container
+            if (repliesContainer.innerHTML.trim() === '') {
+                repliesContainer.innerHTML = ''; // Clear any "no replies" message
+            }
+            
+            await renderComment({...newReply, replyCount: 0}, repliesContainer);
+        } catch (error) {
+            console.error('Error posting reply:', error);
+            alert('Error posting reply. Please try again.');
+        }
+    }
+    
+    // Post a new top-level comment
+    submitCommentBtn.addEventListener('click', async () => {
+        const content = newCommentContent.value.trim();
+        if (content) {
+            try {
+                const newComment = await addComment({
+                    content,
+                    author: 'Current User'
+                });
+                
+                await renderComment({...newComment, replyCount: 0}, commentsContainer);
+                newCommentContent.value = '';
+                
+                // Scroll to the new comment
+                const newCommentElement = document.querySelector(`[data-comment-id="${newComment.id}"]`);
+                newCommentElement.scrollIntoView({ behavior: 'smooth' });
+            } catch (error) {
+                console.error('Error posting comment:', error);
+                alert('Error posting comment. Please try again.');
+            }
+        }
+    });
+    
+    // Helper function to format dates
+    function formatDate(dateString) {
+        const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+        return new Date(dateString).toLocaleDateString(undefined, options);
+    }
+    
+    // Initial load
+    fetchComments();
+});
+     </script>
+</body>
+</html>

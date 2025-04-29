@@ -48,7 +48,7 @@
                      alt="Cover Image"
                 >
                 @else  
-                <img class="object-fit-contain profile_background_image" 
+                <img class="object-fit-contain profile_background_image w-100" 
                      src="{{ asset('img/logo.png') }}"
                      alt="Tadween logo..."
                 >
@@ -57,97 +57,99 @@
         </div>
        
 
-        <div class="col-12">
-            @if (!$data['is_owner'])
-                @if(!$data['is_been_blocked'])
-                    <div id="follow{{$data['username']}}" class="col-12 follow_btn_margin text-{{ app()->getLocale() == 'ar' ? 'start' : 'end' }}">
-                        
-                        <div class="d-flex justify-content-end align-items-center">
-                            <div class="dropdown">
-                                <button class="dots-btn text-orange-color" 
-                                        type="button" 
-                                        id="dropdownMenuButton" 
-                                        data-bs-toggle="dropdown">
-                                    &#x22EF; <!-- Horizontal Ellipsis -->
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end text-{{ app()->getLocale() == 'ar' ? 'end' : 'start' }}">
-                                    
-                                    
-                                    @if($data['is_blocked'])
-                                    <li>
-                                        <form action="{{ route('users.unblock') }}" method="POST" class="unblock-user-form">
-                                            @csrf
-                                            <input type="hidden" name="username" value="{{ $data['username'] }}" required>
-                                            <button type="button" class="dropdown-item unblock-button" data-bs-toggle="modal" data-bs-target="#confirmUnblockModal">
-                                                <i class="fas fa-ban text-orange-color"></i> {{ __('profile.unblock_this_user') }}
-                                            </button>
-                                        </form>
-                                    </li>
-                                    @else
-                                    @if(!$data['can_not_see_followings'])
-                                    <li>
-                                        <a href="{{ route('followings.index', $data['username']) }}" class="dropdown-item">
-                                            <i class="fa fa-users text-orange-color"></i>
-                                            {{ __('profile.view_following') }}
-                                        </a>
-                                    </li>
-                                    @endif
-                                    @if(!$data['can_not_see_followers'])
-                                    <li>
-                                        <a href="{{ route('followers.index', $data['username']) }}" class="dropdown-item">
-                                            <i class="fa fa-users text-orange-color"></i>
-                                            {{ __('profile.view_followers') }}
-                                        </a>
-                                    </li>
-                                    @endif
-                                    
-                                    <li id="copy-link" class="{{ !$data['can_not_see_followers'] ? 'border border-start-0 border-end-0' : '' }}" style="cursor: pointer">
-                                        <p class="dropdown-item mb-1">
-                                            <i class="fa fa-copy text-orange-color"></i>
-                                            <span>{{ __('messages.copy_link') }}</span>
-                                        </p>
-                                    </li>
-                                    <li>
-                                        <form action="{{ route('users.block') }}" method="POST" class="block-user-form">
-                                            @csrf
-                                            <input type="hidden" name="username" value="{{ $data['username'] }}" required>
-                                            <button type="button" class="dropdown-item block-button" data-bs-toggle="modal" data-bs-target="#confirmBlockModal">
-                                                <i class="fas fa-ban text-orange-color"></i> {{ __('profile.block_this_user') }}
-                                            </button>
-                                        </form>
-                                    </li>
-                                    @endif
-                                        
-                                    
-                                    
-                                </ul>
-                                
-                            </div>
-        
-                            @if($data['is_blocked'])
-                                <form action="{{ route('users.unblock') }}" method="POST" class="unblock-user-form">
-                                    @csrf
-                                    <input type="hidden" name="username" value="{{ $data['username'] }}" required>
-                                    <button type="button" class="btn btn-orange text-white unblock-button" data-bs-toggle="modal" data-bs-target="#confirmUnblockModal">
-                                        <i class="fas fa-ban text-orange-color"></i> {{ __('profile.unblock_this_user') }}
+        <div class="row">
+            <div class="col-12">
+                @if (!$data['is_owner'])
+                    @if(!$data['is_been_blocked'])
+                        <div id="follow{{$data['username']}}" class="text-{{ app()->getLocale() == 'ar' ? 'start' : 'end' }}">
+                            
+                            <div class="d-flex justify-content-end align-items-center">
+                                <div class="dropdown">
+                                    <button class="dots-btn text-orange-color" 
+                                            type="button" 
+                                            id="dropdownMenuButton" 
+                                            data-bs-toggle="dropdown">
+                                        &#x22EF; <!-- Horizontal Ellipsis -->
                                     </button>
-                                </form>
-                            @else 
-                                <a href="{{ route('messages.chat', ['username' => $data['username']]) }}" class="btn text-light">
-                                    <i class="fa-regular fa-comments text-orange-color"></i>
-                                </a>
-                                
-                                <button type="button" class="btn btn-orange text-light" onclick="followUser('{{$data['username']}}')">
-                                    <span class="follow_text_btn">
-                                        {{ $data['follow_btn_status_text'] }}
-                                    </span>
-                                </button>
-                            @endif 
+                                    <ul class="dropdown-menu dropdown-menu-end text-{{ app()->getLocale() == 'ar' ? 'end' : 'start' }}">
+                                        
+                                        
+                                        @if($data['is_blocked'])
+                                        <li>
+                                            <form action="{{ route('users.unblock') }}" method="POST" class="unblock-user-form">
+                                                @csrf
+                                                <input type="hidden" name="username" value="{{ $data['username'] }}" required>
+                                                <button type="button" class="dropdown-item unblock-button" data-bs-toggle="modal" data-bs-target="#confirmUnblockModal">
+                                                    <i class="fas fa-ban text-orange-color"></i> {{ __('profile.unblock_this_user') }}
+                                                </button>
+                                            </form>
+                                        </li>
+                                        @else
+                                        @if(!$data['can_not_see_followings'])
+                                        <li>
+                                            <a href="{{ route('followings.index', $data['username']) }}" class="dropdown-item">
+                                                <i class="fa fa-users text-orange-color"></i>
+                                                {{ __('profile.view_following') }}
+                                            </a>
+                                        </li>
+                                        @endif
+                                        @if(!$data['can_not_see_followers'])
+                                        <li>
+                                            <a href="{{ route('followers.index', $data['username']) }}" class="dropdown-item">
+                                                <i class="fa fa-users text-orange-color"></i>
+                                                {{ __('profile.view_followers') }}
+                                            </a>
+                                        </li>
+                                        @endif
+                                        
+                                        <li id="copy-link" class="{{ !$data['can_not_see_followers'] ? 'border border-start-0 border-end-0' : '' }}" style="cursor: pointer">
+                                            <p class="dropdown-item mb-1">
+                                                <i class="fa fa-copy text-orange-color"></i>
+                                                <span>{{ __('messages.copy_link') }}</span>
+                                            </p>
+                                        </li>
+                                        <li>
+                                            <form action="{{ route('users.block') }}" method="POST" class="block-user-form">
+                                                @csrf
+                                                <input type="hidden" name="username" value="{{ $data['username'] }}" required>
+                                                <button type="button" class="dropdown-item block-button" data-bs-toggle="modal" data-bs-target="#confirmBlockModal">
+                                                    <i class="fas fa-ban text-orange-color"></i> {{ __('profile.block_this_user') }}
+                                                </button>
+                                            </form>
+                                        </li>
+                                        @endif
+                                            
+                                        
+                                        
+                                    </ul>
+                                    
+                                </div>
+            
+                                @if($data['is_blocked'])
+                                    <form action="{{ route('users.unblock') }}" method="POST" class="unblock-user-form">
+                                        @csrf
+                                        <input type="hidden" name="username" value="{{ $data['username'] }}" required>
+                                        <button type="button" class="btn btn-orange text-white unblock-button" data-bs-toggle="modal" data-bs-target="#confirmUnblockModal">
+                                            <i class="fas fa-ban text-orange-color"></i> {{ __('profile.unblock_this_user') }}
+                                        </button>
+                                    </form>
+                                @else 
+                                    <a href="{{ route('messages.chat', ['username' => $data['username']]) }}" class="btn text-light">
+                                        <i class="fa-regular fa-comments text-orange-color"></i>
+                                    </a>
+                                    
+                                    <button type="button" class="btn btn-orange text-light" onclick="followUser('{{$data['username']}}')">
+                                        <span class="follow_text_btn">
+                                            {{ $data['follow_btn_status_text'] }}
+                                        </span>
+                                    </button>
+                                @endif 
+                            </div>
+                        
                         </div>
-                    
-                    </div>
-                @endif 
-            @endif
+                    @endif 
+                @endif
+            </div>
         </div>
     </div>
    </div>
