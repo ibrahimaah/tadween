@@ -12,6 +12,7 @@ class Reply extends Model
     protected $fillable = [
         'user_id',
         'post_id',
+        'parent_id',
         'reply_text',
         'reply_image',
         'slug_id',
@@ -28,6 +29,16 @@ class Reply extends Model
         return $this->belongsTo(Post::class);
     }
 
+    // In Reply.php model
+    public function parent()
+    {
+        return $this->belongsTo(Reply::class, 'parent_id');
+    }
+
+    public function children()
+    {
+        return $this->hasMany(Reply::class, 'parent_id');
+    }
     //عندما يرد شخص ما على منشور المستخدم
     protected static function booted()
     {

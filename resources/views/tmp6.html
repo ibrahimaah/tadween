@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twitter-like Post with Replies</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f7f9fa;
+            padding: 20px;
+        }
+        .post-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .post {
+            padding: 15px;
+            border-bottom: 1px solid #e6ecf0;
+        }
+        .post-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .post-username {
+            font-weight: bold;
+            margin-bottom: 0;
+        }
+        .post-handle {
+            color: #657786;
+            font-size: 0.9em;
+        }
+        .post-content {
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
+        .post-actions {
+            display: flex;
+            justify-content: space-between;
+            max-width: 80%;
+            color: #657786;
+        }
+        .post-actions i {
+            cursor: pointer;
+        }
+        .post-actions i:hover {
+            opacity: 0.7;
+        }
+        .reply-form {
+            padding: 10px;
+            display: none;
+        }
+        .replies {
+            margin-left: 60px;
+            border-left: 2px solid #e6ecf0;
+            padding-left: 15px;
+        }
+        .reply {
+            padding: 10px 0;
+            border-bottom: 1px solid #e6ecf0;
+        }
+        .reply:last-child {
+            border-bottom: none;
+        }
+        .reply-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .timestamp {
+            color: #657786;
+            font-size: 0.8em;
+        }
+        .like-active {
+            color: #e0245e;
+        }
+        .retweet-active {
+            color: #17bf63;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="post-container">
+            <!-- Main Post -->
+            <div class="post">
+                <div class="d-flex">
+                    <div class="flex-shrink-0">
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" class="post-avatar" alt="User Avatar">
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <div class="d-flex align-items-center">
+                            <h6 class="post-username me-2 mb-0">John Doe</h6>
+                            <span class="post-handle me-2">@johndoe</span>
+                            <span class="timestamp">· 2h</span>
+                        </div>
+                        <p class="post-content">
+                            Just launched our new product! Check it out at example.com #excited #launch
+                        </p>
+                        <div class="post-actions">
+                            <span class="comment-action" data-post-id="1">
+                                <i class="far fa-comment"></i> <small>12</small>
+                            </span>
+                            <span class="retweet-action" data-post-id="1">
+                                <i class="fas fa-retweet"></i> <small>5</small>
+                            </span>
+                            <span class="like-action" data-post-id="1">
+                                <i class="far fa-heart"></i> <small>24</small>
+                            </span>
+                            <span class="share-action">
+                                <i class="far fa-share-square"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Reply Form -->
+            <div class="reply-form" id="reply-form-1">
+                <div class="d-flex">
+                    <div class="flex-shrink-0">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" class="reply-avatar" alt="User Avatar">
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <textarea class="form-control mb-2" placeholder="Tweet your reply" rows="2"></textarea>
+                        <div class="d-flex justify-content-end">
+                            <button class="btn btn-primary btn-sm">Reply</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Replies Section -->
+            <div class="replies" id="replies-1">
+                <!-- First Level Reply -->
+                <div class="reply">
+                    <div class="d-flex">
+                        <div class="flex-shrink-0">
+                            <img src="https://randomuser.me/api/portraits/women/44.jpg" class="reply-avatar" alt="User Avatar">
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="d-flex align-items-center">
+                                <h6 class="post-username me-2 mb-0">Jane Smith</h6>
+                                <span class="post-handle me-2">@janesmith</span>
+                                <span class="timestamp">· 1h</span>
+                            </div>
+                            <p class="post-content">
+                                Congratulations on the launch! The product looks amazing. Can't wait to try it out.
+                            </p>
+                            <div class="post-actions">
+                                <span class="comment-action" data-post-id="2">
+                                    <i class="far fa-comment"></i> <small>3</small>
+                                </span>
+                                <span class="retweet-action" data-post-id="2">
+                                    <i class="fas fa-retweet"></i> <small>1</small>
+                                </span>
+                                <span class="like-action" data-post-id="2">
+                                    <i class="far fa-heart"></i> <small>8</small>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Reply to Reply Form (hidden by default) -->
+                <div class="reply-form" id="reply-form-2">
+                    <div class="d-flex">
+                        <div class="flex-shrink-0">
+                            <img src="https://randomuser.me/api/portraits/men/32.jpg" class="reply-avatar" alt="User Avatar">
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <textarea class="form-control mb-2" placeholder="Tweet your reply" rows="2"></textarea>
+                            <div class="d-flex justify-content-end">
+                                <button class="btn btn-primary btn-sm">Reply</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Replies to the First Level Reply -->
+                <div class="replies" id="replies-2">
+                    <!-- Second Level Reply -->
+                    <div class="reply">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <img src="https://randomuser.me/api/portraits/men/32.jpg" class="reply-avatar" alt="User Avatar">
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <div class="d-flex align-items-center">
+                                    <h6 class="post-username me-2 mb-0">John Doe</h6>
+                                    <span class="post-handle me-2">@johndoe</span>
+                                    <span class="timestamp">· 45m</span>
+                                </div>
+                                <p class="post-content">
+                                    Thanks @janesmith! Let me know what you think after you've tried it.
+                                </p>
+                                <div class="post-actions">
+                                    <span class="comment-action" data-post-id="3">
+                                        <i class="far fa-comment"></i> <small>0</small>
+                                    </span>
+                                    <span class="retweet-action" data-post-id="3">
+                                        <i class="fas fa-retweet"></i> <small>0</small>
+                                    </span>
+                                    <span class="like-action" data-post-id="3">
+                                        <i class="far fa-heart"></i> <small>2</small>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Another Second Level Reply -->
+                    <div class="reply">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <img src="https://randomuser.me/api/portraits/men/22.jpg" class="reply-avatar" alt="User Avatar">
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <div class="d-flex align-items-center">
+                                    <h6 class="post-username me-2 mb-0">Mike Johnson</h6>
+                                    <span class="post-handle me-2">@mikej</span>
+                                    <span class="timestamp">· 30m</span>
+                                </div>
+                                <p class="post-content">
+                                    @janesmith I've already tried it and it's fantastic! Great job @johndoe
+                                </p>
+                                <div class="post-actions">
+                                    <span class="comment-action" data-post-id="4">
+                                        <i class="far fa-comment"></i> <small>1</small>
+                                    </span>
+                                    <span class="retweet-action" data-post-id="4">
+                                        <i class="fas fa-retweet"></i> <small>0</small>
+                                    </span>
+                                    <span class="like-action" data-post-id="4">
+                                        <i class="far fa-heart"></i> <small>5</small>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Reply to Second Level Reply Form (hidden by default) -->
+                    <div class="reply-form" id="reply-form-4">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <img src="https://randomuser.me/api/portraits/women/44.jpg" class="reply-avatar" alt="User Avatar">
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <textarea class="form-control mb-2" placeholder="Tweet your reply" rows="2"></textarea>
+                                <div class="d-flex justify-content-end">
+                                    <button class="btn btn-primary btn-sm">Reply</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Reply to the Second Level Reply -->
+                    <div class="replies" id="replies-4">
+                        <div class="reply">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0">
+                                    <img src="https://randomuser.me/api/portraits/women/44.jpg" class="reply-avatar" alt="User Avatar">
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <div class="d-flex align-items-center">
+                                        <h6 class="post-username me-2 mb-0">Jane Smith</h6>
+                                        <span class="post-handle me-2">@janesmith</span>
+                                        <span class="timestamp">· 15m</span>
+                                    </div>
+                                    <p class="post-content">
+                                        @mikej That's great to hear! I'll definitely order one today.
+                                    </p>
+                                    <div class="post-actions">
+                                        <span class="comment-action" data-post-id="5">
+                                            <i class="far fa-comment"></i> <small>0</small>
+                                        </span>
+                                        <span class="retweet-action" data-post-id="5">
+                                            <i class="fas fa-retweet"></i> <small>0</small>
+                                        </span>
+                                        <span class="like-action" data-post-id="5">
+                                            <i class="far fa-heart"></i> <small>1</small>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Another First Level Reply -->
+                <div class="reply">
+                    <div class="d-flex">
+                        <div class="flex-shrink-0">
+                            <img src="https://randomuser.me/api/portraits/women/65.jpg" class="reply-avatar" alt="User Avatar">
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="d-flex align-items-center">
+                                <h6 class="post-username me-2 mb-0">Sarah Williams</h6>
+                                <span class="post-handle me-2">@sarahw</span>
+                                <span class="timestamp">· 50m</span>
+                            </div>
+                            <p class="post-content">
+                                The design looks sleek! What's the price range?
+                            </p>
+                            <div class="post-actions">
+                                <span class="comment-action" data-post-id="6">
+                                    <i class="far fa-comment"></i> <small>0</small>
+                                </span>
+                                <span class="retweet-action" data-post-id="6">
+                                    <i class="fas fa-retweet"></i> <small>0</small>
+                                </span>
+                                <span class="like-action" data-post-id="6">
+                                    <i class="far fa-heart"></i> <small>3</small>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            // Toggle reply form when comment icon is clicked
+            $('.comment-action').click(function(e) {
+                e.stopPropagation();
+                const postId = $(this).data('post-id');
+                $(`#reply-form-${postId}`).slideToggle();
+            });
+            
+            // Like action
+            $('.like-action').click(function(e) {
+                e.stopPropagation();
+                const postId = $(this).data('post-id');
+                const heartIcon = $(this).find('i');
+                const likeCount = $(this).find('small');
+                
+                if (heartIcon.hasClass('like-active')) {
+                    // Unlike
+                    heartIcon.removeClass('like-active far').addClass('far');
+                    likeCount.text(parseInt(likeCount.text()) - 1);
+                } else {
+                    // Like
+                    heartIcon.removeClass('far').addClass('fas like-active');
+                    likeCount.text(parseInt(likeCount.text()) + 1);
+                }
+            });
+            
+            // Retweet action
+            $('.retweet-action').click(function(e) {
+                e.stopPropagation();
+                const postId = $(this).data('post-id');
+                const retweetIcon = $(this).find('i');
+                const retweetCount = $(this).find('small');
+                
+                if (retweetIcon.hasClass('retweet-active')) {
+                    // Unretweet
+                    retweetIcon.removeClass('retweet-active');
+                    retweetCount.text(parseInt(retweetCount.text()) - 1);
+                } else {
+                    // Retweet
+                    retweetIcon.addClass('retweet-active');
+                    retweetCount.text(parseInt(retweetCount.text()) + 1);
+                }
+            });
+            
+            // Close reply forms when clicking outside
+            $(document).click(function() {
+                $('.reply-form').slideUp();
+            });
+            
+            // Prevent reply form from closing when clicking inside it
+            $('.reply-form').click(function(e) {
+                e.stopPropagation();
+            });
+        });
+    </script>
+</body>
+</html>

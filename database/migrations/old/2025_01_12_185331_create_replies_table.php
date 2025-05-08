@@ -15,14 +15,16 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('post_id');
+            $table->unsignedBigInteger('parent_id')->nullable(); // This enables nested replies
             $table->text('reply_text')->nullable();
             $table->string('reply_image')->nullable();
             $table->string('slug_id')->unique();
             $table->timestamps();
-
+        
             // Foreign keys
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('post_id')->references('id')->on('posts')->onDelete('cascade');
+            $table->foreign('parent_id')->references('id')->on('replies')->onDelete('cascade');
         });
     }
 

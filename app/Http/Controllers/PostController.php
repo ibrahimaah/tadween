@@ -206,33 +206,9 @@ class PostController extends Controller
     //Display All Posts For Users
     public function loadPosts()
     {
-         // استرجاع المنشورات مع بيانات المستخدم والإعجابات
-     
-        // $posts = Post::with(['user', 'userPostLike', 'poll'])
-        //     ->withCount('replies')
-        //     ->withCount('postLikes')
-        //     ->orderBy('created_at', 'desc')
-        //     ->paginate(10); 
-
-
-
-        // $this->clear_posts_cache();
         $maxLength = 200; // الحد الأقصى لطول النص الذي سيتم عرضه
 
         
-
-        /*
-         ->orWhere(function ($query) {
-                            $query->whereHas('postLikes', function ($q) {
-                                $q->where('user_id', Auth::id());
-                            })
-                            ->orWhereHas('user', function ($q) {
-                                $q->where('account_privacy', 'public');
-                            });
-                        })
-        */
-
-
         $res_get_home_page_posts = $this->postService->get_posts();
 
         if ($res_get_home_page_posts['code'] !== 1) {
@@ -258,32 +234,7 @@ class PostController extends Controller
             $user_name = $post->user->name ? htmlspecialchars($post->user->name, ENT_QUOTES, 'UTF-8') : null;
             $user_username = $post->user->username ? htmlspecialchars($post->user->username, ENT_QUOTES, 'UTF-8') : null;
             $user_cover_image = $post->user->profile->cover_image ? htmlspecialchars($post->user->profile->cover_image, ENT_QUOTES, 'UTF-8') : null;
-            // $user_account_privacy = $post->user->user_account_privacy ? htmlspecialchars($post->user->user_account_privacy, ENT_QUOTES, 'UTF-8') : null;
-            
-            // $pollData = null;
-            // if ($post->poll) {
-            //     $pollData = [
-            //         'expires_at' => $post->poll->expires_at->format('Y-m-d H:i:s'),
-            //         'options' => [
-            //             [
-            //                 'option_text' => $post->poll->option1_text,
-            //                 'votes'       => $post->poll->option1_votes,
-            //             ],
-            //             [
-            //                 'option_text' => $post->poll->option2_text,
-            //                 'votes'       => $post->poll->option2_votes,
-            //             ],
-            //             [
-            //                 'option_text' => $post->poll->option3_text,
-            //                 'votes'       => $post->poll->option3_votes,
-            //             ],
-            //             [
-            //                 'option_text' => $post->poll->option4_text,
-            //                 'votes'       => $post->poll->option4_votes,
-            //             ],
-            //         ],
-            //     ];
-            // }
+           
 
             $pollData = $post->poll ? [
                 'expires_at' => $post->poll->expires_at->format('Y-m-d H:i:s'),
@@ -345,66 +296,15 @@ class PostController extends Controller
                 return redirect()->back()->with('error', __('home.post_not_found'));
             }
 
-            // استخراج نص المنشور
-            $post_text = $post->text ? htmlspecialchars($post->text, ENT_QUOTES, 'UTF-8') : null;
-            if ($post_text) {
-                $post_text = TextHelper::processMentions($post_text);
-            }
+            $res_getPostData = $this->postService->getPostData($post,true);
 
-            // جلب باقي بيانات المنشور
-            $post_image = $post->image ?json_decode( $post->image) : null;
-            $user_name = $post->user->name ? htmlspecialchars($post->user->name, ENT_QUOTES, 'UTF-8') : null;
-            $user_username = $post->user->username ? htmlspecialchars($post->user->username, ENT_QUOTES, 'UTF-8') : null;
-            $user_cover_image = $post->user->profile->cover_image ? htmlspecialchars($post->user->profile->cover_image, ENT_QUOTES, 'UTF-8') : null;
-
-            $pollData = null;
-            if ($post->poll) {
-                $pollData = [
-                    'expires_at' => $post->poll->expires_at->format('Y-m-d H:i:s'),
-                    'options' => [
-                        [
-                            'option_text' => $post->poll->option1_text,
-                            'votes'       => $post->poll->option1_votes,
-                        ],
-                        [
-                            'option_text' => $post->poll->option2_text,
-                            'votes'       => $post->poll->option2_votes,
-                        ],
-                        [
-                            'option_text' => $post->poll->option3_text,
-                            'votes'       => $post->poll->option3_votes,
-                        ],
-                        [
-                            'option_text' => $post->poll->option4_text,
-                            'votes'       => $post->poll->option4_votes,
-                        ],
-                    ],
-                ];
+            if($res_getPostData['code'] == 0)
+            {
+                return redirect()->back()->with('error', $res_getPostData['msg']);
             }
-            // تنسيق بيانات المنشور للإرجاع إلى الواجهة
-            $postData = [
-                'is_owner' => Auth::id() === $post->user_id,
-                'slug_id' => $post->slug_id,
-                'user' => [
-                    'name' => $user_name,
-                    'username' => $user_username,
-                    'cover_image' => $user_cover_image,
-                    'is_private' => Auth::user()->is_private(),
-                ],
-                'poll' => $pollData,
-                'post_type' => $post->post_type,
-                'text' => $post_text,
-                'image' => $post_image,
-                'created_at' => Carbon::parse($post->created_at)->diffForHumans(),
-                'comments_count' => $post->replies_count ?? 0,
-                'reposts_count' => $post->reposts_count ?? 0,
-                'post_likes_count' => $post->post_likes_count  ?? 0,
-                // إضافة حالة الإعجاب
-                'is_post_liked' => $post->userPostLike !== null,
-            ];
 
             // تمرير البيانات إلى العرض
-            return view('posts.post_details', ['post' => $postData]);
+            return view('posts.post_details', ['post' => $res_getPostData['data']]);
         } catch (\Exception $e) {
             // معالجة الأخطاء غير المتوقعة
             return redirect()->back()->with('error', __('home.unexpected_error'));

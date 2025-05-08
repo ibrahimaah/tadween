@@ -214,7 +214,7 @@ function renderPosts(post,hasReplies)
 function renderPost(post,hasReplies)
 {
     return `
-        <div class="bg-white rounded-top rounded-right rounded-left p-3" id="post${post.slug_id}">
+        <div class="bg-white rounded-top rounded-right rounded-left p-3 mt-2" id="post${post.slug_id}">
             ${renderPostHeader(post)}
             ${renderPostBody(post,hasReplies)}
             ${renderPostActions(post,hasReplies)}
@@ -237,8 +237,7 @@ function loadPosts() {
             }
 
             if (data.posts.length > 0) 
-            {
-                
+            { 
                 data.posts.forEach(post => {
                     let hasReplies = true;
                     if (!post.replies || post.replies.length === 0)

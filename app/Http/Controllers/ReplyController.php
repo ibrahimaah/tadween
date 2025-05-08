@@ -112,6 +112,7 @@ class ReplyController extends Controller
 
         $replies = Reply::where('post_id', $post->id)
                         ->with('user')
+                        ->whereNull('parent_id')
                         ->orderBy('created_at', 'desc')
                         ->paginate(10);
 
@@ -134,6 +135,7 @@ class ReplyController extends Controller
                     'cover_image' => $user_cover_image,
                     'is_private' => $reply->user->is_private(),
                 ],
+                'reply_show_route' => route('replies.show',$reply->slug_id),
             ];
         });
 
@@ -206,6 +208,13 @@ class ReplyController extends Controller
                 'message' => __('home.unexpected_error'),
             ], 200);
         }
+    }
+
+    public function show($slug_id)
+    {
+        $reply = Reply::with(['post','children','parent'])->whereSlugId($slug_id)->firstOrFail(); 
+        // dd($reply);
+        return view('replies.index',['reply'=>$reply]);
     }
 
 }

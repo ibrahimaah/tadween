@@ -147,8 +147,8 @@
                     <div class="row">
                         @if (!empty($post['image']))
                             @foreach ($post['image'] as $key => $image)
-                                <div class="col">
-                                    <img src="{{ asset($image) }}" class="img-fluid h-100" alt="Post Image" data-bs-toggle="modal" data-bs-target="#postImageModal{{$key}}">
+                                <div class="col text-center">
+                                    <img src="{{ asset($image) }}" class="img-fluid h-100 w-75" alt="Post Image" data-bs-toggle="modal" data-bs-target="#postImageModal{{$key}}">
                                 </div>
                                 <!-- Bootstrap Show Post Image Modal -->
                                 <div class="modal fade" id="postImageModal{{$key}}" tabindex="-1">
@@ -190,6 +190,9 @@
 
     <!-- Create Reply On Posts -->
     @auth
+
+    
+
     <div id="errorsContainerReply" class="mb-3"></div>
     
     <form id="replyForm" action="{{ route("posts.reply.store") }}" method="post" class="bg-white rounded-4 p-3 mb-5">
@@ -240,6 +243,9 @@
             </div>
         </div>
     </form>
+
+
+
     @endauth
 
     <!-- HTML to display Replies On Post -->
@@ -270,4 +276,6 @@
         {{-- <script src="{{asset('js/posts/create_post.js?version=1.0')}}"></script> --}}
         <script src="{{asset('js/posts/create_vote_poll.js?version=1.0')}}"></script>
     @endauth
+
+    
 @endsection

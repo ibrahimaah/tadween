@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Static Nested Comment System</title>
+    <style>
+        .comment-section {
+            max-width: 800px;
+            margin: 0 auto;
+            font-family: Arial, sans-serif;
+        }
+        .comment {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            color: #666;
+        }
+        .comment-content {
+            margin-bottom: 10px;
+        }
+        .replies {
+            margin-left: 30px;
+            border-left: 2px solid #eee;
+            padding-left: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="comment-section">
+        <h2>Comments</h2>
+        <div id="comments-container">
+
+            <div class="comment">
+                <div class="comment-header">
+                    <span class="comment-author">John Doe</span>
+                    <span class="comment-date">May 15, 2023, 10:30 AM</span>
+                </div>
+                <div class="comment-content">This is a great post!</div>
+                <div class="replies">
+                    <div class="comment">
+                        <div class="comment-header">
+                            <span class="comment-author">Alice Johnson</span>
+                            <span class="comment-date">May 15, 2023, 11:15 AM</span>
+                        </div>
+                        <div class="comment-content">I agree with you, John!</div>
+                    </div>
+                    <div class="comment">
+                        <div class="comment-header">
+                            <span class="comment-author">Bob Brown</span>
+                            <span class="comment-date">May 15, 2023, 12:20 PM</span>
+                        </div>
+                        <div class="comment-content">Thanks for your comment, John.</div>
+                        <div class="replies">
+                            <div class="comment">
+                                <div class="comment-header">
+                                    <span class="comment-author">Bob Brown</span>
+                                    <span class="comment-date">May 15, 2023, 12:20 PM</span>
+                                </div>
+                                <div class="comment-content">Thanks for your comment, John.</div>
+                            </div>
+                            <div class="comment">
+                                <div class="comment-header">
+                                    <span class="comment-author">Lorem, ipsum dolor.</span>
+                                    <span class="comment-date">May 15, 2023, 12:20 PM</span>
+                                </div>
+                                <div class="comment-content">Thanks for your comment, Dahim.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="comment">
+                <div class="comment-header">
+                    <span class="comment-author">Jane Smith</span>
+                    <span class="comment-date">May 16, 2023, 2:45 PM</span>
+                </div>
+                <div class="comment-content">I have a question about this topic.</div>
+            </div>
+
+        </div>
+
+        <h3>Add a New Comment</h3>
+        <div class="comment">
+            <textarea placeholder="Write your comment here..." rows="3" style="width: 100%; padding: 8px;"></textarea>
+            <button style="margin-top: 5px; background-color: #4CAF50; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">Post Comment</button>
+        </div>
+    </div>
+</body>
+</html>

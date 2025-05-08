@@ -15,6 +15,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use App\Enums\Role;  
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Collection;
 use App\Helpers\TextHelper; 
 use Carbon\Carbon;
 class PostService
@@ -71,8 +72,7 @@ class PostService
                 foreach ($filteredLikes as $like) 
                 {
                     
-                
-////////////////////////////////////////////////////////////////////////////////////                                    
+                                                   
                     
                    if($post->user->account_privacy == AccountPrivacy::PRIVATE)
                    {
@@ -93,8 +93,7 @@ class PostService
                                 continue;
                             }
                         }
-                   }
-////////////////////////////////////////////////////////////////////////////////////
+                   } 
 
                     //we are in post_likes table
                     $name = $like->user->name;
@@ -352,7 +351,7 @@ class PostService
             $mergedPosts = collect($postsFromFollowings)
                 ->merge($formattedLikedPosts)
                 ->merge($current_user_likes);
-
+            // dd($mergedPosts);
             // info('-------------------------');
             // info($mergedPosts);
             // Sort the merged posts by the 'created_at' field in descending order (latest first)
@@ -363,7 +362,7 @@ class PostService
 
             // Paginate the sorted posts
             $paginatedPosts = $this->paginateCollection($sortedPosts, 10);
-
+            
 
             return ['code' => 1, 'data' => $paginatedPosts];
         } catch (Exception $ex) {
@@ -372,80 +371,76 @@ class PostService
     }
 
 
-    public function formatePosts($posts)
+    public function formatPosts($posts,$is_just_one_post = false)
     {
-        try 
-        { 
-            $maxLength = 200; // الحد الأقصى لطول النص الذي سيتم عرضه
+        try {
+            $maxLength = 200;
+
+            if ($is_just_one_post) 
+            {
+                return $this->formatSinglePost($posts, $maxLength);
+            }
+
             $postsData = $posts->map(function ($post) use ($maxLength) {
-                $post_text = $post->text ? htmlspecialchars($post->text, ENT_QUOTES, 'UTF-8') : null;
-                if ($post_text) {
-                    $post_text = TextHelper::processMentions($post_text);
-                }
-                $post_image = $post->image ?json_decode( $post->image) : null;
-                $user_name = $post->user->name ? htmlspecialchars($post->user->name, ENT_QUOTES, 'UTF-8') : null;
-                $user_username = $post->user->username ? htmlspecialchars($post->user->username, ENT_QUOTES, 'UTF-8') : null;
-                $user_cover_image = $post->user->profile->cover_image ? htmlspecialchars($post->user->profile->cover_image, ENT_QUOTES, 'UTF-8') : null;
-                $is_private = $post->user->account_privacy == AccountPrivacy::PRIVATE ? true : false;
-    
-                $pollData = null;
-                if ($post->poll) {
-                    $pollData = [
-                        'expires_at' => $post->poll->expires_at->format('Y-m-d H:i:s'),
-                        'options' => [
-                            [
-                                'option_text' => $post->poll->option1_text,
-                                'votes'       => $post->poll->option1_votes,
-                            ],
-                            [
-                                'option_text' => $post->poll->option2_text,
-                                'votes'       => $post->poll->option2_votes,
-                            ],
-                            [
-                                'option_text' => $post->poll->option3_text,
-                                'votes'       => $post->poll->option3_votes,
-                            ],
-                            [
-                                'option_text' => $post->poll->option4_text,
-                                'votes'       => $post->poll->option4_votes,
-                            ],
-                        ],
-                    ];
-                }
-                
-                return [
-                    'is_owner' => Auth::id() === $post->user_id,
-                    'slug_id' => $post->slug_id,
-    
-                    'user' => [
-                        'name' => $user_name,
-                        'username' => $user_username,
-                        'cover_image' => $user_cover_image,
-                        'is_private' => $is_private
-                    ],
-                    'poll' => $pollData,
-                    'post_type' => $post->post_type,
-                    'text' => mb_strlen($post_text) > $maxLength
-                        ? mb_substr($post_text, 0, $maxLength) . '...'
-                        : $post_text,
-                    'image' => $post_image,
-                    'created_at' => Carbon::parse($post->created_at)->diffForHumans(),
-                    'comments_count' => $post->replies_count ?? 0,
-                    'reposts_count' => $post->reposts_count ?? 0,
-                    'post_likes_count' => $post->post_likes_count  ?? 0,
-                    // إضافة حالة الإعجاب
-                    'is_post_liked' => $post->userPostLike !== null,
-    
-                ];
+                return $this->formatSinglePost($post, $maxLength);
             });
 
             return ['code' => 1, 'data' => $postsData];
-        }
-        catch(Exception $ex)
-        {
-            return ['code' => 0 , 'msg' => $ex->getMessage()];
+        } catch (Exception $ex) {
+            return ['code' => 0, 'msg' => $ex->getMessage()];
         }
     }
+
+    private function formatSinglePost($post, $maxLength)
+    {
+        $post_text = $post->text ? htmlspecialchars($post->text, ENT_QUOTES, 'UTF-8') : null;
+        if ($post_text) {
+            $post_text = TextHelper::processMentions($post_text);
+        }
+
+        $post_image = $post->image ? json_decode($post->image) : null;
+        $user_name = $post->user->name ? htmlspecialchars($post->user->name, ENT_QUOTES, 'UTF-8') : null;
+        $user_username = $post->user->username ? htmlspecialchars($post->user->username, ENT_QUOTES, 'UTF-8') : null;
+        $user_cover_image = $post->user->profile->cover_image ? htmlspecialchars($post->user->profile->cover_image, ENT_QUOTES, 'UTF-8') : null;
+        $is_private = $post->user->account_privacy == AccountPrivacy::PRIVATE;
+
+        $pollData = null;
+        if ($post->poll) {
+            $pollData = [
+                'expires_at' => $post->poll->expires_at->format('Y-m-d H:i:s'),
+                'options' => [
+                    ['option_text' => $post->poll->option1_text, 'votes' => $post->poll->option1_votes],
+                    ['option_text' => $post->poll->option2_text, 'votes' => $post->poll->option2_votes],
+                    ['option_text' => $post->poll->option3_text, 'votes' => $post->poll->option3_votes],
+                    ['option_text' => $post->poll->option4_text, 'votes' => $post->poll->option4_votes],
+                ],
+            ];
+        }
+
+        return [
+            'is_owner' => Auth::id() === $post->user_id,
+            'slug_id' => $post->slug_id,
+
+            'user' => [
+                'name' => $user_name,
+                'username' => $user_username,
+                'cover_image' => $user_cover_image,
+                'is_private' => $is_private,
+            ],
+            'poll' => $pollData,
+            'post_type' => $post->post_type,
+            'text' => mb_strlen($post_text) > $maxLength
+                ? mb_substr($post_text, 0, $maxLength) . '...'
+                : $post_text,
+            'image' => $post_image,
+            'created_at' => Carbon::parse($post->created_at)->diffForHumans(),
+            'comments_count' => $post->replies_count ?? 0,
+            'reposts_count' => $post->reposts_count ?? 0,
+            'post_likes_count' => $post->post_likes_count ?? 0,
+            'is_post_liked' => $post->userPostLike !== null,
+        ];
+    }
+
 
     public function formatePostsWithReplies($posts)
     {
@@ -593,7 +588,7 @@ class PostService
                          ->orderBy('created_at', 'desc')
                          ->paginate(10);
 
-            $res_formatePosts = $this->formatePosts($posts);
+            $res_formatePosts = $this->formatPosts($posts);
 
             if($res_formatePosts['code'] == 0)
             {
@@ -633,7 +628,7 @@ class PostService
                 ->orderBy('created_at', 'desc')
                 ->paginate(10);
 
-            $res_formatePosts = $this->formatePosts($posts);
+            $res_formatePosts = $this->formatPosts($posts);
 
             if($res_formatePosts['code'] ==0)
             {
@@ -672,7 +667,7 @@ class PostService
 
             $posts = $res_getPostsByUserId['data'];
 
-            $res_formatePosts = $this->formatePosts($posts);
+            $res_formatePosts = $this->formatPosts($posts);
 
             if($res_formatePosts['code'] ==0)
             {
@@ -688,4 +683,33 @@ class PostService
             return ['code' => 0 , 'msg' => $ex->getMessage()];
         }
     }
+
+    public function getPostBySlug($slug_id) 
+    {
+        try 
+        {
+            $post = Post::findBySlugOrFail($slug_id);
+            return ['code' => 1 , 'data' => $post];
+        }
+        catch(Exception $ex)
+        {
+            return ['code' => 0 , 'msg' => $ex->getMessage()];
+        }
+
+    }
+
+    public function getPostData($post)
+    {
+        try 
+        {
+            $postData = $this->formatPosts($post,true);
+            return ['code' => 1 , 'data'=> $postData];
+        }
+        catch(Exception $ex)
+        {
+            return ['code' => 0, 'msg' => $ex->getMessage()];
+        }
+    }
+
+    
 }

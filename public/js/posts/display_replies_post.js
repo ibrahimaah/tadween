@@ -24,6 +24,7 @@ function loadReplies() {
                 var dropMenuClass = $('html').attr('lang') === 'ar' ? 'text-end' : 'text-start';
                 // Loop through replies and append to the container
                 data.replies.forEach(function(reply) {
+                    var reply_show_route = reply.reply_show_route || '#';
                     var user_image = reply.user.cover_image != null ? '../' + reply.user.cover_image : '../img/logo.png';
                     var reply_image = reply.reply_image != null ? `<img src="../${reply.reply_image}" class="img-fluid reply-image" alt="Reply Image" data-bs-toggle="modal" data-bs-target="#replyImageModal" data-image="../${reply.reply_image}">` : '';
                     var userName = $('html').attr('lang') === 'ar' ? reply.user.username+'@' : '@'+reply.user.username;
@@ -69,7 +70,25 @@ function loadReplies() {
                             <p class="post-text mb-3">${reply.reply_text ?? ''}</p>
                             <p class="w-25" >${reply_image}</p>
 
-                        </div>`;
+                            <div class="row text-center mt-3">
+                            <div class="col">
+                                <a href="${reply_show_route}" class="text-decoration-none text-dark link_hover">
+                                    <span class="comments_count">0</span> 
+                                    <i class="fa-regular fa-message"></i>
+                                </a>
+                            </div>
+                            <div class="col">0 <i class="fa-solid fa-rotate"></i></div>
+                            <div class="col" id="post-like-section" post-slug-data="a">
+                                <span class="link_hover">
+                                    <span id="post-like-count">0</span>
+                                    <i class="fa-regular fa-thumbs-up" id="post-like-btn"></i>
+                                </span>
+                            </div>
+                            <div class="col"><i class="fa-regular fa-share-from-square"></i></div>
+                        </div>
+                        </div>
+                         
+                        `;
                     $('#display-replies-container').append(postHtml);
                 });
 

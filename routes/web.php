@@ -13,9 +13,11 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BlockedUserController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\UserController;
 use App\Models\Follow;
 use App\Models\Post;
+use App\Services\PostService;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -30,16 +32,21 @@ Route::get('lang/{locale}', function ($locale, Request $request) {
     return redirect()->back();
 })->name('lang.switch');
 
+Route::get('/comments', function () {
+    return view('comments');
+}); 
  
 // Route::get('/', function () {
 //     abort(404);
 // });
 Route::get('tmp',function(){
-    /** @var \App\Models\User $current_user */
-    $current_user = Auth::user();
-    $blocked_users_ids_arr = $current_user->getBlockedUsersIds();
-//    dd(Auth::user()->following->whereNotIn('id',$blocked_users_ids_arr));
-   dd(Auth::user()->followers->whereNotIn('id',$blocked_users_ids_arr));
+    $post = Post::with(['user', 'userPostLike', 'poll'])
+    ->withCount('replies')
+    ->withCount('postLikes')
+    ->where('slug_id', '00d2ab4c-004e-446e-9e21-03bf7bb74bf1')
+    ->first();
+    
+    return view('temp_view',['post' => $post]);
 });
 
 // Route::get('/', [PostController::class, 'index'])->name('home')->middleware('auth');
@@ -61,6 +68,7 @@ Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->gro
     Route::post('replies', [ReplyController::class, 'store'])->name('posts.reply.store');
     Route::get('load-replies', [ReplyController::class, 'loadReplies']);
     Route::delete('replies/{slug_id}', [ReplyController::class, 'destroy'])->name('replies.destroy');
+    Route::get('replies/{slug_id}', [ReplyController::class, 'show'])->name('replies.show');
 });
 
 // Static Pages
