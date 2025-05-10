@@ -37,9 +37,9 @@ class PostController extends Controller
     public function store(Request $request)
     {
         // التحقق من تسجيل الدخول
-        if (!Auth::check()) {
-            return redirect()->route('login');
-        }
+        // if (!Auth::check()) {
+        //     return redirect()->route('login');
+        // }
 
         try {
             
@@ -284,18 +284,18 @@ class PostController extends Controller
 
 
 
-    
+
     // Display Post Details For User
     public function detailsPost(String $slug_id)
     {
         $res_getPostBySlug = $this->postService->getPostBySlug($slug_id);
-        // التحقق من وجود المنشور
+        
         if ($res_getPostBySlug['code'] == 0) 
         {
             // return redirect()->back()->with('error', __('home.post_not_found'));
             return redirect()->back()->with('error', $res_getPostBySlug['msg']);
         }
-        // تمرير البيانات إلى العرض
+        
         return view('posts.post_details', ['post' => $res_getPostBySlug['data']]);
     }
 

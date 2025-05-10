@@ -1,7 +1,13 @@
+
+@include('partials.modals._delete-reply-modal')
+@include('partials.modals._reply-img-modal')
+
+<div id="errorsContainerReply" class="mb-3"></div>
+
 <form id="replyForm" 
       action="{{ route("posts.reply.store") }}" 
       method="post" 
-      class="bg-white rounded-4 p-3 mb-5">
+      class="bg-white rounded p-3 mb-5">
     @csrf
     <div class="mb-3 d-flex">
         <input type="hidden" name="slug_id" id="slug_id" value="{{ $post->slug_id }}">
@@ -52,3 +58,24 @@
         </div>
     </div>
 </form>
+
+
+
+<!-- HTML to display Replies On Post -->
+<p class="text-center text-muted empty_replies d-none">{{__('home.post_replies_empty')}}</p>
+<!-- HTML to display post -->
+<div id="pullToRefreshIndicator" class="text-center d-none justify-content-center">
+    <i class="fa fa-spinner fa-spin text-orange-color h1 py-3"></i>
+</div>
+<div class="mt-2" id="display-replies-container"></div>
+
+<!-- Loading Spinner -->
+<div class="d-none justify-content-center my-3" id="replies_loading_indicator">
+    <div class="spinner-border text-danger" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
+
+@push('js')
+    <script src="{{asset('js/posts/create_reply_post.js?version=1.0')}}"></script>
+@endpush

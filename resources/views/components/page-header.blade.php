@@ -8,7 +8,7 @@
         <div class="col text-center">
             <img src="{{ asset('img/logo.png') }}" class="img-fluid" style="width:50px" alt="logo">
         </div>
-        <div class="col text-start">
+        <div class="col text-start text-orange-color">
             <h3 class="h5">{{ __($title) }}</h3>
         </div>
     </div>
