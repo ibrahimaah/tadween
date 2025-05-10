@@ -16,9 +16,11 @@ use App\Models\PollVote;
 use App\Models\User;
 use App\Services\PostService;
 use App\Traits\CacheClearable;
-use Carbon\Carbon; 
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class PostController extends Controller
 {
@@ -280,113 +282,56 @@ class PostController extends Controller
         ]);
     }
 
+
+
+    
     // Display Post Details For User
     public function detailsPost(String $slug_id)
     {
-        try {
-            // جلب المنشور مع تفاصيل المستخدم والإعجابات
-            $post = Post::with(['user', 'userPostLike', 'poll'])
-                ->withCount('replies')
-                ->withCount('postLikes')
-                ->where('slug_id', $slug_id)
-                ->first();
-
-            // التحقق من وجود المنشور
-            if (!$post) {
-                return redirect()->back()->with('error', __('home.post_not_found'));
-            }
-
-            $res_getPostData = $this->postService->getPostData($post,true);
-
-            if($res_getPostData['code'] == 0)
-            {
-                return redirect()->back()->with('error', $res_getPostData['msg']);
-            }
-
-            // تمرير البيانات إلى العرض
-            return view('posts.post_details', ['post' => $res_getPostData['data']]);
-        } catch (\Exception $e) {
-            // معالجة الأخطاء غير المتوقعة
-            return redirect()->back()->with('error', __('home.unexpected_error'));
+        $res_getPostBySlug = $this->postService->getPostBySlug($slug_id);
+        // التحقق من وجود المنشور
+        if ($res_getPostBySlug['code'] == 0) 
+        {
+            // return redirect()->back()->with('error', __('home.post_not_found'));
+            return redirect()->back()->with('error', $res_getPostBySlug['msg']);
         }
+        // تمرير البيانات إلى العرض
+        return view('posts.post_details', ['post' => $res_getPostBySlug['data']]);
     }
+
+
 
     //Delete Post With Replies
     public function destroy(Request $request)
     {
-        try {
+        $validator = Validator::make($request->all(), [
+            'slug_id' => 'required|string|exists:posts,slug_id',
+        ]);
 
-            // التحقق من تسجيل الدخول
-            if (!Auth::check()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => __('home.unauthenticated'),
-                ], 200); // استجابة غير مصرح بها
-            }
-
-            // البحث عن المنشور باستخدام slug_id
-            $post = Post::where('slug_id', $request->slug_id)->first();
-            Cache::forget('posts_page_' . request('page', 1));
-            // التحقق من وجود المنشور
-            if (!$post) {
-                return response()->json([
-                    'success' => false,
-                    'message' => __('home.post_not_found'),
-                ], 200);
-            }
-
-            // التحقق من أن المستخدم الحالي هو صاحب المنشور
-            if ($post->user_id !== Auth::id()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => __('home.not_authorized_to_delete'),
-                ], 200); // استجابة غير مصرح بها
-            }
-
-            // حذف جميع الصور المرتبطة بالمنشور إذا كانت موجودة
-            if (!empty($post->image)) {
-                $images = json_decode($post->image, true); // تحويل JSON إلى مصفوفة
-
-                if (is_array($images)) {
-                    foreach ($images as $image) {
-                        $imagePath = public_path($image);  // تحديد المسار الكامل للصورة
-                        if (file_exists($imagePath)) {
-                            unlink($imagePath);  // حذف الصورة إذا كانت موجودة
-                        }
-                    }
-                }
-            }
-
-            // حذف الصور المرتبطة بالردود
-            foreach ($post->replies as $reply) {
-                if ($reply->reply_image) {
-                    $imagePath = public_path($reply->reply_image);  // تحديد المسار الكامل للصورة
-                    if (file_exists($imagePath)) {
-                        unlink($imagePath);  // حذف الصورة إذا كانت موجودة
-                    }
-                }
-            }
-
-            // حذف الردود المرتبطة
-            $post->replies()->delete();
-
-            // حذف المنشور نفسه
-            $post->delete();
-
-            // إرجاع استجابة ناجحة
-            return response()->json([
-                'success' => true,
-                'slug_id' =>  $request->slug_id,
-                'message' => __('home.post_deleted_successfully'),
-            ], 200);
-
-        } catch (\Exception $e) {
-            // معالجة أي استثناء غير متوقع
+        if ($validator->fails()) 
+        {
             return response()->json([
                 'success' => false,
+                'message' => __('home.validation_error'),
+                'errors' => $validator->errors(),
+            ], 422); // 422 Unprocessable Entity
+        }
+
+        $res_deleteBySlugId = $this->postService->deleteBySlugId($request->slug_id);
+        if($res_deleteBySlugId['code'] == 0)
+        {
+               return response()->json([
+                'success' => false,
                 'message' => __('home.unexpected_error'),
+                'errors' => $res_deleteBySlugId['msg']
             ], 200);
         }
+        // إرجاع استجابة ناجحة
+        return response()->json([
+            'success' => true,
+            'slug_id' =>  $request->slug_id,
+            'message' => __('home.post_deleted_successfully'),
+        ], 200);
     }
 
     //Vote On Poll

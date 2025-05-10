@@ -13,7 +13,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{__('home.cancel')}}</button>
-                <button type="button" class="btn btn-danger confirm-delete-btn" id="">{{__('home.delete')}}</button>
+                <button type="button" class="btn btn-danger confirm-delete-btn" id="{{ isset($slugId) ? $slugId : ''}}">{{__('home.delete')}}</button>
             </div>
         </div>
     </div>

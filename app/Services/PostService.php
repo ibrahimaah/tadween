@@ -711,5 +711,50 @@ class PostService
         }
     }
 
+    public function deleteBySlugId($slug_id)
+    {
+        try 
+        { 
+            $res_getPostBySlug = $this->getPostBySlug($slug_id);
+            if($res_getPostBySlug['code'] == 0) throw new Exception($res_getPostBySlug['msg']);
+            $post = $res_getPostBySlug['data'];
+            Cache::forget('posts_page_' . request('page', 1)); 
+            if (!$post->is_owner()) throw new Exception(__('home.not_authorized_to_delete'));
+
+            //delete post images 
+            $images = json_decode($post->image, true);
+            if (is_array($images)) 
+            {
+                foreach ($images as $image) 
+                {
+                    deleteFile(public_path($image));
+                }
+            }
+            
+            //delete reply images
+            foreach ($post->replies as $reply) 
+            {
+                if ($reply->reply_image) 
+                {
+                    deleteFile(public_path($reply->reply_image));
+                }
+            } 
+
+            $post->replies()->delete();
+            $post->delete();
+
+            return [
+                'code' => 1,
+                'data' => true,
+                'slug_id' => $slug_id,
+                'msg' => __('home.post_deleted_successfully'),
+            ];
+        }
+        catch(Exception $ex)
+        {
+            return ['code' => 0,'msg' => $ex->getMessage()];
+        }
+    }
+
     
 }

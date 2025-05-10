@@ -255,6 +255,7 @@
     @endif
 
 
+     
     
 
     @if(!$data['is_profile_locked'] && !$data['is_blocked'] && !$data['is_been_blocked'])
@@ -271,6 +272,7 @@
 
 
         <!-- Bootstrap Delete Confirmation Post Modal -->
+        {{-- @include('posts.delete_post_modal',['slugId' => $data['slug_id']])  --}}
         @include('posts.delete_post_modal') 
 
        

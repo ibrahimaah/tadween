@@ -35,7 +35,8 @@ class Post extends Model
 
     public function getFirstImageAttribute()
     {
-        $images = json_decode($this->image, true);
+        // dd($this->image);
+        $images = json_decode($this->image, true); 
         return isset($images[0]) ? asset($images[0]) : null;
     }
 
@@ -81,7 +82,11 @@ class Post extends Model
 
     public static function findBySlugOrFail($slug)
     {
-        $post = self::where('slug_id', $slug)->first();
+        $post = self::with(['user', 'userPostLike', 'poll'])
+                    ->withCount('replies')
+                    ->withCount('postLikes')
+                    ->where('slug_id', $slug)
+                    ->first();
 
         if (! $post) {
             throw new PostNotFoundException($slug);

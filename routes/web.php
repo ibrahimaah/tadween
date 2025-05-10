@@ -43,10 +43,10 @@ Route::get('tmp',function(){
     $post = Post::with(['user', 'userPostLike', 'poll'])
     ->withCount('replies')
     ->withCount('postLikes')
-    ->where('slug_id', '00d2ab4c-004e-446e-9e21-03bf7bb74bf1')
+    ->where('slug_id', '4d86a119-353f-4bd0-a6d0-845e1130e909')
     ->first();
     
-    return view('temp_view',['post' => $post]);
+    return view('temp_view',['post' => $post ? $post : 1]);
 });
 
 // Route::get('/', [PostController::class, 'index'])->name('home')->middleware('auth');
