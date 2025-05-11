@@ -15,6 +15,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BlockedUserController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\UserController;
+use App\Http\Middleware\UpdateLastActivity;
 use App\Models\Follow;
 use App\Models\Post;
 use App\Services\PostService;
@@ -51,7 +52,7 @@ Route::get('tmp',function(){
 
 // Route::get('/', [PostController::class, 'index'])->name('home')->middleware('auth');
 ////////////////////// Routes For Home ////////////////////
-Route::middleware(['auth', \App\Http\Middleware\UpdateLastActivity::class])->group(function () {
+Route::middleware(['auth', UpdateLastActivity::class])->group(function () {
     // Posts
     Route::get('/', [PostController::class, 'index'])->name('home');
     // Route::get('load-homepage-posts', [PostController::class, 'loadHomePagePosts']);

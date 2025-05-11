@@ -65,7 +65,7 @@ $(document).ready(function() {
 
         var formData = new FormData(this);
         var imageInputReply = $('#imageInputReply')[0];
-        var errorsContainer = $('#errorsContainerReply');
+        // var errorsContainer = $('#errorsContainerReply');
         var csrfToken = $('input[name="_token"]').val();
 
         // إضافة الصورة فقط إذا تم اختيارها
@@ -73,7 +73,7 @@ $(document).ready(function() {
             formData.append('reply_image', imageInputReply.files[0]);
         }
 
-        errorsContainer.empty(); // إعادة تعيين الأخطاء السابقة
+        // errorsContainer.empty(); // إعادة تعيين الأخطاء السابقة
         
         // إخفاء زر النشر وعرض إشارة التحميل
         $('#submitBtnReply').hide();
@@ -93,9 +93,9 @@ $(document).ready(function() {
                 
                 if (data.success) {
                     $('.comments_count').text(data.reply.comments_count);
-
-                    var successMessage = `<p class="text-success">${data.message}</p>`;
-                    errorsContainer.append(successMessage);
+                    toastr.success(data.message)
+                    // var successMessage = `<p class="text-success">${data.message}</p>`;
+                    // errorsContainer.append(successMessage);
                     $('#replyForm')[0].reset();
                     $('#imagePreviewReply').empty();
                     // عرض المنشور الجديد في الصفحة
@@ -108,12 +108,14 @@ $(document).ready(function() {
                         // إذا كانت الرسالة كائن يحتوي على مصفوفات أخطاء
                         for (var field in errorData) {
                             errorData[field].forEach(function(error) {
-                                errorsContainer.append(`<p class="text-danger">${error}</p>`);
+                                // errorsContainer.append(`<p class="text-danger">${error}</p>`);
+                                toastr.error(error);
                             });
                         }
                     } else {
                         // في حالة وجود رسالة خطأ مباشرة
-                        errorsContainer.append(`<p class="text-danger">${errorData}</p>`);
+                        // errorsContainer.append(`<p class="text-danger">${errorData}</p>`);
+                        toastr.error(error);
                     }
                 }
             },
@@ -121,9 +123,9 @@ $(document).ready(function() {
         });
 
         // إخفاء الرسائل بعد 5 ثوانٍ
-        setTimeout(function() {
-            errorsContainer.empty();
-        }, 5000);
+        // setTimeout(function() {
+        //     errorsContainer.empty();
+        // }, 5000);
     });
 });
 

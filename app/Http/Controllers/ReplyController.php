@@ -2,107 +2,103 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ReplyRequest;
 use App\Models\Post;
 use App\Models\Reply;
+use App\Services\ImgService;
+use App\Services\PostService;
+use App\Services\ReplyService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
+
 class ReplyController extends Controller
 {
+    public function __construct(
+        private PostService $postService,
+        private ImgService $imgService,
+        private ReplyService $replyService) {}
+
+
     //Add new reply on post
-    public function store(Request $request)
-    {
-        // التحقق من تسجيل الدخول
-        if (!Auth::check()) {
-            return redirect()->route('login');
+    public function store(ReplyRequest $request)
+    { 
+        $reply_data = $request->validated();
+
+        $res_getPostBySlug = $this->postService->getPostBySlug($reply_data['slug_id']);
+
+        if ($res_getPostBySlug['code'] == 0) 
+        {
+            generateErrorResponse($res_getPostBySlug['msg']); 
         }
-        try {
-            // Validate the data
-            $request->validate([
-                'reply_text' => 'nullable|string|max:400',
-                'reply_image' => 'nullable|image|mimes:jpeg,png,gif,webp,jpg|max:1024',
-            ]);
 
-            $post = Post::where('slug_id', $request->slug_id)->first();
+        $post = $res_getPostBySlug['data'];
 
-            // Ensure the reply is not empty
-            if (empty($request->reply_text) && !$request->hasFile('reply_image')) {
-                return response()->json([
-                    'success' => false,
-                    'message' => __('home.post_reply_empty_error'),
-                ], 200);
+        $imagePath = null;
+        if($request->hasFile('reply_image'))
+        {
+            $res_storeImage = $this->imgService->storeImage($request->file('reply_image'), 'replies_images');
+
+            if($res_storeImage['code'] == 0)
+            {
+                generateErrorResponse($res_storeImage['msg']);  
             }
-
-            $imagePath = null;
-
-            // تخزين الصورة إذا تم رفعها
-            if ($request->hasFile('reply_image')) {
-                $image = $request->file('reply_image');
-                // تحديد اسم فريد لكل صورة لتجنب تكرار الأسماء
-                $imageName = time() . '_' . uniqid('reply_', true) . '.' . $image->getClientOriginalExtension();
-
-                // نقل الصورة إلى مجلد public/reply_image
-                $image->move(public_path('replies_images'), $imageName);
-
-                // إضافة المسار إلى المصفوفة
-                $imagePath = 'replies_images/' . $imageName;
-            }
-
-            // Create the reply
-            $reply = Reply::create([
-                'user_id' => Auth::id(),
-                'post_id' => $post->id,
-                'reply_text' => strip_tags($request->reply_text),
-                'reply_image' => $imagePath,
-                'slug_id' => Str::uuid(),
-            ]);
+            
+            $imagePath = $res_storeImage['data'];
+        }
         
-            if ($reply) {
-                // Load user data for the response
-                $reply->load('user');
-                // حساب عدد التعليقات الحالية للمنشور
-                $comments_count = Reply::where('post_id', $post->id)->count();
-                $reply_text = $reply->reply_text ? htmlspecialchars($reply->reply_text, ENT_QUOTES, 'UTF-8') : null;
-                $reply_image = $reply->reply_image ? htmlspecialchars($reply->reply_image, ENT_QUOTES, 'UTF-8') : null;
-                $user_name = $reply->user->name ? htmlspecialchars($reply->user->name, ENT_QUOTES, 'UTF-8') : null;
-                $user_username = $reply->user->username ? htmlspecialchars($reply->user->username, ENT_QUOTES, 'UTF-8') : null;
-                $user_cover_image = $reply->user->profile->cover_image ? htmlspecialchars($reply->user->profile->cover_image, ENT_QUOTES, 'UTF-8') : null;
-                
-                return response()->json([
-                    'success' => true,
-                    'message' => __('home.post_reply_success'),
-                    'reply' => [
-                        'is_owner' => Auth::id() === $reply->user_id,
-                        'reply_text' => $reply_text,
-                        'reply_image' => $reply_image,
-                        'slug_id' => $reply->slug_id,
-                        'comments_count' => $comments_count,
-                        'created_at' => Carbon::parse($reply->created_at)->diffForHumans(),
-                        'user' => [
-                            'name' => $user_name,
-                            'username' => $user_username,
-                            'cover_image' => $user_cover_image,
-                        ],
-                    ],
-                ], 200);
-            }
+        $reply_data = [
+            'user_id' => Auth::id(),
+            'post_id' => $post->id,
+            'reply_text' => strip_tags($request->reply_text),
+            'reply_image' => $imagePath,
+            'slug_id' => Str::uuid()
+        ];
+       
+        $res_store = $this->replyService->store($reply_data);
+        if($res_store['code'] == 0)
+        {
+            $this->imgService->deleteImage($imagePath);
+            generateErrorResponse($res_store['msg']);
+        }
 
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            // Return validation errors
+        $reply = $res_store['data'];
+
+
+        if ($reply) 
+        {
+            // Load user data for the response
+            $reply->load('user');
+            // حساب عدد التعليقات الحالية للمنشور
+            $comments_count = Reply::where('post_id', $post->id)->count();
+            $reply_text = $reply->reply_text ? htmlspecialchars($reply->reply_text, ENT_QUOTES, 'UTF-8') : null;
+            $reply_image = $reply->reply_image ? htmlspecialchars($reply->reply_image, ENT_QUOTES, 'UTF-8') : null;
+            $user_name = $reply->user->name ? htmlspecialchars($reply->user->name, ENT_QUOTES, 'UTF-8') : null;
+            $user_username = $reply->user->username ? htmlspecialchars($reply->user->username, ENT_QUOTES, 'UTF-8') : null;
+            $user_cover_image = $reply->user->profile->cover_image ? htmlspecialchars($reply->user->profile->cover_image, ENT_QUOTES, 'UTF-8') : null;
+
             return response()->json([
-                'success' => false,
-                'message' => $e->errors(),
-            ], 200);
-        } catch (\Exception $e) {
-            // Handle unexpected exceptions
-            return response()->json([
-                'success' => false,
-                'message' => __('home.unexpected_error'),
+                'success' => true,
+                'message' => __('home.post_reply_success'),
+                'reply' => [
+                    'is_owner' => Auth::id() === $reply->user_id,
+                    'reply_text' => $reply_text,
+                    'reply_image' => $reply_image,
+                    'slug_id' => $reply->slug_id,
+                    'comments_count' => $comments_count,
+                    'created_at' => Carbon::parse($reply->created_at)->diffForHumans(),
+                    'user' => [
+                        'name' => $user_name,
+                        'username' => $user_username,
+                        'cover_image' => $user_cover_image,
+                    ],
+                ],
             ], 200);
         }
     }
+
 
     //Display All Replies On Post For Users
     public function loadReplies(Request $request)
@@ -111,10 +107,10 @@ class ReplyController extends Controller
         $post = Post::where('slug_id', $slugId)->firstOrFail();
 
         $replies = Reply::where('post_id', $post->id)
-                        ->with('user')
-                        ->whereNull('parent_id')
-                        ->orderBy('created_at', 'desc')
-                        ->paginate(10);
+            ->with('user')
+            ->whereNull('parent_id')
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
 
         $repliesData = $replies->map(function ($reply) {
             $reply_text = $reply->reply_text ? htmlspecialchars($reply->reply_text, ENT_QUOTES, 'UTF-8') : null;
@@ -122,7 +118,7 @@ class ReplyController extends Controller
             $user_name = $reply->user->name ? htmlspecialchars($reply->user->name, ENT_QUOTES, 'UTF-8') : null;
             $user_username = $reply->user->username ? htmlspecialchars($reply->user->username, ENT_QUOTES, 'UTF-8') : null;
             $user_cover_image = $reply->user->profile->cover_image ? htmlspecialchars($reply->user->profile->cover_image, ENT_QUOTES, 'UTF-8') : null;
-            
+
             return [
                 'is_owner' => Auth::id() === $reply->user_id,
                 'reply_text' => $reply_text,
@@ -135,7 +131,7 @@ class ReplyController extends Controller
                     'cover_image' => $user_cover_image,
                     'is_private' => $reply->user->is_private(),
                 ],
-                'reply_show_route' => route('replies.show',$reply->slug_id),
+                'reply_show_route' => route('replies.show', $reply->slug_id),
             ];
         });
 
@@ -181,12 +177,12 @@ class ReplyController extends Controller
             // حذف الصورة المرتبطة بالرد إذا كانت موجودة
             if ($reply->reply_image) {
                 $imagePath = public_path($reply->reply_image); // تحديد المسار الكامل للصورة
-            
+
                 if (file_exists($imagePath)) {
                     unlink($imagePath); // حذف الصورة من المجلد مباشرة
                 }
             }
-            
+
             $post_id = $reply->post_id;
 
             $reply->delete();
@@ -200,7 +196,6 @@ class ReplyController extends Controller
                 'comments_count' => $comments_count,
                 'message' => __('home.post_reply_deleted_successfully'),
             ], 200);
-
         } catch (\Exception $e) {
             // معالجة أي استثناء غير متوقع
             return response()->json([
@@ -212,9 +207,8 @@ class ReplyController extends Controller
 
     public function show($slug_id)
     {
-        $reply = Reply::with(['post','children','parent'])->whereSlugId($slug_id)->firstOrFail(); 
+        $reply = Reply::with(['post', 'children', 'parent'])->whereSlugId($slug_id)->firstOrFail();
         // dd($reply);
-        return view('replies.index',['reply'=>$reply]);
+        return view('replies.index', ['reply' => $reply]);
     }
-
 }

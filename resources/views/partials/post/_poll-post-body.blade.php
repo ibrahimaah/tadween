@@ -4,7 +4,7 @@ $options = $poll['options'];
 $totalVotes = collect($options)->sum('votes');
 @endphp
 
-<div class="text-dark row"> 
+<div class="text-dark row justify-content-center"> 
 <div class="col-11">
     <h4 class="mb-4">{{ $post->text }}</h4>
 
