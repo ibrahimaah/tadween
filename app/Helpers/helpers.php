@@ -30,3 +30,11 @@ if (!function_exists('generateErrorResponse')) {
         ]);
     }
 }
+
+
+if (!function_exists('sanitizeText')) {
+    function sanitizeText(?string $text): ?string
+    {
+        return $text ? htmlspecialchars($text, ENT_QUOTES, 'UTF-8') : null;
+    }
+}

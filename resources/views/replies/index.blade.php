@@ -8,7 +8,7 @@ Replies
 
 <x-page-header title="Replies" route="home" />
 
-<x-reply 
+<x-reply-componenet 
     :reply="$reply"
     :reply-show-route="route('replies.show', $reply->id)"
 />

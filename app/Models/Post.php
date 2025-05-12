@@ -20,7 +20,7 @@ class Post extends Model
     ];
 
     // 👇 Add this to make it appear in arrays / JSON
-    protected $appends = ['user_profile_img', 'created_at_diff','first_image'];
+    protected $appends = ['user_profile_img', 'created_at_diff','first_image','comments_count'];
 
     // 👇 Add the accessor
     public function getUserProfileImgAttribute()
@@ -38,6 +38,11 @@ class Post extends Model
         // dd($this->image);
         $images = json_decode($this->image, true); 
         return isset($images[0]) ? asset($images[0]) : null;
+    }
+
+    public function getCommentsCountAttribute()
+    {
+        return $this->replies()->count();
     }
 
     public function getPollData()

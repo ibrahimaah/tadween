@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class Reply extends Component
+class ReplyComponent extends Component
 {
     public $reply;
     public $replyShowRoute;
@@ -22,6 +22,6 @@ class Reply extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.reply');
+        return view('components.reply-component');
     }
 }
