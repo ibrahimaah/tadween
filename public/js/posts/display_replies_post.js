@@ -1,119 +1,99 @@
-///////////////Display Replies On Post at home page//////////////////////
-var page = 1; // Initial page
-var loading = false; // To prevent multiple requests
-var hasMoreReplies = true; // التأكد من وجود صفحات إضافية
-// استخراج slug_id من رابط الصفحة
-const slugId = window.location.pathname.split('/').pop();
+/////////////// Display Replies On Post at home page ////////////////////
+let page = 1; // Initial page
+let loading = false; // To prevent multiple requests
+let hasMoreReplies = true; // Ensure more pages exist
+const slugId = window.location.pathname.split('/').pop(); // Extract slug_id from URL
 
 // Function to load replies on posts
 function loadReplies() {
-    // منع الطلب عند التحميل أو إذا انتهت الردود
     if (loading || !hasMoreReplies) return;
     loading = true;
 
-    // Show loading spinner
     $('#replies_loading_indicator').removeClass('d-none').addClass('d-flex');
 
     $.ajax({
-        url: '/load-replies', // Route to load replies
+        url: '/load-replies',
         method: 'GET',
-        data: { slug_id: slugId, page: page }, // Pass current page
+        data: { slug_id: slugId, page },
         success: function(data) {
-            if (data.success && data.replies.length > 0) {
-                var deleteText = $('html').attr('lang') === 'ar' ? 'حذف الرد' : 'Delete Reply';
-                var dropMenuClass = $('html').attr('lang') === 'ar' ? 'text-end' : 'text-start';
-                // Loop through replies and append to the container
-                data.replies.forEach(function(reply) {
-                    var reply_show_route = reply.reply_show_route || '#';
-                    var user_image = reply.user.cover_image != null ? '../' + reply.user.cover_image : '../img/logo.png';
-                    var reply_image = reply.reply_image != null ? `<img src="../${reply.reply_image}" class="img-fluid reply-image" alt="Reply Image" data-bs-toggle="modal" data-bs-target="#replyImageModal" data-image="../${reply.reply_image}">` : '';
-                    var userName = $('html').attr('lang') === 'ar' ? reply.user.username+'@' : '@'+reply.user.username;
-                    var is_private = reply.user.is_private;
-                    var deleteButton = '';
-                    if (reply.is_owner) {
-                        deleteButton = `<div class="dropstart">
-                            <button class="btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fa-solid fa-ellipsis-vertical text-orange-color"></i>
-                            </button>
+            if (data.success && data.replies.length) {
+                const deleteText = $('html').attr('lang') === 'ar' ? 'حذف الرد' : 'Delete Reply';
+                const dropMenuClass = $('html').attr('lang') === 'ar' ? 'text-end' : 'text-start';
 
-                            <ul class="dropdown-menu ${dropMenuClass}">
-                                <li>
-                                    <!-- Delete Reply Link -->
-                                    <button class="dropdown-item delete-reply-btn" id="${reply.slug_id}" data-bs-toggle="modal" data-bs-target="#deleteReplyModal">
-                                        <i class="fa-regular fa-trash-can text-orange-color"></i><span class="mx-1">${deleteText}</span>
-                                    </button>
-                                </li>
-                            </ul>
-                        </div>`;
+                data.replies.forEach(reply => {
+                    const replyShowRoute = reply.reply_show_route || '#';
+                    const userImage = reply.user.cover_image ? `../${reply.user.cover_image}` : '../img/logo.png';
+                    const replyImage = reply.reply_image ? `<img src="../${reply.reply_image}" class="img-fluid reply-image" alt="Reply Image" data-bs-toggle="modal" data-bs-target="#replyImageModal" data-image="../${reply.reply_image}">` : '';
+                    const userName = $('html').attr('lang') === 'ar' ? `${reply.user.username}@` : `@${reply.user.username}`;
+                    const isPrivate = reply.user.is_private;
+
+                    let deleteButton = '';
+                    if (reply.is_owner) {
+                        deleteButton = `
+                            <div class="dropstart">
+                                <button class="btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fa-solid fa-ellipsis-vertical text-orange-color"></i>
+                                </button>
+                                <ul class="dropdown-menu ${dropMenuClass}">
+                                    <li>
+                                        <button class="dropdown-item delete-reply-btn" id="${reply.slug_id}" data-bs-toggle="modal" data-bs-target="#deleteReplyModal">
+                                            <i class="fa-regular fa-trash-can text-orange-color"></i><span class="mx-1">${deleteText}</span>
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>`;
                     }
 
-                    var postHtml = `
+                    const postHtml = `
                         <div class="bg-white rounded-4 p-3 mb-2" id="reply${reply.slug_id}">
-                            
                             <div class="d-flex justify-content-between">
                                 <a href="/${reply.user.username}" class="d-flex text-decoration-none text-dark">
-                                    <img src="${user_image}" class="rounded-circle logo-main" alt="User Image">
+                                    <img src="${userImage}" class="rounded-circle logo-main" alt="User Image">
                                     <div class="px-1">
                                         <p class="mx-1 mb-0">
-                                            ${reply.user.name}
-                                             ${is_private ? '<i class="fa-solid fa-lock text-orange-color me-1"></i>' : ''} 
+                                            ${reply.user.name} ${isPrivate ? '<i class="fa-solid fa-lock text-orange-color me-1"></i>' : ''}
                                         </p>
-
                                         <p class="mx-1 mt-0 text-grey">${userName} (${reply.created_at})</p>
                                     </div>
                                 </a>
-
                                 ${deleteButton}
-
                             </div>
-
                             <p class="post-text mb-3">${reply.reply_text ?? ''}</p>
-                            <p class="w-25" >${reply_image}</p>
-
+                            <p class="w-25">${replyImage}</p>
                             <div class="row text-center mt-3">
-                            <div class="col">
-                                <a href="${reply_show_route}" class="text-decoration-none text-dark link_hover">
-                                    <span class="comments_count">0</span> 
-                                    <i class="fa-regular fa-message"></i>
-                                </a>
+                                <div class="col">
+                                    <a href="${replyShowRoute}" class="text-decoration-none text-dark link_hover">
+                                        <span class="comments_count">0</span> <i class="fa-regular fa-message"></i>
+                                    </a>
+                                </div>
+                                <div class="col">0 <i class="fa-solid fa-rotate"></i></div>
+                                <div class="col" id="post-like-section" post-slug-data="a">
+                                    <span class="link_hover">
+                                        <span id="post-like-count">0</span>
+                                        <i class="fa-regular fa-thumbs-up" id="post-like-btn"></i>
+                                    </span>
+                                </div>
+                                <div class="col"><i class="fa-regular fa-share-from-square"></i></div>
                             </div>
-                            <div class="col">0 <i class="fa-solid fa-rotate"></i></div>
-                            <div class="col" id="post-like-section" post-slug-data="a">
-                                <span class="link_hover">
-                                    <span id="post-like-count">0</span>
-                                    <i class="fa-regular fa-thumbs-up" id="post-like-btn"></i>
-                                </span>
-                            </div>
-                            <div class="col"><i class="fa-regular fa-share-from-square"></i></div>
-                        </div>
-                        </div>
-                         
-                        `;
+                        </div>`;
+
                     $('#display-replies-container').append(postHtml);
                 });
 
-                // تحديث الصفحة التالية
                 if (data.next_page) {
-                    // تحديث الصفحة إذا كان هناك المزيد
                     page = data.next_page;
                 } else {
-                    // لا مزيد من الصفحات
                     hasMoreReplies = false;
-                    // Hide loading spinner
                     $('#replies_loading_indicator').removeClass('d-flex').addClass('d-none');
                 }
-            }
-            else {
-                // إذا كانت الصفحة الأولى فارغة
+            } else {
                 $('.empty_replies').removeClass('d-none').addClass('d-block');
-                hasMoreReplies = false; // لا مزيد من الردود
+                hasMoreReplies = false;
             }
 
-            loading = false; // Reset loading flag
+            loading = false;
         },
-        
         complete: function() {
-            // إخفاء مؤشر التحميل دائمًا بعد الطلب
             $('#replies_loading_indicator').removeClass('d-flex').addClass('d-none');
             loading = false;
         }
@@ -122,56 +102,44 @@ function loadReplies() {
 
 // Event listener for reply images
 $(document).on('click', '.reply-image', function() {
-    var imageUrl = $(this).data('image');
-    $('#modalImage').attr('src', imageUrl);
+    $('#modalImage').attr('src', $(this).data('image'));
     $('#replyImageModal').modal('show');
 });
 
-// تفعيل جلب الردود عند تحميل الصفحة وعند التمرير
+// Load replies on page load and scroll
 $(document).ready(function() {
     loadReplies();
     $(window).on('scroll', function() {
-        
-        var scrollBottom = $(document).height() - $(window).height() - $(window).scrollTop();
-        if (scrollBottom <= 100) {
+        if ($(document).height() - $(window).height() - $(window).scrollTop() <= 100) {
             loadReplies();
         }
     });
 });
 
-
-//Delete Reply From Post
-$(document).on('click', '.delete-reply-btn', function (e) {
+// Delete reply from post
+$(document).on('click', '.delete-reply-btn', function(e) {
     e.preventDefault();
-    var slug_id = $(this).attr('id');
-    $('.confirm-delete-btn-reply').attr('id', slug_id);
+    $('.confirm-delete-btn-reply').attr('id', $(this).attr('id'));
 });
 
-// معالجة زر الحذف داخل المودل
-$(document).on('click', '.confirm-delete-btn-reply', function () {
-    var slug_id = $(this).attr('id');
-    const csrfToken = $('meta[name="csrf-token"]').attr('content'); // احصل على CSRF Token
+// Confirm delete reply
+$(document).on('click', '.confirm-delete-btn-reply', function() {
+    const slugId = $(this).attr('id');
+    const csrfToken = $('meta[name="csrf-token"]').attr('content');
 
     $.ajax({
-        url: `/replies/${slug_id}`,
-        method: 'POST',  // ⬅️ استخدم `POST` بدلاً من `DELETE`
-        headers: {
-            'X-CSRF-TOKEN': csrfToken,
-        },
-        data: {
-            _method: 'DELETE' // ⬅️ Laravel سيتعامل معه كـ `DELETE`
-        },
-        success: function (response) {
+        url: `/replies/${slugId}`,
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': csrfToken },
+        data: { _method: 'DELETE' },
+        success: function(response) {
             if (response.success) {
-                // تحديث عدد التعليقات في الواجهة
-                document.querySelector('.comments_count').textContent = response.comments_count;
-
+                $('.comments_count').text(response.comments_count);
                 $('#deleteMessageReply').html(`<p class="alert alert-success">${response.message}</p>`);
-
                 $(`#reply${response.slug_id}`).remove();
 
-                setTimeout(function () {
-                    $(`#deleteReplyModal`).modal('hide');
+                setTimeout(() => {
+                    $('#deleteReplyModal').modal('hide');
                     $('#deleteMessageReply').html('');
                 }, 1000);
             } else {
@@ -179,60 +147,31 @@ $(document).on('click', '.confirm-delete-btn-reply', function () {
             }
         }
     });
-    
 });
 
+// Pull to refresh functionality
+let isRefreshing = false;
+let refreshThreshold = 50;
+let startY = 0;
+let isPulling = false;
 
-///////////////////////////////////////////////////
-var isRefreshing = false; // لتجنب التحديث أثناء عملية التحديث
-var refreshThreshold = 50; // الحد الأدنى للسحب لبدء التحديث
-var startY = 0; // موقع السحب الأولي
-var isPulling = false; // التحقق من حالة السحب
-
-// Event listeners for touch events (الحاسوب)
-$(document).on('touchstart', function (e) {
+$(document).on('touchstart mousedown', function(e) {
     if ($(window).scrollTop() === 0) {
-        startY = e.touches[0].clientY;
+        startY = e.touches ? e.touches[0].clientY : e.clientY;
         isPulling = true;
     }
 });
 
-$(document).on('touchmove', function (e) {
+$(document).on('touchmove mousemove', function(e) {
     if (!isPulling) return;
 
-    var currentY = e.touches[0].clientY;
+    const currentY = e.touches ? e.touches[0].clientY : e.clientY;
     if (currentY - startY > refreshThreshold) {
         $('#pullToRefreshIndicator').removeClass('d-none').addClass('d-flex');
     }
 });
 
-$(document).on('touchend', function () {
-    if (!isPulling) return;
-    isPulling = false;
-
-    if ($('#pullToRefreshIndicator').hasClass('d-flex')) {
-        refreshReplies();
-    }
-});
-
-// Event listeners for mouse events (الحاسوب)
-$(document).on('mousedown', function (e) {
-    if ($(window).scrollTop() === 0) {
-        startY = e.clientY; // تسجيل النقطة الأولية عند النقر
-        isPulling = true;
-    }
-});
-
-$(document).on('mousemove', function (e) {
-    if (!isPulling) return;
-
-    var currentY = e.clientY; // موقع المؤشر الحالي
-    if (currentY - startY > refreshThreshold) {
-        $('#pullToRefreshIndicator').removeClass('d-none').addClass('d-flex');
-    }
-});
-
-$(document).on('mouseup', function () {
+$(document).on('touchend mouseup', function() {
     if (!isPulling) return;
     isPulling = false;
 
@@ -246,14 +185,11 @@ function refreshReplies() {
     if (isRefreshing) return;
     isRefreshing = true;
 
-    // Reset page and fetch replies from the start
     page = 1;
     hasMoreReplies = true;
-    $('#display-replies-container').empty(); // تفريغ المنشورات الحالية
+    $('#display-replies-container').empty();
 
-    loadReplies(); // جلب المنشورات مرة أخرى
+    loadReplies();
     isRefreshing = false;
     $('#pullToRefreshIndicator').removeClass('d-flex').addClass('d-none');
-
 }
-
