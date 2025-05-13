@@ -18,6 +18,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Middleware\UpdateLastActivity;
 use App\Models\Follow;
 use App\Models\Post;
+use App\Models\Reply;
 use App\Services\PostService;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Http\Request;
@@ -41,13 +42,9 @@ Route::get('/comments', function () {
 //     abort(404);
 // });
 Route::get('tmp',function(){
-    $post = Post::with(['user', 'userPostLike', 'poll'])
-    ->withCount('replies')
-    ->withCount('postLikes')
-    ->where('slug_id', '4d86a119-353f-4bd0-a6d0-845e1130e909')
-    ->first();
-    
-    return view('temp_view',['post' => $post ? $post : 1]);
+    $post_id = Post::select('id')->where('slug_id','caee8c33-884a-428c-a268-955a3a2822f')->value('id');
+    dd($post_id);
+    // return view('temp_view',['post' => $post ? $post : 1]);
 });
 
 // Route::get('/', [PostController::class, 'index'])->name('home')->middleware('auth');

@@ -1,10 +1,69 @@
-/////////////// Display Replies On Post at home page ////////////////////
-let page = 1; // Initial page
-let loading = false; // To prevent multiple requests
-let hasMoreReplies = true; // Ensure more pages exist
-const slugId = window.location.pathname.split('/').pop(); // Extract slug_id from URL
+let page = 1;
+let loading = false;
+let hasMoreReplies = true;
+const slugId = window.location.pathname.split('/').pop();
 
-// Function to load replies on posts
+function renderReplyHeader(reply) {
+    const userImage = reply.user.cover_image ? `../${reply.user.cover_image}` : '../img/logo.png';
+    const isPrivate = reply.user.is_private ? '<i class="fa-solid fa-lock text-orange-color me-1"></i>' : '';
+    const userName = document.documentElement.lang === 'ar' ? `${reply.user.username}@` : `@${reply.user.username}`;
+    const deleteText = document.documentElement.lang === 'ar' ? 'حذف الرد' : 'Delete Reply';
+    const dropMenuClass = document.documentElement.lang === 'ar' ? 'text-end' : 'text-start';
+
+    const deleteButton = reply.is_owner ? `
+        <div class="dropstart">
+            <button class="btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa-solid fa-ellipsis-vertical text-orange-color"></i>
+            </button>
+            <ul class="dropdown-menu ${dropMenuClass}">
+                <li>
+                    <button class="dropdown-item delete-reply-btn" id="${reply.slug_id}" data-bs-toggle="modal" data-bs-target="#deleteReplyModal">
+                        <i class="fa-regular fa-trash-can text-orange-color"></i><span class="mx-1">${deleteText}</span>
+                    </button>
+                </li>
+            </ul>
+        </div>` : '';
+
+    return `
+        <div class="d-flex justify-content-between">
+            <a href="/${reply.user.username}" class="d-flex text-decoration-none text-dark">
+                <img src="${userImage}" class="rounded-circle logo-main" alt="User Image">
+                <div class="px-1">
+                    <p class="mx-1 mb-0">${reply.user.name} ${isPrivate}</p>
+                    <p class="mx-1 mt-0 text-grey">${userName} (${reply.created_at})</p>
+                </div>
+            </a>
+            ${deleteButton}
+        </div>`;
+}
+
+function renderReplyBody(reply) {
+    const replyImage = reply.reply_image ? `
+        <img src="../${reply.reply_image}" class="img-fluid reply-image" alt="Reply Image"
+             data-bs-toggle="modal" data-bs-target="#replyImageModal" data-image="../${reply.reply_image}">` : '';
+
+    const replyShowRoute = reply.reply_show_route || '#';
+
+    return `
+        <p class="post-text mb-3">${reply.reply_text ?? ''}</p>
+        <p class="w-25">${replyImage}</p>
+        <div class="row text-center mt-3">
+            <div class="col">
+                <a href="${replyShowRoute}" class="text-decoration-none text-dark link_hover">
+                    <span class="comments_count">0</span> <i class="fa-regular fa-message"></i>
+                </a>
+            </div>
+            <div class="col">0 <i class="fa-solid fa-rotate"></i></div>
+            <div class="col" id="post-like-section" post-slug-data="a">
+                <span class="link_hover">
+                    <span id="post-like-count">0</span>
+                    <i class="fa-regular fa-thumbs-up" id="post-like-btn"></i>
+                </span>
+            </div>
+            <div class="col"><i class="fa-regular fa-share-from-square"></i></div>
+        </div>`;
+}
+
 function loadReplies() {
     if (loading || !hasMoreReplies) return;
     loading = true;
@@ -15,83 +74,26 @@ function loadReplies() {
         url: '/load-replies',
         method: 'GET',
         data: { slug_id: slugId, page },
-        success: function(data) {
-            if (data.success && data.replies.length) {
-                const deleteText = $('html').attr('lang') === 'ar' ? 'حذف الرد' : 'Delete Reply';
-                const dropMenuClass = $('html').attr('lang') === 'ar' ? 'text-end' : 'text-start';
-
-                data.replies.forEach(reply => {
-                    const replyShowRoute = reply.reply_show_route || '#';
-                    const userImage = reply.user.cover_image ? `../${reply.user.cover_image}` : '../img/logo.png';
-                    const replyImage = reply.reply_image ? `<img src="../${reply.reply_image}" class="img-fluid reply-image" alt="Reply Image" data-bs-toggle="modal" data-bs-target="#replyImageModal" data-image="../${reply.reply_image}">` : '';
-                    const userName = $('html').attr('lang') === 'ar' ? `${reply.user.username}@` : `@${reply.user.username}`;
-                    const isPrivate = reply.user.is_private;
-
-                    let deleteButton = '';
-                    if (reply.is_owner) {
-                        deleteButton = `
-                            <div class="dropstart">
-                                <button class="btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fa-solid fa-ellipsis-vertical text-orange-color"></i>
-                                </button>
-                                <ul class="dropdown-menu ${dropMenuClass}">
-                                    <li>
-                                        <button class="dropdown-item delete-reply-btn" id="${reply.slug_id}" data-bs-toggle="modal" data-bs-target="#deleteReplyModal">
-                                            <i class="fa-regular fa-trash-can text-orange-color"></i><span class="mx-1">${deleteText}</span>
-                                        </button>
-                                    </li>
-                                </ul>
-                            </div>`;
-                    }
-
-                    const postHtml = `
+        success: function(response) {
+            if (response.success && response.replies.length) {
+                response.replies.forEach(reply => {
+                    const replyHtml = `
                         <div class="bg-white rounded-4 p-3 mb-2" id="reply${reply.slug_id}">
-                            <div class="d-flex justify-content-between">
-                                <a href="/${reply.user.username}" class="d-flex text-decoration-none text-dark">
-                                    <img src="${userImage}" class="rounded-circle logo-main" alt="User Image">
-                                    <div class="px-1">
-                                        <p class="mx-1 mb-0">
-                                            ${reply.user.name} ${isPrivate ? '<i class="fa-solid fa-lock text-orange-color me-1"></i>' : ''}
-                                        </p>
-                                        <p class="mx-1 mt-0 text-grey">${userName} (${reply.created_at})</p>
-                                    </div>
-                                </a>
-                                ${deleteButton}
-                            </div>
-                            <p class="post-text mb-3">${reply.reply_text ?? ''}</p>
-                            <p class="w-25">${replyImage}</p>
-                            <div class="row text-center mt-3">
-                                <div class="col">
-                                    <a href="${replyShowRoute}" class="text-decoration-none text-dark link_hover">
-                                        <span class="comments_count">0</span> <i class="fa-regular fa-message"></i>
-                                    </a>
-                                </div>
-                                <div class="col">0 <i class="fa-solid fa-rotate"></i></div>
-                                <div class="col" id="post-like-section" post-slug-data="a">
-                                    <span class="link_hover">
-                                        <span id="post-like-count">0</span>
-                                        <i class="fa-regular fa-thumbs-up" id="post-like-btn"></i>
-                                    </span>
-                                </div>
-                                <div class="col"><i class="fa-regular fa-share-from-square"></i></div>
-                            </div>
+                            ${renderReplyHeader(reply)}
+                            ${renderReplyBody(reply)}
                         </div>`;
-
-                    $('#display-replies-container').append(postHtml);
+                    $('#display-replies-container').append(replyHtml);
                 });
 
-                if (data.next_page) {
-                    page = data.next_page;
+                if (response.next_page) {
+                    page = response.next_page;
                 } else {
                     hasMoreReplies = false;
-                    $('#replies_loading_indicator').removeClass('d-flex').addClass('d-none');
                 }
             } else {
                 $('.empty_replies').removeClass('d-none').addClass('d-block');
                 hasMoreReplies = false;
             }
-
-            loading = false;
         },
         complete: function() {
             $('#replies_loading_indicator').removeClass('d-flex').addClass('d-none');
@@ -100,13 +102,13 @@ function loadReplies() {
     });
 }
 
-// Event listener for reply images
+// Handle reply image modal
 $(document).on('click', '.reply-image', function() {
     $('#modalImage').attr('src', $(this).data('image'));
     $('#replyImageModal').modal('show');
 });
 
-// Load replies on page load and scroll
+// Initial load and infinite scroll
 $(document).ready(function() {
     loadReplies();
     $(window).on('scroll', function() {
@@ -116,19 +118,19 @@ $(document).ready(function() {
     });
 });
 
-// Delete reply from post
+// Set ID for delete confirmation
 $(document).on('click', '.delete-reply-btn', function(e) {
     e.preventDefault();
     $('.confirm-delete-btn-reply').attr('id', $(this).attr('id'));
 });
 
-// Confirm delete reply
+// Confirm delete
 $(document).on('click', '.confirm-delete-btn-reply', function() {
-    const slugId = $(this).attr('id');
+    const id = $(this).attr('id');
     const csrfToken = $('meta[name="csrf-token"]').attr('content');
 
     $.ajax({
-        url: `/replies/${slugId}`,
+        url: `/replies/${id}`,
         method: 'POST',
         headers: { 'X-CSRF-TOKEN': csrfToken },
         data: { _method: 'DELETE' },
@@ -149,7 +151,7 @@ $(document).on('click', '.confirm-delete-btn-reply', function() {
     });
 });
 
-// Pull to refresh functionality
+// Pull to refresh
 let isRefreshing = false;
 let refreshThreshold = 50;
 let startY = 0;
@@ -164,7 +166,6 @@ $(document).on('touchstart mousedown', function(e) {
 
 $(document).on('touchmove mousemove', function(e) {
     if (!isPulling) return;
-
     const currentY = e.touches ? e.touches[0].clientY : e.clientY;
     if (currentY - startY > refreshThreshold) {
         $('#pullToRefreshIndicator').removeClass('d-none').addClass('d-flex');
@@ -180,7 +181,6 @@ $(document).on('touchend mouseup', function() {
     }
 });
 
-// Function to refresh replies
 function refreshReplies() {
     if (isRefreshing) return;
     isRefreshing = true;

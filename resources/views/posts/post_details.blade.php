@@ -27,7 +27,7 @@
 @endsection
 
 @push('js')
-    <script src="{{asset('js/posts/display_replies_post.js?version=1.0')}}"></script> 
+    <script src="{{asset('js/posts/display_replies_post.js')}}"></script> 
     {{-- @auth  --}}
         <script src="{{asset('js/posts/create_vote_poll.js?version=1.0')}}"></script>
     {{-- @endauth --}}

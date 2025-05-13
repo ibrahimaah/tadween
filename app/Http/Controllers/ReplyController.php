@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LoadRepliesRequest;
 use App\Http\Requests\ReplyRequest;
 use App\Models\Post;
 use App\Models\Reply;
@@ -90,34 +91,36 @@ class ReplyController extends Controller
 
 
     //Display All Replies On Post For Users
-    public function loadReplies(Request $request)
+    public function loadReplies(LoadRepliesRequest $request)
     {
-        $slugId = $request->input('slug_id');
-        $post = Post::where('slug_id', $slugId)->firstOrFail();
+        $validated = $request->validated();
+        
+        $post_id = Post::select('id')->where('slug_id',$validated['slug_id'])->value('id');
 
-        $replies = Reply::where('post_id', $post->id)
-            ->with('user')
-            ->whereNull('parent_id')
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+        if (!$post_id) {
+            generateErrorResponse("No post found with the provided slug ID: {$validated['slug_id']}");
+        }
+         
 
+        $res_getRepliesByPostId = $this->replyService->getRepliesByPostId($post_id);
+        if($res_getRepliesByPostId['code'] == 0)
+        {
+            generateErrorResponse($res_getRepliesByPostId['msg']);
+        }
+
+        $replies = $res_getRepliesByPostId['data'];
+        
         $repliesData = $replies->map(function ($reply) {
-            $reply_text = $reply->reply_text ? htmlspecialchars($reply->reply_text, ENT_QUOTES, 'UTF-8') : null;
-            $reply_image = $reply->reply_image ? htmlspecialchars($reply->reply_image, ENT_QUOTES, 'UTF-8') : null;
-            $user_name = $reply->user->name ? htmlspecialchars($reply->user->name, ENT_QUOTES, 'UTF-8') : null;
-            $user_username = $reply->user->username ? htmlspecialchars($reply->user->username, ENT_QUOTES, 'UTF-8') : null;
-            $user_cover_image = $reply->user->profile->cover_image ? htmlspecialchars($reply->user->profile->cover_image, ENT_QUOTES, 'UTF-8') : null;
-
             return [
                 'is_owner' => Auth::id() === $reply->user_id,
-                'reply_text' => $reply_text,
-                'reply_image' => $reply_image,
+                'reply_text' => sanitizeText($reply->reply_text),
+                'reply_image' => sanitizeText($reply->reply_image),
                 'slug_id' => $reply->slug_id,
                 'created_at' => Carbon::parse($reply->created_at)->diffForHumans(),
                 'user' => [
-                    'name' => $user_name,
-                    'username' => $user_username,
-                    'cover_image' => $user_cover_image,
+                    'name' => sanitizeText($reply->user->name),
+                    'username' => sanitizeText($reply->user->username),
+                    'cover_image' => sanitizeText($reply->user->profile->cover_image),
                     'is_private' => $reply->user->is_private(),
                 ],
                 'reply_show_route' => route('replies.show', $reply->slug_id),

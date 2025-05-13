@@ -30,5 +30,21 @@ class ReplyService
         }
     }
 
-   
+   public function getRepliesByPostId($post_id)
+   {
+        try 
+        {
+            $replies = Reply::where('post_id', $post_id)
+                        ->with('user')
+                        ->whereNull('parent_id')
+                        ->orderBy('created_at', 'desc')
+                        ->paginate(10);
+            
+            return ['code' => 1 , 'data' => $replies];
+        }
+        catch(Exception $ex)
+        {
+            return ['code' => 0, 'msg' => $ex->getMessage()];
+        }
+   }
 }
