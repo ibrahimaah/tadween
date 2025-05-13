@@ -101,6 +101,11 @@ $(document).ready(function () {
                 } else {
                     handleErrors(data.message);
                 }
+            },
+            error: function(xhr) 
+            { 
+                const errorMsg = xhr.responseJSON?.message || 'An unexpected error occurred.';
+                toastr.error(errorMsg);  
             }
         });
     });

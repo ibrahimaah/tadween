@@ -24,7 +24,7 @@ if (!function_exists('generateErrorResponse')) {
     function generateErrorResponse($msg, $errors = null)
     {
         return response()->json([
-            'code' => false,
+            'success' => false,
             'msg' => $msg,
             'errors' => $errors
         ]);

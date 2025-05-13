@@ -73,33 +73,51 @@ function loadReplies() {
     $.ajax({
         url: '/load-replies',
         method: 'GET',
-        data: { slug_id: slugId, page },
+        data: { slug_id: slugId,page },
         success: function(response) {
-            if (response.success && response.replies.length) {
-                response.replies.forEach(reply => {
-                    const replyHtml = `
-                        <div class="bg-white rounded-4 p-3 mb-2" id="reply${reply.slug_id}">
-                            ${renderReplyHeader(reply)}
-                            ${renderReplyBody(reply)}
-                        </div>`;
-                    $('#display-replies-container').append(replyHtml);
-                });
-
-                if (response.next_page) {
-                    page = response.next_page;
-                } else {
+            if (response.success) 
+            {
+                if(response.replies.length)
+                {
+                    response.replies.forEach(reply => {
+                        const replyHtml = `
+                            <div class="bg-white rounded-4 p-3 mb-2" id="reply${reply.slug_id}">
+                                ${renderReplyHeader(reply)}
+                                ${renderReplyBody(reply)}
+                            </div>`;
+                        $('#display-replies-container').append(replyHtml);
+                    });
+        
+                    if (response.next_page) {
+                        page = response.next_page;
+                    } else {
+                        hasMoreReplies = false;
+                    }
+                }
+                else 
+                {
+                    $('.empty_replies').removeClass('d-none').addClass('d-block');
                     hasMoreReplies = false;
                 }
-            } else {
-                $('.empty_replies').removeClass('d-none').addClass('d-block');
-                hasMoreReplies = false;
             }
+            else 
+            {
+                toastr.error(response.msg)
+                toastr.error(response.errors)
+            } 
+        },
+        error: function(xhr) 
+        { 
+            const errorMsg = xhr.responseJSON?.message || 'An unexpected error occurred.';
+            toastr.error(errorMsg); // or show it in a div
+            hasMoreReplies = false;
         },
         complete: function() {
             $('#replies_loading_indicator').removeClass('d-flex').addClass('d-none');
             loading = false;
         }
     });
+    
 }
 
 // Handle reply image modal
