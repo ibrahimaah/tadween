@@ -3,8 +3,14 @@ let loading = false;
 let hasMoreReplies = true;
 const slugId = window.location.pathname.split('/').pop();
 
-function renderReplyHeader(reply) {
-    const userImage = reply.user.cover_image ? `../${reply.user.cover_image}` : '../img/logo.png';
+function renderReplyHeader(reply) 
+{ 
+    if (!reply.user) 
+    {
+        toastr.error('Missing user in reply:', reply);
+        return ''; // or return a fallback header
+    }
+    const userImage = reply.user.cover_image;
     const isPrivate = reply.user.is_private ? '<i class="fa-solid fa-lock text-orange-color me-1"></i>' : '';
     const userName = document.documentElement.lang === 'ar' ? `${reply.user.username}@` : `@${reply.user.username}`;
     const deleteText = document.documentElement.lang === 'ar' ? 'حذف الرد' : 'Delete Reply';
@@ -37,17 +43,22 @@ function renderReplyHeader(reply) {
         </div>`;
 }
 
-function renderReplyBody(reply) {
+function renderReplyBody(reply) 
+{
     const replyImage = reply.reply_image ? `
         <img src="../${reply.reply_image}" class="img-fluid reply-image" alt="Reply Image"
              data-bs-toggle="modal" data-bs-target="#replyImageModal" data-image="../${reply.reply_image}">` : '';
 
-    const replyShowRoute = reply.reply_show_route || '#';
-
     return `
         <p class="post-text mb-3">${reply.reply_text ?? ''}</p>
         <p class="w-25">${replyImage}</p>
-        <div class="row text-center mt-3">
+        `;
+}
+
+function renderReplyFooter(reply)
+{
+    const replyShowRoute = reply.reply_show_route || '#';
+    return `<div class="row text-center mt-3">
             <div class="col">
                 <a href="${replyShowRoute}" class="text-decoration-none text-dark link_hover">
                     <span class="comments_count">0</span> <i class="fa-regular fa-message"></i>
@@ -64,7 +75,8 @@ function renderReplyBody(reply) {
         </div>`;
 }
 
-function loadReplies() {
+function loadReplies() 
+{
     if (loading || !hasMoreReplies) return;
     loading = true;
 
@@ -78,12 +90,13 @@ function loadReplies() {
             if (response.success) 
             {
                 if(response.replies.length)
-                {
+                { 
                     response.replies.forEach(reply => {
                         const replyHtml = `
                             <div class="bg-white rounded-4 p-3 mb-2" id="reply${reply.slug_id}">
                                 ${renderReplyHeader(reply)}
                                 ${renderReplyBody(reply)}
+                                ${renderReplyFooter(reply)}
                             </div>`;
                         $('#display-replies-container').append(replyHtml);
                     });

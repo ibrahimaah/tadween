@@ -86,20 +86,23 @@ $(document).ready(function () {
             data: formData,
             contentType: false,
             processData: false,
-            success: function (data) {
+            success: function (response) 
+            {
+                console.log(response)
                 loadingIndicator.hide();
                 submitBtn.show();
 
-                if (data.success) {
-                    $('.comments_count').text(data.reply.comments_count);
-                    toastr.success(data.message);
+                if (response.success) 
+                {
+                    $('.comments_count').text(response.reply.comments_count);
+                    toastr.success(response.message);
 
                     replyForm[0].reset();
                     imagePreview.empty();
-                    addReplyPostToPage(data.reply);
+                    addReplyPostToPage(response.reply);
                     $('.empty_replies').removeClass('d-block').addClass('d-none');
                 } else {
-                    handleErrors(data.message);
+                    toastr.error(response.message);
                 }
             },
             error: function(xhr) 
@@ -110,62 +113,20 @@ $(document).ready(function () {
         });
     });
 
-    function handleErrors(errorData) {
-        if (typeof errorData === 'object') {
-            $.each(errorData, function (field, messages) {
-                messages.forEach(msg => toastr.error(msg));
-            });
-        } else {
-            toastr.error(errorData);
-        }
-    }
+   
 });
 
 
 
 //show new reply on post after added
-function addReplyPostToPage(reply) {
-    const userImage = reply.user.cover_image ? `../${reply.user.cover_image}` : '../img/logo.png';
-    const replyImage = reply.reply_image ? `<img src="../${reply.reply_image}" class="img-fluid reply-image" alt="Reply Image" data-bs-toggle="modal" data-bs-target="#replyImageModal" data-image="../${reply.reply_image}">` : '';
-
-    const deleteText = document.documentElement.lang === 'ar' ? 'حذف الرد' : 'Delete Reply';
-    const dropMenuClass = document.documentElement.lang === 'ar' ? 'text-end' : 'text-start';
-    const userName = document.documentElement.lang === 'ar' ? `${reply.user.username}@` : `@${reply.user.username}`;
-
-    let deleteButton = '';
-    if (reply.is_owner) {
-        deleteButton = `
-            <div class="dropstart">
-                <button class="btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="fa-solid fa-ellipsis-vertical text-orange-color"></i>
-                </button>
-                <ul class="dropdown-menu ${dropMenuClass}">
-                    <li>
-                        <button class="dropdown-item delete-reply-btn" id="${reply.slug_id}" data-bs-toggle="modal" data-bs-target="#deleteReplyModal">
-                            <i class="fa-regular fa-trash-can text-orange-color"></i><span class="mx-1">${deleteText}</span>
-                        </button>
-                    </li>
-                </ul>
-            </div>`;
-    }
-
-    const postHtml = `
-        <div class="bg-white rounded-top p-3 mb-2" id="reply${reply.slug_id}">
-            <div class="d-flex justify-content-between">
-                <a href="/${reply.user.username}" class="d-flex text-decoration-none text-dark">
-                    <img src="${userImage}" class="rounded-circle logo-main" alt="User Image">
-                    <div class="px-1">
-                        <p class="mx-1 mb-0">${reply.user.name}</p>
-                        <p class="mx-1 mt-0 text-grey">${userName} (${reply.created_at})</p>
-                    </div>
-                </a>
-                ${deleteButton}
-            </div>
-            <p class="post-text mb-3">${reply.reply_text ?? ''}</p>
-            <p class="w-25">${replyImage}</p>
-        </div>`;
-
-    // Add the new comment at the top of the list
-    document.querySelector('#display-replies-container').insertAdjacentHTML('afterbegin', postHtml);
+function addReplyPostToPage(reply) 
+{ 
+    const replyHtml = `
+    <div class="bg-white rounded-4 p-3 mb-2" id="reply${reply.slug_id}">
+        ${renderReplyHeader(reply)}
+        ${renderReplyBody(reply)}
+        ${renderReplyFooter(reply)}
+    </div>`;
+    document.querySelector('#display-replies-container').insertAdjacentHTML('afterbegin',replyHtml);
 }
 

@@ -9,7 +9,7 @@
         <div class="row"> 
             <div class="col-1"></div>
             <div class="col-10">
-                <p class="w-25">{!! $reply->reply_image !!}</p>
+                <img src="{{ asset($reply->reply_image) }}" class="img-fluid" alt="post Image">
             </div>
             <div class="col-1"></div>
         </div>

@@ -76,6 +76,3 @@
     </div>
 </div>
 
-@push('js')
-    <script src="{{asset('js/posts/create_reply_post.js')}}"></script>
-@endpush

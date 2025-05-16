@@ -25,7 +25,7 @@ class Post extends Model
     // 👇 Add the accessor
     public function getUserProfileImgAttribute()
     {
-        return $this->user->profile->cover_image ?? asset('img/user.jpg');
+        return asset($this->user->profile->cover_image ?? 'img/user.jpg');
     }
 
     public function getCreatedAtDiffAttribute()

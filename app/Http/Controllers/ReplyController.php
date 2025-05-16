@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
+use Exception;
 
 class ReplyController extends Controller
 {
@@ -71,21 +72,14 @@ class ReplyController extends Controller
         if ($reply) 
         {
             // $comments_count = Reply::where('post_id', $post->id)->count();
+            $replyData = replyJsonResponse($reply);
             return response()->json([
                 'success' => true,
-                'message' => __('home.post_reply_success'),
-                'reply' => [ 
-                    'is_owner' => Auth::id() === $reply->user_id,
-                        'reply_text' => sanitizeText($reply->reply_text),
-                        'reply_image' => sanitizeText($reply->reply_image),
-                        'slug_id' => $reply->slug_id, 
-                        'created_at' => Carbon::parse($reply->created_at)->diffForHumans(),
-                        'user' => [
-                            'name' => sanitizeText($reply->user->name),
-                            'username' => sanitizeText($reply->user->username),
-                            'cover_image' => sanitizeText($reply->user->profile->cover_image),
-                        ],    
-            ]]);
+                'reply' => $replyData, 
+                'message' => __('reply.reply_success')
+            ]);
+            
+
         }
     }
 
@@ -93,45 +87,40 @@ class ReplyController extends Controller
     //Display All Replies On Post For Users
     public function loadReplies(LoadRepliesRequest $request)
     {
-        $validated = $request->validated();
-        
-        $post_id = Post::select('id')->where('slug_id',$validated['slug_id'])->value('id');
-
-        if (!$post_id) {
-            generateErrorResponse("No post found with the provided slug ID: {$validated['slug_id']}");
-        }
-         
-
-        $res_getRepliesByPostId = $this->replyService->getRepliesByPostId($post_id);
-        if($res_getRepliesByPostId['code'] == 0)
+        try 
         {
-            generateErrorResponse($res_getRepliesByPostId['msg']);
-        }
-
-        $replies = $res_getRepliesByPostId['data'];
+            $validated = $request->validated();
         
-        $repliesData = $replies->map(function ($reply) {
-            return [
-                'is_owner' => Auth::id() === $reply->user_id,
-                'reply_text' => sanitizeText($reply->reply_text),
-                'reply_image' => sanitizeText($reply->reply_image),
-                'slug_id' => $reply->slug_id,
-                'created_at' => Carbon::parse($reply->created_at)->diffForHumans(),
-                'user' => [
-                    'name' => sanitizeText($reply->user->name),
-                    'username' => sanitizeText($reply->user->username),
-                    'cover_image' => sanitizeText($reply->user->profile->cover_image),
-                    'is_private' => $reply->user->is_private(),
-                ],
-                'reply_show_route' => route('replies.show', $reply->slug_id),
-            ];
-        });
+            $post_id = Post::select('id')->where('slug_id',$validated['slug_id'])->value('id');
 
-        return response()->json([
-            'success' => true,
-            'replies' => $repliesData,
-            'next_page' => $replies->hasMorePages() ? $replies->currentPage() + 1 : null,
-        ]);
+            if (!$post_id) {
+                throw new Exception("No post found with the provided slug ID: {$validated['slug_id']}");
+            }
+            
+
+            $res_getRepliesByPostId = $this->replyService->getRepliesByPostId($post_id);
+
+            if($res_getRepliesByPostId['code'] == 0)
+            {
+                throw new Exception($res_getRepliesByPostId['msg']);
+            }
+
+            $replies = $res_getRepliesByPostId['data'];
+            
+            $repliesData = $replies->map(function ($reply) 
+            {
+                return replyJsonResponse($reply);
+            }); 
+            return response()->json([
+                'success' => true,
+                'replies' => $repliesData,
+                'next_page' => $replies->hasMorePages() ? $replies->currentPage() + 1 : null,
+            ]);
+        }
+        catch(Exception $ex)
+        {
+            generateErrorResponse($ex->getMessage());
+        }
     }
 
     //Delete Reply From Post
@@ -199,8 +188,17 @@ class ReplyController extends Controller
 
     public function show($slug_id)
     {
-        $reply = Reply::with(['post', 'children', 'parent'])->whereSlugId($slug_id)->firstOrFail();
-        // dd($reply);
-        return view('replies.index', ['reply' => $reply]);
+        $reply = Reply::with(['children', 'children.allChildren', 'parent', 'parent.allParents'])
+                        ->where('slug_id', $slug_id)
+                        ->firstOrFail();
+
+                    // All nested children (flat)
+                    $allChildren = $reply->allChildrenFlat();
+
+                    // All parent chain (flat)
+                    // $allParents = $reply->allParentsFlat();
+
+        
+        return view('replies.index', ['reply' => $reply,'reply_children' => $allChildren]);
     }
 }

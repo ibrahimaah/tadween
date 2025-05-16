@@ -4,8 +4,8 @@
 
 
 @section('content')
-<div class="post-container"> 
-    
+<div class="post-container">
+
     <x-page-header title="{{ __('home.home') }}" route="home" />
 
     <div class="mt-2" id="display-posts-container">
@@ -13,9 +13,9 @@
         <x-alert-error />
 
         @isset($post)
-            <x-post-component :$post/>
+        <x-post-component :$post />
         @else
-            <p>🙏</p>
+        <p>🙏</p>
         @endisset
     </div>
 
@@ -27,8 +27,7 @@
 @endsection
 
 @push('js')
-    <script src="{{asset('js/posts/display_replies_post.js')}}"></script> 
-    {{-- @auth  --}}
-        <script src="{{asset('js/posts/create_vote_poll.js?version=1.0')}}"></script>
-    {{-- @endauth --}}
+    <script src="{{asset('js/posts/display_replies_post.js')}}"></script>
+    <script src="{{asset('js/posts/create_reply_post.js')}}"></script> 
+    <script src="{{asset('js/posts/create_vote_poll.js?version=1.0')}}"></script> 
 @endpush

@@ -18,6 +18,17 @@ class Reply extends Model
         'slug_id',
     ];
 
+    protected $appends = ['user_cover_image', 'created_at_diff'];
+
+    public function getUserCoverImageAttribute()
+    {
+        return asset(optional($this->user->profile)->cover_image ?? 'img/user.jpg');
+    }
+
+    public function getCreatedAtDiffAttribute()
+    {
+        return $this->created_at->diffForHumans();
+    }
     // Define relationships
     public function user()
     {
@@ -54,4 +65,40 @@ class Reply extends Model
         });
     }
 
+    // Recursive relationship loaders
+    public function allChildren()
+    {
+        return $this->children()->with('allChildren');
+    }
+
+    public function allParents()
+    {
+        return $this->parent()->with('allParents');
+    }
+
+    // Flat children collector
+    public function allChildrenFlat()
+    {
+        $all = collect();
+
+        foreach ($this->children as $child) {
+            $all->push($child);
+            $all = $all->merge($child->allChildrenFlat());
+        }
+
+        return $all;
+    }
+
+    // Flat parents collector
+    public function allParentsFlat()
+    {
+        $all = collect();
+
+        if ($this->parent) {
+            $all->push($this->parent);
+            $all = $all->merge($this->parent->allParentsFlat());
+        }
+
+        return $all;
+    }
 }

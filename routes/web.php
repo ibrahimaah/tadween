@@ -34,17 +34,10 @@ Route::get('lang/{locale}', function ($locale, Request $request) {
     return redirect()->back();
 })->name('lang.switch');
 
-Route::get('/comments', function () {
-    return view('comments');
-}); 
  
-// Route::get('/', function () {
-//     abort(404);
-// });
 Route::get('tmp',function(){
-    $post_id = Post::select('id')->where('slug_id','caee8c33-884a-428c-a268-955a3a2822f')->value('id');
-    dd($post_id);
-    // return view('temp_view',['post' => $post ? $post : 1]);
+     $reply = Reply::find(67);
+     dd($reply->user_cover_image);
 });
 
 // Route::get('/', [PostController::class, 'index'])->name('home')->middleware('auth');
