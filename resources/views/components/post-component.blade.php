@@ -1,5 +1,5 @@
 
-<div class="bg-white rounded-top p-3" id="post{{ $post->slug_id }}">
+<div class="bg-white rounded-top p-3 mt-2" id="post{{ $post->slug_id }}">
 
     <!-- Begin Post Header -->
      @include('partials.post._post-header',['post'=>$post])

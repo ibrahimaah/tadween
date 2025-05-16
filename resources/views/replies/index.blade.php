@@ -6,8 +6,14 @@ Replies
 
 @section('content')
 
-<x-page-header title="Replies" route="home" />
+<x-page-header :title="__('reply.replies')" route="home" />
 
+
+
+@php
+    $post = $reply->post;
+@endphp
+<x-post-component :$post />
 
 <x-reply-componenet 
     :reply="$reply"

@@ -27,59 +27,66 @@ class ReplyController extends Controller
     //Add new reply on post
     public function store(ReplyRequest $request)
     { 
-        $reply_data = $request->validated();
-
-        $res_getPostBySlug = $this->postService->getPostBySlug($reply_data['slug_id']);
-
-        if ($res_getPostBySlug['code'] == 0) 
+        try 
         {
-            generateErrorResponse($res_getPostBySlug['msg']); 
-        }
+            $reply_data = $request->validated();
 
-        $post = $res_getPostBySlug['data'];
+            $res_getPostBySlug = $this->postService->getPostBySlug($reply_data['slug_id']);
 
-        $imagePath = null;
-        if($request->hasFile('reply_image'))
-        {
-            $res_storeImage = $this->imgService->storeImage($request->file('reply_image'), 'replies_images');
-
-            if($res_storeImage['code'] == 0)
+            if ($res_getPostBySlug['code'] == 0) 
             {
-                generateErrorResponse($res_storeImage['msg']);  
+                throw new Exception($res_getPostBySlug['msg']);
+            }
+
+            $post = $res_getPostBySlug['data'];
+
+            $imagePath = null;
+            if($request->hasFile('reply_image'))
+            {
+                $res_storeImage = $this->imgService->storeImage($request->file('reply_image'), 'replies_images');
+
+                if($res_storeImage['code'] == 0)
+                {
+                    throw new Exception($res_storeImage['msg']);  
+                }
+                
+                $imagePath = $res_storeImage['data'];
             }
             
-            $imagePath = $res_storeImage['data'];
-        }
+            $reply_data = [
+                'user_id' => Auth::id(),
+                'post_id' => $post->id,
+                'reply_text' => strip_tags($request->reply_text),
+                'reply_image' => $imagePath,
+                'slug_id' => Str::uuid()
+            ];
         
-        $reply_data = [
-            'user_id' => Auth::id(),
-            'post_id' => $post->id,
-            'reply_text' => strip_tags($request->reply_text),
-            'reply_image' => $imagePath,
-            'slug_id' => Str::uuid()
-        ];
-       
-        $res_store = $this->replyService->store($reply_data);
-        if($res_store['code'] == 0)
-        {
-            $this->imgService->deleteImage($imagePath);
-            generateErrorResponse($res_store['msg']);
+            $res_store = $this->replyService->store($reply_data);
+            if($res_store['code'] == 0)
+            {
+                $this->imgService->deleteImage($imagePath);
+                throw new Exception($res_store['msg']);
+            }
+
+            $reply = $res_store['data'];
+
+
+            if ($reply) 
+            {
+                // $comments_count = Reply::where('post_id', $post->id)->count();
+                $replyData = replyJsonResponse($reply);
+                return response()->json([
+                    'success' => true,
+                    'reply' => $replyData, 
+                    'message' => __('reply.reply_success')
+                ]);
+                
+
+            }
         }
-
-        $reply = $res_store['data'];
-
-
-        if ($reply) 
+        catch(Exception $ex)
         {
-            // $comments_count = Reply::where('post_id', $post->id)->count();
-            $replyData = replyJsonResponse($reply);
-            return response()->json([
-                'success' => true,
-                'reply' => $replyData, 
-                'message' => __('reply.reply_success')
-            ]);
-            
-
+            generateErrorResponse($ex->getMessage());
         }
     }
 
