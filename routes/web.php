@@ -56,7 +56,7 @@ Route::middleware(['auth', UpdateLastActivity::class])->group(function () {
     Route::post('post-like', [PostLikeController::class, 'store'])->name('post.like.store');
 
     // Replies
-    Route::post('replies', [ReplyController::class, 'store'])->name('posts.reply.store');
+    Route::post('replies', [ReplyController::class, 'store'])->name('reply.store');
     Route::get('load-replies', [ReplyController::class, 'loadReplies']);
     Route::delete('replies/{slug_id}', [ReplyController::class, 'destroy'])->name('replies.destroy');
     Route::get('replies/{slug_id}', [ReplyController::class, 'show'])->name('replies.show');

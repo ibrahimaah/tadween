@@ -56,6 +56,7 @@ class ReplyController extends Controller
             $reply_data = [
                 'user_id' => Auth::id(),
                 'post_id' => $post->id,
+                'parent_id' => $reply_data['parent_id'],
                 'reply_text' => strip_tags($request->reply_text),
                 'reply_image' => $imagePath,
                 'slug_id' => Str::uuid()
@@ -199,13 +200,15 @@ class ReplyController extends Controller
                         ->where('slug_id', $slug_id)
                         ->firstOrFail();
 
-                    // All nested children (flat)
-                    $allChildren = $reply->allChildrenFlat();
+        // All nested children (flat)
+        $allChildren = $reply->allChildrenFlat();
 
-                    // All parent chain (flat)
-                    // $allParents = $reply->allParentsFlat();
+        // All parent chain (flat)
+        $allParents = $reply->allParentsFlat();
 
         
-        return view('replies.index', ['reply' => $reply,'reply_children' => $allChildren]);
+        return view('replies.show', ['reply' => $reply,
+                                    'reply_children' => $allChildren,
+                                    'reply_parents' => $allParents]);
     }
 }

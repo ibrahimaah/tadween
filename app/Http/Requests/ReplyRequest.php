@@ -27,6 +27,7 @@ class ReplyRequest extends FormRequest
             'reply_text' => 'nullable|string|max:400',
             'slug_id' => 'required|string|exists:posts,slug_id',
             'reply_image' => 'nullable|image|mimes:jpeg,png,gif,webp,jpg|max:1024',
+            'parent_id' => 'nullable|exists:replies,id',
         ];
     }
 

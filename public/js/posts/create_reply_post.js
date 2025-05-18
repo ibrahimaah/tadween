@@ -65,20 +65,23 @@ $(document).ready(function () {
         countReply.text(length);
     });
 
+
+    
     // Submit reply form
     replyForm.on('submit', function (e) {
         e.preventDefault();
-
+    
         const formData = new FormData(this);
         const csrfToken = $('input[name="_token"]').val();
-
-        if (imageInput[0].files.length > 0) {
-            formData.append('reply_image', imageInput[0].files[0]);
+        const file = imageInput[0].files[0];
+    
+        if (file) {
+            formData.append('reply_image', file);
         }
-
+    
         submitBtn.hide();
         loadingIndicator.show();
-
+    
         $.ajax({
             url: replyForm.attr('action'),
             method: 'POST',
@@ -86,17 +89,11 @@ $(document).ready(function () {
             data: formData,
             contentType: false,
             processData: false,
-            success: function (response) 
-            {
-                console.log(response)
-                loadingIndicator.hide();
-                submitBtn.show();
-
-                if (response.success) 
-                {
+            success(response) {
+                if (response.success) {
                     $('.comments_count').text(response.reply.comments_count);
                     toastr.success(response.message);
-
+    
                     replyForm[0].reset();
                     imagePreview.empty();
                     addReplyPostToPage(response.reply);
@@ -105,17 +102,18 @@ $(document).ready(function () {
                     toastr.error(response.message);
                 }
             },
-            error: function(xhr) 
-            { 
+            error(xhr) {
                 const errorMsg = xhr.responseJSON?.message || 'An unexpected error occurred.';
-                toastr.error(errorMsg);  
+                toastr.error(errorMsg);
+            },
+            complete() {
+                loadingIndicator.hide();
+                submitBtn.show();
             }
         });
     });
-
-   
+    
 });
-
 
 
 //show new reply on post after added
