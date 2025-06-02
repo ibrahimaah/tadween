@@ -10,10 +10,13 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 // use Illuminate\Database\Eloquent\Prunable;
 // use Illuminate\Database\Eloquent\Builder;
-class User extends Authenticatable
+use Bavix\Wallet\Traits\HasWallet;
+use Bavix\Wallet\Interfaces\Wallet;
+
+class User extends Authenticatable implements Wallet
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable,SoftDeletes;
+    use HasFactory, Notifiable,SoftDeletes,HasWallet;
     
 
     /**

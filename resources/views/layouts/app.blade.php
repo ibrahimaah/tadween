@@ -10,8 +10,18 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@100..900&display=swap" rel="stylesheet">
     <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{asset('css/style.css')}}">
+    @if(app()->getLocale() == 'ar')
+        <!-- Bootstrap RTL CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+        <!-- Your custom RTL overrides -->
+        {{-- <link rel="stylesheet" href="{{ asset('css/style-rtl.css') }}"> --}}
+    @else
+        <!-- Default Bootstrap LTR CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <!-- Your custom LTR styles -->
+        <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    @endif
+
     <link rel="manifest" href="{{ asset('manifest.json') }}">
 
     {{-- <script>

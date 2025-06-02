@@ -58,6 +58,8 @@ return [
     'post_reply_deleted_successfully' => 'تم حذف الرد بنجاح',
     'follow_up_requests' => 'طلبات المتابعة',
     'yes' => 'نعم',
+    'my_wallet' => 'محفظتي',
+    'wallet' => 'محفظة',
 
 ];
 

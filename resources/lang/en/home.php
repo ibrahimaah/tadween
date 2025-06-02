@@ -58,6 +58,8 @@ return [
     'post_reply_deleted_successfully' => 'Reply deleted successfully',
     'follow_up_requests' => 'Follow up requests',
     'yes' => 'Yes',
+    'my_wallet' => 'My Wallet',
+    'wallet' => 'Wallet',
 
 
 ];

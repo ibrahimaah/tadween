@@ -15,10 +15,12 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BlockedUserController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WalletController;
 use App\Http\Middleware\UpdateLastActivity;
 use App\Models\Follow;
 use App\Models\Post;
 use App\Models\Reply;
+use App\Models\User;
 use App\Services\PostService;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Http\Request;
@@ -36,8 +38,14 @@ Route::get('lang/{locale}', function ($locale, Request $request) {
 
  
 Route::get('tmp',function(){
-     $reply = Reply::find(67);
-     dd($reply->user_cover_image);
+    $transactions = auth()->user()
+    ->wallet
+    ->transactions()
+    ->latest()
+    ->take(10)
+    ->get();
+    dd($transactions);
+
 });
 
 // Route::get('/', [PostController::class, 'index'])->name('home')->middleware('auth');
@@ -60,6 +68,13 @@ Route::middleware(['auth', UpdateLastActivity::class])->group(function () {
     Route::get('load-replies', [ReplyController::class, 'loadReplies']);
     Route::delete('replies/{slug_id}', [ReplyController::class, 'destroy'])->name('replies.destroy');
     Route::get('replies/{slug_id}', [ReplyController::class, 'show'])->name('replies.show');
+
+
+    Route::get('wallet',[WalletController::class,'index'])->name('wallet.index');
+    Route::post('wallet-deposit',[WalletController::class,'deposit'])->name('wallet.deposit');
+    Route::post('wallet-transfer',[WalletController::class,'transfer'])->name('wallet.transfer');
+    
+    
 });
 
 // Static Pages
