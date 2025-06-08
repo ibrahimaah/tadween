@@ -1,0 +1,14 @@
+
+Client ID
+AXAGlsJ-JhXTrCHJwnsi5rlquzbH2rTlvmwV2JiMzem702SZMxQjZIazy62emh56kCvPdYG6Pk_fcAxF
+Secret key 1
+EDduE1YTqQba3m4hbNQydRfOjvoBKPhtq1hsUxmwlzMJYDe9Qzap1aaAbczsfc0ZXY580avUwvXrbF80
+
+====================================
+Bussiness Account
+
+https://sandbox.paypal.com
+
+sb-rl6u343313027@business.example.com
+
+N?UupA9o

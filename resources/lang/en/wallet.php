@@ -2,7 +2,8 @@
 
 return [
     'your_balance' => 'Your Balance',
-    'currency' => '$',
+    'currency_rial' => 'SAR',
+    'currency_dollar' => 'USD', 
     'deposit' => 'Deposit',
     'transfer' => 'Transfer',
     'history' => 'History',

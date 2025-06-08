@@ -2,7 +2,8 @@
 
 return [
     'your_balance' => 'رصيدك',
-    'currency' => 'ر.س',
+    'currency_rial' => 'ر.س',
+    'currency_dollar' => 'دولار', 
     'deposit' => 'إيداع',
     'transfer' => 'تحويل',
     'history' => 'السجل',

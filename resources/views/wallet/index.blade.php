@@ -42,7 +42,7 @@
                     </h3>
                     <span class="badge bg-light text-dark fs-4">
                         <span id="balance">{{ auth()->user()->balance }}  </span>
-                        {{ __('wallet.currency') }}
+                        {{ __('wallet.currency_dollar') }}
                     </span>
                 </div>
                 <div class="card-body">

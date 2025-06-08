@@ -1,0 +1,33 @@
+<!-- PayPal Payment Button -->
+<script src="https://www.paypal.com/sdk/js?client-id=AXAGlsJ-JhXTrCHJwnsi5rlquzbH2rTlvmwV2JiMzem702SZMxQjZIazy62emh56kCvPdYG6Pk_fcAxF&currency=USD" data-sdk-integration-source="button-factory"></script>
+<div id="paypal-button-container"></div>
+
+<!-- إضافة واجهة المستخدم لإدخال قيمة المنتج -->
+<label for="productAmount">USD$ قيمة المنتج:</label>
+<input type="text" id="productAmount" placeholder="أدخل قيمة المنتج">
+
+<script>
+paypal.Buttons({
+  createOrder: function(data, actions) {
+    // الحصول على قيمة المنتج من مدخل المستخدم
+    var productAmount = document.getElementById('productAmount').value;
+
+    return actions.order.create({
+      purchase_units: [
+        {
+          amount: {
+            currency_code: 'USD',
+            value: productAmount || '0.00' // إذا لم يتم إدخال شيء، قيمة افتراضية هي 0.00
+          }
+        }
+      ]
+    });
+  },
+  onApprove: function(data, actions) {
+    return actions.order.capture().then(function(details) {
+      // معالجة نجاح الدفع
+      alert('تم الدفع بنجاح');
+    });
+  }
+}).render('#paypal-button-container');
+</script>
