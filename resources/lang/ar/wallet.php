@@ -34,4 +34,9 @@ return [
     'deposit_error_msg' => 'فشلت عملية الإيداع',
     'transaction' => 'المعاملة',
     'deposit_via_paypal' => 'إيداع باستخدام بايبال',
+    'continue' => 'متابعة',
+    'loading' => 'جاري التحميل ...',
+    'please_enter_valid_amount' => 'يرجى إدخال مبلغ صالح.',
+    'error_occurred' => 'حدث خطأ. يرجى المحاولة مرة أخرى.',
+    'updated_success' => 'تم تحديث المحفظة بنجاح !'
 ];

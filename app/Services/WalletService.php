@@ -22,8 +22,7 @@ class WalletService
                 return [
                     'code' => 1,
                     'msg' => __('wallet.deposit_success_msg'),
-                    'transaction_id' => $transaction->id,
-                    'data' => $user->balance,
+                    'data' => $transaction, 
                 ];
             }
 

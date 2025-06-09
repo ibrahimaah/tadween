@@ -91,7 +91,7 @@
                         <label for="transferAmount" class="form-label">{{ __('wallet.amount') }}</label>
                         <div class="input-group">
                             <input type="number" class="form-control" id="transferAmount" name="amount" min="1" required>
-                            <span class="input-group-text">{{ __('wallet.currency') }}</span>
+                            <span class="input-group-text">{{ __('wallet.currency_dollar') }}</span>
                         </div>
                     </div>
                     <div class="mb-3">
@@ -152,7 +152,7 @@
                             <tr>
                                 <td>2023-05-15 14:30</td>
                                 <td>{{ __('wallet.deposit') }} via PayPal</td>
-                                <td class="text-success">+100 {{ __('wallet.currency') }}</td>
+                                <td class="text-success">+100 {{ __('wallet.currency_dollar') }}</td>
                                 <td>
                                     <span class="badge bg-success">{{ __('wallet.completed') }}</span>
                                 </td>
@@ -162,7 +162,7 @@
                             <tr>
                                 <td>2023-05-10 09:15</td>
                                 <td>{{ __('wallet.transfer') }} to @ahmed</td>
-                                <td class="text-danger">-50 {{ __('wallet.currency') }}</td>
+                                <td class="text-danger">-50 {{ __('wallet.currency_dollar') }}</td>
                                 <td>
                                     <span class="badge bg-success">{{ __('wallet.completed') }}</span>
                                 </td>
@@ -172,7 +172,7 @@
                             <tr>
                                 <td>2023-05-08 16:45</td>
                                 <td>{{ __('wallet.deposit') }} via {{ __('wallet.credit_debit_card') }}</td>
-                                <td class="text-success">+200 {{ __('wallet.currency') }}</td>
+                                <td class="text-success">+200 {{ __('wallet.currency_dollar') }}</td>
                                 <td>
                                     <span class="badge bg-warning">{{ __('wallet.pending') }}</span>
                                 </td>
@@ -182,7 +182,7 @@
                             <tr>
                                 <td>2023-05-01 11:20</td>
                                 <td>{{ __('wallet.transfer') }} to @sara</td>
-                                <td class="text-danger">-30 {{ __('wallet.currency') }}</td>
+                                <td class="text-danger">-30 {{ __('wallet.currency_dollar') }}</td>
                                 <td>
                                     <span class="badge bg-danger">{{ __('wallet.failed') }}</span>
                                 </td>
@@ -192,7 +192,7 @@
                             <tr>
                                 <td>2023-04-28 13:10</td>
                                 <td>{{ __('wallet.deposit') }} via PayPal</td>
-                                <td class="text-success">+75 {{ __('wallet.currency') }}</td>
+                                <td class="text-success">+75 {{ __('wallet.currency_dollar') }}</td>
                                 <td>
                                     <span class="badge bg-success">{{ __('wallet.completed') }}</span>
                                 </td>
@@ -202,7 +202,7 @@
                             <tr>
                                 <td>2023-04-25 18:30</td>
                                 <td>{{ __('wallet.transfer') }} to @mohammed</td>
-                                <td class="text-danger">-25 {{ __('wallet.currency') }}</td>
+                                <td class="text-danger">-25 {{ __('wallet.currency_dollar') }}</td>
                                 <td>
                                     <span class="badge bg-success">{{ __('wallet.completed') }}</span>
                                 </td>

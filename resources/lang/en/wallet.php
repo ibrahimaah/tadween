@@ -34,4 +34,9 @@ return [
     'deposit_error_msg' => 'Deposit failed',
     'transaction' => 'transaction',
     'deposit_via_paypal' => 'Deposit via PayPal',
+    'continue' => 'continue',
+    'loading' => 'loading...',
+    'please_enter_valid_amount' => 'Please enter valid amount',
+    'updated_success' => 'Wallet updated successfully !',
+    'error_occurred' => 'An error occurred. Please try again.'
 ];
