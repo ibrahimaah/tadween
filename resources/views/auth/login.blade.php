@@ -3,7 +3,7 @@
 @section('pageTitle')
 {{ __('auth.login_field') }}
 @endsection
-
+ 
 @section('content')
     <div class="container mt-5">
         <div class="row justify-content-center">
@@ -49,7 +49,7 @@
                         <p>{{ __('auth.forgot_password_field') }} <a href="{{ route('password.request') }}" class="text-decoration-none">{{ __('auth.reset_password_field') }}</a></p>
                     </div>
 
-                    <button type="submit" class="btn w-100">{{ __('auth.login_field') }}</button>
+                    <button type="submit" class="btn btn-orange w-100">{{ __('auth.login_field') }}</button>
 
                     <div class="text-center mt-5">
                         <p>{{ __('auth.not_have_account_field') }} <a href="{{ route('register') }}" class="text-decoration-none">{{ __('auth.create_account_field') }}</a></p>

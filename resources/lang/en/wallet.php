@@ -38,5 +38,9 @@ return [
     'loading' => 'loading...',
     'please_enter_valid_amount' => 'Please enter valid amount',
     'updated_success' => 'Wallet updated successfully !',
-    'error_occurred' => 'An error occurred. Please try again.'
+    'error_occurred' => 'An error occurred. Please try again.',
+    'validation_failed' => 'Validation failed',
+    'payment_not_completed' => 'The payment was not completed successfully.',
+    'deposit_via_credit_or_debit_card' => 'Deposit via Debit/Credit Card',
+    'payment_was_cancelled' => 'Payment was cancelled'
 ];

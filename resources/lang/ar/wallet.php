@@ -38,5 +38,9 @@ return [
     'loading' => 'جاري التحميل ...',
     'please_enter_valid_amount' => 'يرجى إدخال مبلغ صالح.',
     'error_occurred' => 'حدث خطأ. يرجى المحاولة مرة أخرى.',
-    'updated_success' => 'تم تحديث المحفظة بنجاح !'
+    'updated_success' => 'تم تحديث المحفظة بنجاح !',
+    'validation_failed' => 'فشل التحقق من البيانات',
+    'payment_not_completed' => 'لم تكتمل عملية الدفع بنجاح.',
+    'deposit_via_credit_or_debit_card' => 'إيداع عبر بطاقة الائتمان / الخصم',
+    'payment_was_cancelled' => 'تم إلغاء الدفع'
 ];

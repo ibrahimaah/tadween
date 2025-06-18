@@ -1,4 +1,4 @@
-<ul id="transactionsList" class="list-group">
+<ul id="transactionsList" class="list-group pe-0">
     @forelse($recent_transactions as $transaction)
         @include('wallet.partials._transaction_item', ['transaction' => $transaction])
     @empty

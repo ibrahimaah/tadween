@@ -19,11 +19,12 @@
         <!-- Default Bootstrap LTR CSS -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
         <!-- Your custom LTR styles -->
-        <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     @endif
 
     <link rel="manifest" href="{{ asset('manifest.json') }}">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 
+    @stack('css')
     {{-- <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/serviceworker.js')
@@ -51,5 +52,6 @@
 
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    @stack('js')
 </body>
 </html>
