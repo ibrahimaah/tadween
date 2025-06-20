@@ -42,5 +42,10 @@ return [
     'validation_failed' => 'فشل التحقق من البيانات',
     'payment_not_completed' => 'لم تكتمل عملية الدفع بنجاح.',
     'deposit_via_credit_or_debit_card' => 'إيداع عبر بطاقة الائتمان / الخصم',
-    'payment_was_cancelled' => 'تم إلغاء الدفع'
+    'payment_was_cancelled' => 'تم إلغاء الدفع',
+    'choose_payment_method' => 'اختر طريقة الدفع',
+    'pay_with_paypal' => 'الدفع باستخدام بايبال',
+    'pay_with_card' => 'الدفع باستخدام البطاقة ',
+    'or' => 'أو',
+    'secure_payment_notice' => 'مدفوعاتك آمنة ومشفرة',
 ];

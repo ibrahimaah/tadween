@@ -42,5 +42,10 @@ return [
     'validation_failed' => 'Validation failed',
     'payment_not_completed' => 'The payment was not completed successfully.',
     'deposit_via_credit_or_debit_card' => 'Deposit via Debit/Credit Card',
-    'payment_was_cancelled' => 'Payment was cancelled'
+    'payment_was_cancelled' => 'Payment was cancelled',
+    'choose_payment_method' => 'Choose payment method',
+    'pay_with_paypal' => 'Pay with paypal',
+    'pay_with_card' => 'Pay with card',
+    'or' => 'or',
+    'secure_payment_notice' => 'Your payment is secure and encrypted',
 ];

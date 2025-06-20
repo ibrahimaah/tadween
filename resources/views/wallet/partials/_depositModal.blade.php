@@ -1,5 +1,5 @@
 <style>
-    <style>.payment-card {
+    .payment-card {
         border-radius: 15px;
         box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
         transition: all 0.3s ease;
@@ -7,10 +7,10 @@
         overflow: hidden;
     }
 
-    .payment-card:hover {
+    /* .payment-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
-    }
+    } */
 
     .paypal-btn {
         background: linear-gradient(135deg, #253B80 0%, #179BD7 100%);
@@ -92,45 +92,53 @@
                         <p class="mt-2">{{ __('wallet.loading') }}</p>
                     </div>
 
-                    <div class="container py-5 d-none" id="btnsPaymentChoices">
+                    <div class="container d-none" id="btnsPaymentChoices">
                         <div class="row justify-content-center">
+
                             <div class="card payment-card">
-                                <div class="card-body p-4">
-                                    <h4 class="card-title text-center mb-4">Complete Your Payment</h4>
-                                    
+                                <div class="card-body p-4" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
+                                    <h4 class="card-title text-center mb-4">{{ __('wallet.choose_payment_method') }}</h4>
+                                
                                     <!-- PayPal Button -->
-                                    <button class="btn btn-primary w-100 paypal-btn mb-3 rounded-pill">
+                                    <button class="btn btn-primary px-2 w-100 paypal-btn mb-3 rounded-pill d-flex justify-content-between align-items-center">
+                                        <span class="fw-bold">{{ __('wallet.pay_with_paypal') }}</span>
                                         <i class="fab fa-cc-paypal payment-icon paypal-icon"></i>
-                                        <span class="fw-bold">Pay with PayPal</span>
                                     </button>
-                                    
+                                
                                     <!-- Separator -->
-                                    <div class="payment-separator">
-                                        <span>OR PAY WITH CARD</span>
+                                    <div class="payment-separator text-center my-3">
+                                        <span>{{ __('wallet.or') }}</span>
+                                        <span>{{ __('wallet.pay_with_card') }}</span>
                                     </div>
-                                    
+                                
                                     <!-- Multi-Payment Option Button -->
-                                    <button class="btn w-100 multi-payment-btn rounded-pill">
-                                        <i class="fab fa-cc-visa payment-icon visa-icon"></i>
-                                        <i class="fab fa-cc-mastercard payment-icon mastercard-icon"></i>
-                                        <i class="fab fa-cc-paypal payment-icon" style="color: #253B80;"></i>
-                                        <span class="text-muted ms-2">Credit/Debit Card</span>
+                                    <button class="btn w-100 multi-payment-btn rounded-pill d-flex justify-content-between align-items-center">
+                                        <span class="text-muted {{ app()->getLocale() == 'ar' ? 'me-2' : 'ms-2' }}">
+                                            {{ app()->getLocale() == 'ar' ? 'بطاقة ائتمان / بطاقة خصم' : 'Credit/Debit Card' }}
+                                        </span>
+                                        <div>
+                                            <i class="fab fa-cc-visa payment-icon visa-icon"></i>
+                                            <i class="fab fa-cc-mastercard payment-icon mastercard-icon"></i>
+                                            <i class="fab fa-cc-paypal payment-icon" style="color: #253B80;"></i>
+                                        </div>
                                     </button>
-                                    
-                                    <!-- This would expand to show card form in a real implementation -->
+                                
+                                    <!-- Card Form (Initially Hidden) -->
                                     <div class="mt-4 d-none" id="cardForm">
                                         <!-- Card form would go here -->
                                     </div>
                                 </div>
+                                
                             </div>
                             
                             <!-- Security Info -->
-                            <div class="text-center mt-3">
+                            <div class="text-center mt-3" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
                                 <small class="text-muted">
-                                    <i class="fas fa-lock me-1"></i>
-                                    Your payment is secure and encrypted
+                                    <i class="fas fa-lock {{ app()->getLocale() == 'ar' ? 'ms-1' : 'me-1' }}"></i>
+                                    {{ __('wallet.secure_payment_notice') }}
                                 </small>
                             </div>
+                            
                         </div>
                     </div>
 
