@@ -1,356 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Static Nested Comment System</title>
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <style>
-        .like-btn {
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .like-btn:hover {
-            transform: scale(1.1);
-        }
-        .liked {
-            color: #0d6efd !important;
-        }
-        .reply-form {
-            display: none;
-            margin-top: 10px;
-        }
-        .action-buttons {
-            margin-top: 8px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>PayPal & Card Toggle</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- PayPal SDK with both PayPal and Card options -->
+  <script src="https://www.paypal.com/sdk/js?client-id=AXAGlsJ-JhXTrCHJwnsi5rlquzbH2rTlvmwV2JiMzem702SZMxQjZIazy62emh56kCvPdYG6Pk_fcAxF&components=buttons,funding-eligibility&currency=USD"></script>
+
+  <style>
+    .btn-group {
+      margin-bottom: 20px;
+    }
+    .paypal-option {
+      margin-top: 20px;
+    }
+  </style>
 </head>
 <body>
-    <div class="container-md my-4">
-        <h2 class="mb-3">Comments</h2>
-        <div id="comments-container">
-            <div class="card mb-2">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between text-muted small mb-2">
-                        <span class="comment-author fw-bold">John Doe</span>
-                        <span class="comment-date">May 15, 2023, 10:30 AM</span>
-                    </div>
-                    <p class="card-text">This is a great post!</p>
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-sm btn-outline-primary like-btn">Like (0)</button>
-                        <button class="btn btn-sm btn-outline-secondary reply-btn">Reply</button>
-                    </div>
-                    <div class="reply-form mt-2" style="display: none;">
-                        <textarea class="form-control mb-2" rows="2" placeholder="Write your reply..."></textarea>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-sm btn-primary submit-reply">Reply</button>
-                            <button class="btn btn-sm btn-outline-danger cancel-reply">Cancel</button>
-                        </div>
-                    </div>
-                    <div class="ms-4 ps-3 border-start">
-                        <div class="card mb-2">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between text-muted small mb-2">
-                                    <span class="comment-author fw-bold">Alice Johnson</span>
-                                    <span class="comment-date">May 15, 2023, 11:15 AM</span>
-                                </div>
-                                <p class="card-text">I agree with you, John!</p>
-                                <div class="d-flex gap-2">
-                                    <button class="btn btn-sm btn-outline-primary like-btn">Like (0)</button>
-                                    <button class="btn btn-sm btn-outline-secondary reply-btn">Reply</button>
-                                </div>
-                                <div class="reply-form mt-2" style="display: none;">
-                                    <textarea class="form-control mb-2" rows="2" placeholder="Write your reply..."></textarea>
-                                    <div class="d-flex gap-2">
-                                        <button class="btn btn-sm btn-primary submit-reply">Reply</button>
-                                        <button class="btn btn-sm btn-outline-danger cancel-reply">Cancel</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card mb-2">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between text-muted small mb-2">
-                                    <span class="comment-author fw-bold">Bob Brown</span>
-                                    <span class="comment-date">May 15, 2023, 12:20 PM</span>
-                                </div>
-                                <p class="card-text">Thanks for your comment, John.</p>
-                                <div class="d-flex gap-2">
-                                    <button class="btn btn-sm btn-outline-primary like-btn">Like (0)</button>
-                                    <button class="btn btn-sm btn-outline-secondary reply-btn">Reply</button>
-                                </div>
-                                <div class="reply-form mt-2" style="display: none;">
-                                    <textarea class="form-control mb-2" rows="2" placeholder="Write your reply..."></textarea>
-                                    <div class="d-flex gap-2">
-                                        <button class="btn btn-sm btn-primary submit-reply">Reply</button>
-                                        <button class="btn btn-sm btn-outline-danger cancel-reply">Cancel</button>
-                                    </div>
-                                </div>
-                                <div class="ms-4 ps-3 border-start">
-                                    <div class="card mb-2">
-                                        <div class="card-body">
-                                            <div class="d-flex justify-content-between text-muted small mb-2">
-                                                <span class="comment-author fw-bold">Bob Brown</span>
-                                                <span class="comment-date">May 15, 2023, 12:20 PM</span>
-                                            </div>
-                                            <p class="card-text">Thanks for your comment, John.</p>
-                                            <div class="d-flex gap-2">
-                                                <button class="btn btn-sm btn-outline-primary like-btn">Like (0)</button>
-                                                <button class="btn btn-sm btn-outline-secondary reply-btn">Reply</button>
-                                            </div>
-                                            <div class="reply-form mt-2" style="display: none;">
-                                                <textarea class="form-control mb-2" rows="2" placeholder="Write your reply..."></textarea>
-                                                <div class="d-flex gap-2">
-                                                    <button class="btn btn-sm btn-primary submit-reply">Reply</button>
-                                                    <button class="btn btn-sm btn-outline-danger cancel-reply">Cancel</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="card mb-2">
-                                        <div class="card-body">
-                                            <div class="d-flex justify-content-between text-muted small mb-2">
-                                                <span class="comment-author fw-bold">Lorem, ipsum dolor.</span>
-                                                <span class="comment-date">May 15, 2023, 12:20 PM</span>
-                                            </div>
-                                            <p class="card-text">Thanks for your comment, Dahim.</p>
-                                            <div class="d-flex gap-2">
-                                                <button class="btn btn-sm btn-outline-primary like-btn">Like (0)</button>
-                                                <button class="btn btn-sm btn-outline-secondary reply-btn">Reply</button>
-                                            </div>
-                                            <div class="reply-form mt-2" style="display: none;">
-                                                <textarea class="form-control mb-2" rows="2" placeholder="Write your reply..."></textarea>
-                                                <div class="d-flex gap-2">
-                                                    <button class="btn btn-sm btn-primary submit-reply">Reply</button>
-                                                    <button class="btn btn-sm btn-outline-danger cancel-reply">Cancel</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        
-            <div class="card mb-2">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between text-muted small mb-2">
-                        <span class="comment-author fw-bold">Jane Smith</span>
-                        <span class="comment-date">May 16, 2023, 2:45 PM</span>
-                    </div>
-                    <p class="card-text">I have a question about this topic.</p>
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-sm btn-outline-primary like-btn">Like (0)</button>
-                        <button class="btn btn-sm btn-outline-secondary reply-btn">Reply</button>
-                    </div>
-                    <div class="reply-form mt-2" style="display: none;">
-                        <textarea class="form-control mb-2" rows="2" placeholder="Write your reply..."></textarea>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-sm btn-primary submit-reply">Reply</button>
-                            <button class="btn btn-sm btn-outline-danger cancel-reply">Cancel</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                // Handle reply button clicks
-                document.querySelectorAll('.reply-btn').forEach(button => {
-                    button.addEventListener('click', function() {
-                        const replyForm = this.closest('.card-body').querySelector('.reply-form');
-                        replyForm.style.display = replyForm.style.display === 'none' ? 'block' : 'none';
-                    });
-                });
-            
-                // Handle cancel button clicks
-                document.querySelectorAll('.cancel-reply').forEach(button => {
-                    button.addEventListener('click', function() {
-                        this.closest('.reply-form').style.display = 'none';
-                        this.closest('.reply-form').querySelector('textarea').value = '';
-                    });
-                });
-            
-                // Handle like button clicks
-                document.querySelectorAll('.like-btn').forEach(button => {
-                    button.addEventListener('click', function() {
-                        const currentText = this.textContent;
-                        const likeCount = parseInt(currentText.match(/\((\d+)\)/)[1]) || 0;
-                        this.textContent = `Like (${likeCount + 1})`;
-                    });
-                });
-            
-                // Handle submit reply button clicks (just hides the form for this example)
-                document.querySelectorAll('.submit-reply').forEach(button => {
-                    button.addEventListener('click', function() {
-                        const replyForm = this.closest('.reply-form');
-                        replyForm.style.display = 'none';
-                        replyForm.querySelector('textarea').value = '';
-                        // In a real app, you would submit the reply to your server here
-                        alert('Reply submitted! (This is just a demo)');
-                    });
-                });
-            });
-            </script>
 
-        <h3 class="mt-4">Add a New Comment</h3>
-        <div class="card">
-            <div class="card-body">
-                <textarea class="form-control mb-2" id="new-comment-text" placeholder="Write your comment here..." rows="3"></textarea>
-                <button class="btn btn-success" onclick="postNewComment()">Post Comment</button>
-            </div>
-        </div>
+  <div class="container">
+    <h2>Select Payment Method</h2>
+    <div class="btn-group">
+      <label><input type="radio" name="paymentMethod" value="paypal"> Pay with PayPal</label>
+      <br>
+      <label><input type="radio" name="paymentMethod" value="card"> Pay with Card</label>
     </div>
 
-    <!-- Font Awesome for icons -->
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-    <!-- Bootstrap 5 JS Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <script>
-        // Toggle like button
-        function toggleLike(button) {
-            const likeBtn = $(button);
-            const likeCount = likeBtn.find('.like-count');
-            let count = parseInt(likeCount.text());
-            
-            if (likeBtn.hasClass('liked')) {
-                likeBtn.removeClass('liked');
-                likeCount.text(count - 1);
-                likeBtn.find('i').removeClass('fas').addClass('far');
-            } else {
-                likeBtn.addClass('liked');
-                likeCount.text(count + 1);
-                likeBtn.find('i').removeClass('far').addClass('fas');
-            }
+    <div id="paypal-button-container" class="paypal-option d-none"></div>
+    <div id="card-button-container" class="paypal-option d-none"></div>
+  </div>
+
+  <script>
+    function renderButtons() {
+      // Render PayPal Button
+      paypal.Buttons({
+        fundingSource: paypal.FUNDING.PAYPAL,
+        style: { layout: 'vertical' },
+        createOrder: function (data, actions) {
+          return actions.order.create({
+            purchase_units: [{ amount: { value: '10.00' } }]
+          });
+        },
+        onApprove: function (data, actions) {
+          return actions.order.capture().then(function (details) {
+            alert('Transaction completed by ' + details.payer.name.given_name);
+          });
         }
-        
-        // Show reply form
-        function showReplyForm(button) {
-            const commentCard = $(button).closest('.comment');
-            const replyForm = commentCard.find('.reply-form');
-            
-            // Hide all other reply forms
-            $('.reply-form').not(replyForm).hide();
-            
-            // Toggle this reply form
-            replyForm.toggle();
+      }).render('#paypal-button-container');
+
+      // Render Card Button
+      paypal.Buttons({
+        fundingSource: paypal.FUNDING.CARD,
+        style: { layout: 'vertical' },
+        createOrder: function (data, actions) {
+          return actions.order.create({
+            purchase_units: [{ amount: { value: '10.00' } }]
+          });
+        },
+        onApprove: function (data, actions) {
+          return actions.order.capture().then(function (details) {
+            alert('Transaction completed by ' + details.payer.name.given_name);
+          });
         }
-        
-        // Cancel reply
-        function cancelReply(button) {
-            $(button).closest('.reply-form').hide();
+      }).render('#card-button-container');
+    }
+
+    $(document).ready(function () {
+      renderButtons();
+
+      // Hide both by default
+      $('#paypal-button-container, #card-button-container').hide();
+
+      $('input[name="paymentMethod"]').on('change', function () {
+        var selected = $(this).val();
+
+        if (selected === 'paypal') {
+          $('#paypal-button-container').show();
+          $('#card-button-container').hide();
+        } else if (selected === 'card') {
+          $('#card-button-container').show();
+          $('#paypal-button-container').hide();
         }
-        
-        // Post a reply
-        function postReply(button) {
-            const replyForm = $(button).closest('.reply-form');
-            const replyText = replyForm.find('.reply-text').val().trim();
-            
-            if (replyText === '') {
-                alert('Please enter your reply');
-                return;
-            }
-            
-            const commentCard = $(button).closest('.comment');
-            const repliesContainer = commentCard.find('.replies');
-            
-            // If this is a top-level comment without a replies container yet
-            if (repliesContainer.length === 0) {
-                commentCard.append('<div class="replies ms-4 ps-3 border-start"></div>');
-            }
-            
-            // Generate a unique ID for the new comment
-            const newId = 'comment-' + Date.now();
-            
-            // Create the new reply
-            const newReply = `
-                <div class="card mb-2 comment" data-id="${newId}">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between text-muted small mb-2">
-                            <span class="comment-author fw-bold">You</span>
-                            <span class="comment-date">Just now</span>
-                        </div>
-                        <p class="card-text">${replyText}</p>
-                        
-                        <div class="action-buttons d-flex gap-2">
-                            <span class="like-btn text-muted small" onclick="toggleLike(this)">
-                                <i class="far fa-thumbs-up"></i> <span class="like-count">0</span> Likes
-                            </span>
-                            <span class="reply-btn text-muted small" onclick="showReplyForm(this)">
-                                <i class="far fa-comment"></i> Reply
-                            </span>
-                        </div>
-                        
-                        <div class="reply-form mt-2">
-                            <textarea class="form-control mb-2 reply-text" placeholder="Write your reply..." rows="2"></textarea>
-                            <button class="btn btn-sm btn-primary me-2" onclick="postReply(this)">Post Reply</button>
-                            <button class="btn btn-sm btn-outline-secondary" onclick="cancelReply(this)">Cancel</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            // Append the new reply to the replies container
-            repliesContainer.append(newReply);
-            
-            // Clear and hide the reply form
-            replyForm.find('.reply-text').val('');
-            replyForm.hide();
-        }
-        
-        // Post a new top-level comment
-        function postNewComment() {
-            const commentText = $('#new-comment-text').val().trim();
-            
-            if (commentText === '') {
-                alert('Please enter your comment');
-                return;
-            }
-            
-            // Generate a unique ID for the new comment
-            const newId = 'comment-' + Date.now();
-            
-            // Create the new comment
-            const newComment = `
-                <div class="card mb-2 comment" data-id="${newId}">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between text-muted small mb-2">
-                            <span class="comment-author fw-bold">You</span>
-                            <span class="comment-date">Just now</span>
-                        </div>
-                        <p class="card-text">${commentText}</p>
-                        
-                        <div class="action-buttons d-flex gap-2">
-                            <span class="like-btn text-muted small" onclick="toggleLike(this)">
-                                <i class="far fa-thumbs-up"></i> <span class="like-count">0</span> Likes
-                            </span>
-                            <span class="reply-btn text-muted small" onclick="showReplyForm(this)">
-                                <i class="far fa-comment"></i> Reply
-                            </span>
-                        </div>
-                        
-                        <div class="reply-form mt-2">
-                            <textarea class="form-control mb-2 reply-text" placeholder="Write your reply..." rows="2"></textarea>
-                            <button class="btn btn-sm btn-primary me-2" onclick="postReply(this)">Post Reply</button>
-                            <button class="btn btn-sm btn-outline-secondary" onclick="cancelReply(this)">Cancel</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            // Append the new comment to the comments container
-            $('#comments-container').append(newComment);
-            
-            // Clear the comment textarea
-            $('#new-comment-text').val('');
-        }
-    </script>
+      });
+    });
+  </script>
 </body>
 </html>

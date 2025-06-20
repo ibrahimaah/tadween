@@ -100,7 +100,7 @@
                                     <h4 class="card-title text-center mb-4">{{ __('wallet.choose_payment_method') }}</h4>
                                 
                                     <!-- PayPal Button -->
-                                    <button class="btn btn-primary px-2 w-100 paypal-btn mb-3 rounded-pill d-flex justify-content-between align-items-center">
+                                    <button class="btn btn-primary px-2 w-100 paypal-btn mb-3 rounded-pill d-flex justify-content-between align-items-center" id="btnPayWithPaypal">
                                         <span class="fw-bold">{{ __('wallet.pay_with_paypal') }}</span>
                                         <i class="fab fa-cc-paypal payment-icon paypal-icon"></i>
                                     </button>
@@ -112,7 +112,7 @@
                                     </div>
                                 
                                     <!-- Multi-Payment Option Button -->
-                                    <button class="btn w-100 multi-payment-btn rounded-pill d-flex justify-content-between align-items-center">
+                                    <button class="btn w-100 multi-payment-btn rounded-pill d-flex justify-content-between align-items-center" id="btnPayWithCard">
                                         <span class="text-muted {{ app()->getLocale() == 'ar' ? 'me-2' : 'ms-2' }}">
                                             {{ app()->getLocale() == 'ar' ? 'بطاقة ائتمان / بطاقة خصم' : 'Credit/Debit Card' }}
                                         </span>
@@ -143,9 +143,10 @@
                     </div>
 
 
-                    <div id="paypal-wrapper" class="mb-3" style="display: none;">
-                        <div id="paypal-button-container"></div>
-                    </div>
+                    
+                    <div id="paypal-button-container" class="d-none"></div>
+                    <div id="card-button-container" class="d-none"></div>
+                    
                 </div>
 
                 <div class="modal-footer">
@@ -160,10 +161,10 @@
 </div>
 
 @push('js')
-<script
-    src="https://www.paypal.com/sdk/js?client-id={{ env('PAYPAL_SANDBOX_CLIENT_ID') }}&currency={{ env('PAYPAL_CURRENCY') }}"
-    data-sdk-integration-source="button-factory"></script>
 
+<script
+    src="https://www.paypal.com/sdk/js?client-id={{ env('PAYPAL_SANDBOX_CLIENT_ID') }}&components=buttons,funding-eligibility&currency={{ env('PAYPAL_CURRENCY') }}"></script>
+   
 <script>
     // Toastr global options
     toastr.options = {
@@ -173,8 +174,10 @@
     };
 </script>
 
+
 <script>
     $(function() {
+        
         const $amountInput = $('#amount');
         const $continueBtn = $('#continueToPayPal');
         const $paypalWrapper = $('#paypal-wrapper');
@@ -183,11 +186,15 @@
         const $depositModal = $('#depositModal');
         const $depositForm = $('#depositForm');
         const btnsPaymentChoices = $('#btnsPaymentChoices');
-
+        const btnPayWithPaypal = $('#btnPayWithPaypal');
+        const btnPayWithCard = $('#btnPayWithCard');
+        
         var paymentMethod = 'UnKnown';
         let paypalButtonsRendered = false;
+        let paypalButtonRendered = false;
         let choicesButtonsRendered = false;
 
+       
         // Reset modal to initial state
         function resetModal() {
             $depositForm[0].reset();
@@ -208,10 +215,11 @@
                 shape: 'rect',
                 label: 'paypal'
             },
+            fundingSource: paypal.FUNDING.PAYPAL,
               // onClick is called when the buyer clicks the PayPal button
             onClick: function(data, actions) 
             {
-                console.log('Button clicked data:', data);
+                // console.log('Button clicked data:', data);
                 if (data.fundingSource) 
                 {
                     if (data.fundingSource === 'paypal') 
@@ -330,16 +338,31 @@
                 $paypalWrapper.show();
                 $paypalLoading.hide();
 
-                if(btnsPaymentChoices.hasClass('d-none'))
-                {
-                    btnsPaymentChoices.removeClass('d-none').addClass('d-block');
-                }
+                btnsPaymentChoices.toggleClass('d-none')
+                
                 // if (!paypalButtonsRendered) {
                     // paypal.Buttons(paypalConfig).render('#paypal-button-container');
                     // paypalButtonsRendered = true;
                 // }
             }, 500);
         });
+
+        const renderButtons = () => paypal.Buttons(paypalConfig).render('#paypal-button-container');
+
+        btnPayWithPaypal.on('click',function(e)
+        {
+            e.preventDefault();
+            btnsPaymentChoices.toggleClass('d-none'); 
+            $paypalLoading.show();
+            setTimeout(() => { 
+                $paypalLoading.hide();
+                renderButtons();
+                $('#paypal-button-container').toggleClass('d-none');
+                // $('#card-button-container').hide();
+            }, 500);
+        });
+
+
 
         // Reset modal when hidden
         $depositModal.on('hidden.bs.modal', resetModal);
