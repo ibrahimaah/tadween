@@ -1,67 +1,7 @@
-<style>
-    .payment-card {
-        border-radius: 15px;
-        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
-        border: none;
-        overflow: hidden;
-    }
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/wallet/deposit_modal_styles.css') }}">
+@endpush
 
-    /* .payment-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
-    } */
-
-    .paypal-btn {
-        background: linear-gradient(135deg, #253B80 0%, #179BD7 100%);
-        border: none;
-        padding: 12px 0;
-    }
-
-    .multi-payment-btn {
-        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-        border: 1px solid #dee2e6;
-        padding: 12px 0;
-    }
-
-    .payment-icon {
-        font-size: 1.8rem;
-        margin: 0 8px;
-        vertical-align: middle;
-    }
-
-    .paypal-icon {
-        color: white;
-    }
-
-    .visa-icon {
-        color: #1A1F71;
-    }
-
-    .mastercard-icon {
-        color: #EB001B;
-    }
-
-    .payment-separator {
-        display: flex;
-        align-items: center;
-        margin: 20px 0;
-    }
-
-    .payment-separator::before,
-    .payment-separator::after {
-        content: "";
-        flex: 1;
-        border-bottom: 1px solid #dee2e6;
-    }
-
-    .payment-separator span {
-        padding: 0 10px;
-        color: #6c757d;
-        font-size: 0.9rem;
-    }
-</style>
-</style>
 <div class="modal fade" id="depositModal" tabindex="-1" aria-labelledby="depositModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -175,6 +115,7 @@
 </script>
 
 
+
 <script>
     $(function() {
         
@@ -188,134 +129,66 @@
         const btnsPaymentChoices = $('#btnsPaymentChoices');
         const btnPayWithPaypal = $('#btnPayWithPaypal');
         const btnPayWithCard = $('#btnPayWithCard');
-        
         var paymentMethod = 'UnKnown';
         let paypalButtonsRendered = false;
         let paypalButtonRendered = false;
         let choicesButtonsRendered = false;
-
-       
-        // Reset modal to initial state
-        function resetModal() {
-            $depositForm[0].reset();
-            $paypalWrapper.hide();
-            $paypalLoading.hide();
-            $continueBtn.show().prop('disabled', true);
-            $paypalButtonContainer.empty();
-            paypalButtonsRendered = false;
-            choicesButtonsRendered = false;
-            btnsPaymentChoices.removeClass('d-block').addClass('d-none');
-        }
-
        
         const paypalConfig = {
+
             style: {
                 layout: 'vertical',
                 color: 'silver',
                 shape: 'rect',
                 label: 'paypal'
             },
-            fundingSource: paypal.FUNDING.PAYPAL,
-              // onClick is called when the buyer clicks the PayPal button
+            
+            fundingSource: paypal.FUNDING.PAYPAL, 
+
             onClick: function(data, actions) 
-            {
-                // console.log('Button clicked data:', data);
-                if (data.fundingSource) 
-                {
-                    if (data.fundingSource === 'paypal') 
-                    {
-                        paymentMethod = @json(\App\Enums\PaymentMethods::PAYPAL->value);
-                        // Add specific logic for PayPal payments here
-                    } 
-                    else if (data.fundingSource === 'card') 
-                    {
-                        paymentMethod = @json(\App\Enums\PaymentMethods::CREDIT_OR_DEBIT_CARD->value);
-                    }
-                    // You can check for other funding sources like 'venmo', 'paylater', etc.
-                    // based on your PayPal setup.
-                } else {
-                    console.log('Funding source information not available in this click context.');
-                }
+            {    
+                paymentMethod = @json(\App\Enums\PaymentMethods::PAYPAL->value); 
             },
             createOrder: function(data, actions) {
                 const amount = $amountInput.val().trim() || '0.00';
-                return actions.order.create({
-                    purchase_units: [{
-                        amount: {
-                            currency_code: '{{ env("PAYPAL_CURRENCY", "USD") }}',
-                            value: amount
-                        }
-                    }],
-                    application_context: {
-                        shipping_preference: 'NO_SHIPPING', // 👈 Hides billing/shipping fields 
-                    }
-                });
+                return createOrderFun(amount,actions);
             },
             onApprove: function(data, actions) {
-                return actions.order.capture().then(details => {
-                    const payerName = `${details.payer.name.given_name} ${details.payer.name.surname}`;
-                    const payment = details.purchase_units[0].payments.captures[0];
-                    const status = payment.status || 'UNKNOWN';
-                    const { id: captureId, amount: { value, currency_code } } = payment;
-
-                    // console.log('Payment details:', details); 
-
-                    // const paymentSource = details.payment_source ? Object.keys(details.payment_source)[0] : 'paypal';
-
-                    // Send payment info to server
-                    $.ajax({
-                        url: "{{ route('wallet.deposit') }}",
-                        method: "POST",
-                        data: {
-                            _token: "{{ csrf_token() }}",
-                            amount: value,
-                            captureId,
-                            paymentMethod,
-                            status ,
-                            details
-                        },
-                        success: response => {
-                            $('#balance').html(response.balance);
-                            $('#noTransactionsMsg').remove();
-                            $('#transactionsList').prepend(response.transaction_item_html);
-                            toastr.success("{{ __('wallet.updated_success') }}");
-                            $depositModal.modal('hide');
-                            resetModal();
-                        },
-                        error: xhr => {
-                            if (xhr.status === 422) {
-                                // Validation error
-                                const response = xhr.responseJSON;
-                                if (response && response.msg) {
-                                    // If msg is an array, join it; otherwise display as-is
-                                    const messages = Array.isArray(response.msg) ? response.msg.join('<br>') : response.msg;
-                                    toastr.error(messages);
-                                } else {
-                                    toastr.error("{{ __('wallet.validation_failed') }}");
-                                }
-                            } else {
-                                // Other errors
-                                toastr.error("{{ __('wallet.error_occurred') }}");
-                                console.error(xhr);
-                            }
-                        }
-
-                    });
-                });
+                return onApproveFun(actions);
             },
             // Optional: Handle cancellation
             onCancel: function(data) {
-                toastr.error("{{ __('wallet.payment_was_cancelled') }}"); 
-                // You can redirect or update the UI here
-                // window.location.href = '/payment/cancelled'; // 👈 Customize this
+                toastr.error("{{ __('wallet.payment_was_cancelled') }}");  
             },
             onError: function(err) {
                 toastr.error("{{ __('wallet.error_occurred') }}");
                 console.error(err);
             }
         };
-
-
+        const paypalCardConfig = {
+            style: {
+                layout: 'vertical',
+                color: 'black',
+                shape: 'rect',
+                label: 'paypal'
+            },
+            fundingSource: paypal.FUNDING.CARD, 
+            onClick: function(data, actions) 
+            {    
+                paymentMethod = @json(\App\Enums\PaymentMethods::CREDIT_OR_DEBIT_CARD->value); 
+            },
+            createOrder: function(data, actions) {
+                const amount = $amountInput.val().trim() || '0.00';
+                return createOrderFun(amount,actions);
+            },
+            onApprove: function(data, actions) {
+                return onApproveFun(actions);
+            }, 
+            onError: function(err) {
+                toastr.error("{{ __('wallet.error_occurred') }}");
+                console.error(err);
+            }
+        };
 
         // Enable/disable continue button based on input
         $amountInput.on('input', function() {
@@ -347,25 +220,58 @@
             }, 500);
         });
 
-        const renderButtons = () => paypal.Buttons(paypalConfig).render('#paypal-button-container');
+        const PAYPAL = @json(\App\Enums\PaymentMethods::PAYPAL->value);
+        const CARD = @json(\App\Enums\PaymentMethods::CARD->value);
 
-        btnPayWithPaypal.on('click',function(e)
-        {
+        function renderButtons(method) {
+            if (method === PAYPAL) {
+                paypal.Buttons(paypalConfig).render('#paypal-button-container');
+            } else if (method === CARD) {
+                paypal.Buttons(paypalCardConfig).render('#card-button-container');
+            }
+        }
+
+        function handleClick(e, method, container) {
             e.preventDefault();
-            btnsPaymentChoices.toggleClass('d-none'); 
+            btnsPaymentChoices.toggleClass('d-none');
             $paypalLoading.show();
-            setTimeout(() => { 
+
+            setTimeout(() => {
                 $paypalLoading.hide();
-                renderButtons();
-                $('#paypal-button-container').toggleClass('d-none');
-                // $('#card-button-container').hide();
+                renderButtons(method);
+                $(container).toggleClass('d-none');
             }, 500);
-        });
+        }
+
+        btnPayWithPaypal.on('click', e => handleClick(e, PAYPAL, '#paypal-button-container'));
+        btnPayWithCard.on('click', e => handleClick(e, CARD, '#card-button-container'));
 
 
-
+        // Reset modal to initial state
+        function resetModal() {
+            $depositForm[0].reset();
+            $paypalWrapper.hide();
+            $paypalLoading.hide();
+            $continueBtn.show().prop('disabled', true);
+            $paypalButtonContainer.empty();
+            paypalButtonsRendered = false;
+            choicesButtonsRendered = false;
+            btnsPaymentChoices.removeClass('d-block').addClass('d-none');
+        }
         // Reset modal when hidden
         $depositModal.on('hidden.bs.modal', resetModal);
     });
 </script>
+
+<script>
+    window.translations = {
+        validation_failed: "{{ __('wallet.validation_failed') }}", 
+        err_occur: "{{ __('wallet.error_occurred') }}", 
+        wallet_updated_success: "{{ __('wallet.updated_success') }}",
+    };
+    window.constants = {
+        url: "{{ route('wallet.deposit') }}", 
+    };
+</script>
+
 @endpush

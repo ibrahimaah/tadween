@@ -219,3 +219,7 @@
 </div>
 @endsection
 
+@push('js')
+    <script src="{{ asset('js/wallet/deposit_modal_helper.js') }}"></script>
+@endpush
+

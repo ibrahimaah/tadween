@@ -1,0 +1,61 @@
+.payment-card {
+    border-radius: 15px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: none;
+    overflow: hidden;
+}
+
+/* .payment-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+} */
+
+.paypal-btn {
+    background: linear-gradient(135deg, #253B80 0%, #179BD7 100%);
+    border: none;
+    padding: 12px 0;
+}
+
+.multi-payment-btn {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border: 1px solid #dee2e6;
+    padding: 12px 0;
+}
+
+.payment-icon {
+    font-size: 1.8rem;
+    margin: 0 8px;
+    vertical-align: middle;
+}
+
+.paypal-icon {
+    color: white;
+}
+
+.visa-icon {
+    color: #1A1F71;
+}
+
+.mastercard-icon {
+    color: #EB001B;
+}
+
+.payment-separator {
+    display: flex;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.payment-separator::before,
+.payment-separator::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.payment-separator span {
+    padding: 0 10px;
+    color: #6c757d;
+    font-size: 0.9rem;
+}

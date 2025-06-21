@@ -6,6 +6,7 @@ enum PaymentMethods: string
 {
     case PAYPAL  = 'paypal';
     case CREDIT_OR_DEBIT_CARD  = 'Debit/Credit card';
+    case CARD = 'card';
 
     // App\Enums\PaymentMethods.php (or a helper class)
     public static function getDescription(?string $method): ?string
