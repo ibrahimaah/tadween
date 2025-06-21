@@ -106,6 +106,15 @@
     @yield('java_scripts')
     <script src="{{asset('js/home.js?version=1.0')}}"></script>
 
+    <script>
+        // Include this once (e.g., in a JS setup file)
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+    </script>
     @stack('js')
 </body>
 </html>

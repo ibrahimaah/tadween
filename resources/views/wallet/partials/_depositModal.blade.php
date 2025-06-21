@@ -32,7 +32,7 @@
                         <p class="mt-2">{{ __('wallet.loading') }}</p>
                     </div>
 
-                    <div class="container d-none" id="btnsPaymentChoices">
+                    <div class="container" style="display: none" id="btnsPaymentChoices">
                         <div class="row justify-content-center">
 
                             <div class="card payment-card">
@@ -59,7 +59,7 @@
                                         <div>
                                             <i class="fab fa-cc-visa payment-icon visa-icon"></i>
                                             <i class="fab fa-cc-mastercard payment-icon mastercard-icon"></i>
-                                            <i class="fab fa-cc-paypal payment-icon" style="color: #253B80;"></i>
+                                            {{-- <i class="fab fa-cc-paypal payment-icon" style="color: #253B80;"></i> --}}
                                         </div>
                                     </button>
                                 
@@ -82,10 +82,8 @@
                         </div>
                     </div>
 
-
-                    
-                    <div id="paypal-button-container" class="d-none"></div>
-                    <div id="card-button-container" class="d-none"></div>
+                    <div id="paypal-button-container" style="display: none"></div>
+                    <div id="card-button-container" style="display: none"></div>
                     
                 </div>
 
@@ -118,128 +116,97 @@
 
 <script>
     $(function() {
-        
-        const $amountInput = $('#amount');
-        const $continueBtn = $('#continueToPayPal');
-        const $paypalWrapper = $('#paypal-wrapper');
-        const $paypalLoading = $('#paypal-loading');
-        const $paypalButtonContainer = $('#paypal-button-container');
-        const $depositModal = $('#depositModal');
-        const $depositForm = $('#depositForm');
+        const PAYPAL = @json(\App\Enums\PaymentMethods::PAYPAL->value);
+        const CARD = @json(\App\Enums\PaymentMethods::CARD->value);
+
+        const amountInput = $('#amount');
+        const continueBtn = $('#continueToPayPal'); 
+        const paypalLoading = $('#paypal-loading');
+        const paypalButtonContainer = $('#paypal-button-container');
+        const cardButtonContainer = $('#card-button-container');
+        const depositModal = $('#depositModal');
+        const depositForm = $('#depositForm');
         const btnsPaymentChoices = $('#btnsPaymentChoices');
         const btnPayWithPaypal = $('#btnPayWithPaypal');
         const btnPayWithCard = $('#btnPayWithCard');
-        var paymentMethod = 'UnKnown';
-        let paypalButtonsRendered = false;
-        let paypalButtonRendered = false;
-        let choicesButtonsRendered = false;
+        var paymentMethod = 'UnKnown'; 
+        let paypalButtonRendered = false; 
        
-        const paypalConfig = {
+    const createPaypalConfig = (fundingSource, style, methodValue) => ({
+        style,
+        fundingSource,
+        createOrder: function (data, actions) {
+            const amount = amountInput.val().trim() || '0.00';
+            return createOrderFun(amount, actions);
+        },
+        onApprove: function (data, actions) {
+            return onApproveFun(actions,methodValue);
+        },
+        onError: function (err) {
+            toastr.error("{{ __('wallet.error_occurred') }}");
+            console.error(err);
+        }
+    });
 
-            style: {
-                layout: 'vertical',
-                color: 'silver',
-                shape: 'rect',
-                label: 'paypal'
-            },
-            
-            fundingSource: paypal.FUNDING.PAYPAL, 
+    const paypalConfig = createPaypalConfig(
+        paypal.FUNDING.PAYPAL,
+        {
+            layout: 'vertical',
+            color: 'silver',
+            shape: 'rect',
+            label: 'paypal'
+        },
+        @json(\App\Enums\PaymentMethods::PAYPAL->value)
+    );
 
-            onClick: function(data, actions) 
-            {    
-                paymentMethod = @json(\App\Enums\PaymentMethods::PAYPAL->value); 
-            },
-            createOrder: function(data, actions) {
-                const amount = $amountInput.val().trim() || '0.00';
-                return createOrderFun(amount,actions);
-            },
-            onApprove: function(data, actions) {
-                return onApproveFun(actions);
-            },
-            // Optional: Handle cancellation
-            onCancel: function(data) {
-                toastr.error("{{ __('wallet.payment_was_cancelled') }}");  
-            },
-            onError: function(err) {
-                toastr.error("{{ __('wallet.error_occurred') }}");
-                console.error(err);
-            }
-        };
-        const paypalCardConfig = {
-            style: {
-                layout: 'vertical',
-                color: 'black',
-                shape: 'rect',
-                label: 'paypal'
-            },
-            fundingSource: paypal.FUNDING.CARD, 
-            onClick: function(data, actions) 
-            {    
-                paymentMethod = @json(\App\Enums\PaymentMethods::CREDIT_OR_DEBIT_CARD->value); 
-            },
-            createOrder: function(data, actions) {
-                const amount = $amountInput.val().trim() || '0.00';
-                return createOrderFun(amount,actions);
-            },
-            onApprove: function(data, actions) {
-                return onApproveFun(actions);
-            }, 
-            onError: function(err) {
-                toastr.error("{{ __('wallet.error_occurred') }}");
-                console.error(err);
-            }
-        };
+    const paypalCardConfig = createPaypalConfig(
+        paypal.FUNDING.CARD,
+        {
+            layout: 'vertical',
+            color: 'black',
+            shape: 'rect',
+            label: 'paypal'
+        },
+        @json(\App\Enums\PaymentMethods::CREDIT_OR_DEBIT_CARD->value)
+    );
 
         // Enable/disable continue button based on input
-        $amountInput.on('input', function() {
-            const amount = parseFloat($amountInput.val());
-            $continueBtn.prop('disabled', !(amount > 0));
+        amountInput.on('input', function() {
+            const amount = parseFloat(amountInput.val());
+            continueBtn.prop('disabled', !(amount > 0));
         });
 
         // Continue button click handler
-        $continueBtn.on('click', function() {
-            const amount = parseFloat($amountInput.val());
+        continueBtn.on('click', function() {
+            const amount = parseFloat(amountInput.val());
             if (!(amount > 0)) {
                 toastr.error("{{ __('wallet.please_enter_valid_amount') }}");
                 return;
             }
-
-            $continueBtn.hide();
-            $paypalLoading.show();
-
-            setTimeout(() => {
-                $paypalWrapper.show();
-                $paypalLoading.hide();
-
-                btnsPaymentChoices.toggleClass('d-none')
-                
-                // if (!paypalButtonsRendered) {
-                    // paypal.Buttons(paypalConfig).render('#paypal-button-container');
-                    // paypalButtonsRendered = true;
-                // }
+            continueBtn.hide();
+            paypalLoading.show();
+            setTimeout(() => { 
+                paypalLoading.hide();
+                btnsPaymentChoices.show() 
             }, 500);
         });
 
-        const PAYPAL = @json(\App\Enums\PaymentMethods::PAYPAL->value);
-        const CARD = @json(\App\Enums\PaymentMethods::CARD->value);
+       
 
-        function renderButtons(method) {
-            if (method === PAYPAL) {
-                paypal.Buttons(paypalConfig).render('#paypal-button-container');
-            } else if (method === CARD) {
-                paypal.Buttons(paypalCardConfig).render('#card-button-container');
-            }
-        }
+       
 
         function handleClick(e, method, container) {
             e.preventDefault();
-            btnsPaymentChoices.toggleClass('d-none');
-            $paypalLoading.show();
-
+            btnsPaymentChoices.hide();
+            paypalLoading.show();
             setTimeout(() => {
-                $paypalLoading.hide();
-                renderButtons(method);
-                $(container).toggleClass('d-none');
+                paypalLoading.hide();
+                if (method === PAYPAL) {
+                    paypal.Buttons(paypalConfig).render('#paypal-button-container');
+                } else if (method === CARD) {
+                    paypal.Buttons(paypalCardConfig).render('#card-button-container');
+                }
+                $(container).show();
             }, 500);
         }
 
@@ -249,17 +216,17 @@
 
         // Reset modal to initial state
         function resetModal() {
-            $depositForm[0].reset();
-            $paypalWrapper.hide();
-            $paypalLoading.hide();
-            $continueBtn.show().prop('disabled', true);
-            $paypalButtonContainer.empty();
-            paypalButtonsRendered = false;
-            choicesButtonsRendered = false;
-            btnsPaymentChoices.removeClass('d-block').addClass('d-none');
+            depositForm[0].reset(); 
+            paypalLoading.hide();   
+            continueBtn.show().prop('disabled', true); 
+            
+            paypalButtonContainer.empty().hide();
+            cardButtonContainer.empty().hide();
+            
+            btnsPaymentChoices.hide();  
         }
         // Reset modal when hidden
-        $depositModal.on('hidden.bs.modal', resetModal);
+        depositModal.on('hidden.bs.modal', resetModal);
     });
 </script>
 

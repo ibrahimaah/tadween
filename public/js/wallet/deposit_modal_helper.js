@@ -13,7 +13,7 @@ function createOrderFun(amount,actions)
     });
 }
 
-function onApproveFun(actions)
+function onApproveFun(actions,paymentMethod)
 {
     // onApprove: function(data, actions) {
         return actions.order.capture().then(details => {
@@ -25,8 +25,7 @@ function onApproveFun(actions)
             $.ajax({
                 url: window.constants.url,
                 method: "POST",
-                data: {
-                    _token: "{{ csrf_token() }}",
+                data: { 
                     amount: value,
                     captureId,
                     paymentMethod,
@@ -38,7 +37,7 @@ function onApproveFun(actions)
                     $('#noTransactionsMsg').remove();
                     $('#transactionsList').prepend(response.transaction_item_html);
                     toastr.success(window.translations.wallet_updated_success);
-                    $depositModal.modal('hide');
+                    $('#depositModal').modal('hide');
                     resetModal();
                 },
                 error: xhr => {
