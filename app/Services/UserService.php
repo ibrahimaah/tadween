@@ -143,5 +143,18 @@ class UserService
         }
     }
 
+    public function getTransferWalletUsers()
+    {
+        try 
+        {
+            $data = User::select('id','username')->where('role','user')->where ('is_ban','no')->get();
+            return ['code' => 1, 'data' => $data];
+        }
+        catch(Exception $ex)
+        {
+            return ['code' => 0 , 'msg' => $ex->getMessage()];
+        }
+    }
+
     
 }

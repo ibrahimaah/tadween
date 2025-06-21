@@ -74,7 +74,8 @@ Route::middleware(['auth', UpdateLastActivity::class])->group(function () {
     Route::post('wallet-deposit',[WalletController::class,'deposit'])->name('wallet.deposit');
     Route::post('wallet-transfer',[WalletController::class,'transfer'])->name('wallet.transfer'); 
     Route::get('/wallet/paypal/success', [WalletController::class, 'paypalSuccess'])->name('wallet.paypal.success');
-    Route::get('/wallet/paypal/cancel', [WalletController::class, 'paypalCancel'])->name('wallet.paypal.cancel');
+    Route::get('/wallet/paypal/cancel', [WalletController::class, 'paypalCancel'])->name('wallet.paypal.cancel'); 
+    
 
     
     

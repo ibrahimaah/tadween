@@ -52,6 +52,10 @@ return [
     'secure_payment_notice' => 'Your payment is secure and encrypted',
     'non_refundable_notice' => 'I understand that this deposit is non-refundable.',
     'please_accept_non_refundable' => 'You must accept that this payment is non-refundable.',
-
+    'sender_and_receiver_must_be_different' => 'The sender and receiver must be different users.',
+    'insufficient_funds' => 'Insufficient funds',
+    'transfer_success' => 'Transfer success',
+    'transfer_failed' => 'Transfer failed',
+    'transferring' => 'transferring ...',
 
 ];

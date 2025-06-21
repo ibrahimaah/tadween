@@ -2,28 +2,31 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\PaymentMethods;
 use App\Http\Requests\DepositToWalletRequest;
-use App\Models\User;
+use App\Http\Requests\TransferWallerRequest;
+use App\Services\UserService;
 use App\Services\WalletService;
-use Exception;
-use Illuminate\Http\Request;
+use Exception; 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Srmklive\PayPal\Services\PayPal as PayPalClient;
+
 
 
 class WalletController extends Controller
 {
-    public function __construct(private WalletService $walletService) {}
+    public function __construct(private WalletService $walletService,private UserService $userService) {}
 
     public function index()
     {
         $wallet = Auth::user()->wallet;
-    
+        $res_users = $this->userService->getTransferWalletUsers();
+        $sender_id = Auth::id();
+        if($res_users['code'] == 0) dd($res_users['msg']);
         return view('wallet.index', [
             'recent_transactions' => $wallet->transactions()->latest()->take(10)->get(),
             'allTransactions'     => $wallet->transactions()->latest()->get(),
+            'users'               => $res_users['data'],
+            'sender_id'           => $sender_id
         ]);
     }
     
@@ -81,6 +84,39 @@ class WalletController extends Controller
     }
 
 
+    public function transfer(TransferWallerRequest $request)
+    {
+        $validated = $request->validated();
+
+        $sender_id = $validated['sender_id'];
+        $receiver_id = $validated['receiver_id'];
+        $amount = $validated['amount'];
+
+        $res_transfer = $this->walletService->transfer($sender_id,$receiver_id,$amount);
+
+        if($res_transfer['code'] == 0)
+        {
+            return response()->json([
+                'code' => false,
+                'msg' => $res_transfer['msg'],
+                'userMsg' => __('wallet.transfer_failed')
+            ],500);
+        }
+
+        // Get the latest transaction
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $transaction = $user->wallet->transactions()->latest()->first();
+        $transaction_view = view('wallet.partials._transaction_item', compact('transaction'))->render();
+        
+        return response()->json([
+            'code' => true,
+            'msg' => __('wallet.transfer_success'),
+            'transfer' => $res_transfer['data'],
+            'balance' => Auth::user()->balance,
+            'transaction_item_html' => $transaction_view
+        ], 200);
+    }
     // public function deposit(Request $request)
     // {
     //     $provider = new PayPalClient;

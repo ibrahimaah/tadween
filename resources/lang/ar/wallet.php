@@ -52,5 +52,10 @@ return [
     'secure_payment_notice' => 'مدفوعاتك آمنة ومشفرة',
     'non_refundable_notice' => 'هذا الإيداع غير قابل للاسترداد.',
     'please_accept_non_refundable' =>  'يجب أن توافق على أن هذه الدفعة غير قابلة للاسترداد قبل المتابعة.',
+    'sender_and_receiver_must_be_different' => 'يجب أن يكون المرسل والمستقبل مستخدمين مختلفين.',
+    'insufficient_funds' => 'الرصيد غير كافٍ',
+    'transfer_success' => 'تم التحويل بنجاح',
+    'transfer_failed' => 'فشلت عملية التحويل',
+    'transferring' => 'جاري التحويل ...',
 
 ];

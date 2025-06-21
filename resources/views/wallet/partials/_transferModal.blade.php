@@ -10,15 +10,15 @@
                     aria-label="{{ __('wallet.close') }}"></button>
             </div> 
 
-            <form action="{{ route('wallet.transfer') }}" method="POST">
+            <form action="{{ route('wallet.transfer') }}" method="POST" id="form_transfer">
                 @csrf
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="recipient" class="form-label">{{ __('wallet.recipient') }}</label>
                         <select class="form-control" name="recipient" id="recipient" required>
-                            <option value="1">علي</option>
-                            <option value="2">علي</option>
-                            <option value="3">علي</option>
+                            @foreach ($users as $user)
+                                <option value="{{ $user->id }}">{{ $user->username }}</option> 
+                            @endforeach
                         </select> 
                     </div>
                     <div class="mb-3">
@@ -35,7 +35,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('wallet.cancel') }}</button>
-                    <button type="submit" class="btn btn-primary">{{ __('wallet.transfer') }}</button>
+                    <button type="submit" class="btn btn-primary" id="btn_transfer">{{ __('wallet.transfer') }}</button>
                 </div>
             </form>
         </div>
@@ -43,10 +43,65 @@
 </div>
 
 @push('js')
+
 <script src="{{ asset('js/select2.min.js') }}"></script>
+
 <script>
-    $(function() {
-        $('#recipient').select2();
-    })
+    // Toastr global options
+    toastr.options = {
+        positionClass: "toast-top-center",
+        closeButton: true,
+        progressBar: true
+    };
+</script>
+
+<script>
+$(function() {
+    $('#recipient').select2();
+    let sender_id = @json($sender_id);
+
+    $('#form_transfer').on('submit', function(e) {
+        e.preventDefault();
+
+        let receiver_id = $('#recipient').val();
+        let amount = $('#transferAmount').val();
+        let url = $(this).attr('action');
+        let token = $('input[name="_token"]').val();
+
+        $('#btn_transfer').attr('disabled', true).text('{{ __("wallet.transferring") }}...');
+
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: {
+                _token: token,
+                sender_id: sender_id,
+                receiver_id: receiver_id,
+                amount: amount
+            },
+            success: function(response) {
+                if(response.code)
+                {
+                    $('#balance').html(response.balance);
+                    $('#btn_transfer').attr('disabled', false).text('{{ __("wallet.transfer") }}');
+                    // Optional: close modal
+                    $('#transferModal').modal('hide');
+                    toastr.success(response.msg);
+                }
+                else 
+                {
+                    toastr.error("{{ __('wallet.transfer_failed') }}") 
+                }
+
+                // Optional: refresh wallet balance or transaction history
+            },
+            error: function(xhr) {
+                $('#btn_transfer').attr('disabled', false).text('{{ __("wallet.transfer") }}');
+                // let msg = xhr.responseJSON?.msg || '{{ __("wallet.transfer_failed") }}';
+                toastr.error(xhr.responseJSON?.userMsg || "{{ __('wallet.transfer_failed') }}") 
+            }
+        });
+    });
+});
 </script>
 @endpush
