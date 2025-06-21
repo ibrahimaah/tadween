@@ -73,153 +73,22 @@
 @include('wallet.partials._depositModal')
 
 <!-- Transfer Modal -->
-<div class="modal fade" id="transferModal" tabindex="-1" aria-labelledby="transferModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="transferModalLabel">{{ __('wallet.transfer_funds') }}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form action="{{ route('wallet.transfer') }}" method="POST">
-                @csrf
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="recipient" class="form-label">{{ __('wallet.recipient') }}</label>
-                        <input type="text" class="form-control" id="recipient" name="recipient" placeholder="@username" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="transferAmount" class="form-label">{{ __('wallet.amount') }}</label>
-                        <div class="input-group">
-                            <input type="number" class="form-control" id="transferAmount" name="amount" min="1" required>
-                            <span class="input-group-text">{{ __('wallet.currency_dollar') }}</span>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="note" class="form-label">{{ __('wallet.note') }} ({{ __('wallet.optional') }})</label>
-                        <textarea class="form-control" id="note" name="note" rows="2"></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('wallet.cancel') }}</button>
-                    <button type="submit" class="btn btn-primary">{{ __('wallet.transfer') }}</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+@include('wallet.partials._transferModal')
 
 <!-- History Modal -->
-<div class="modal fade" id="historyModal" tabindex="-1" aria-labelledby="historyModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="historyModalLabel">{{ __('wallet.transaction_history') }}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>{{ __('wallet.date') }}</th>
-                                <th>{{ __('wallet.description') }}</th>
-                                <th>{{ __('wallet.amount') }}</th>
-                                <th>{{ __('wallet.status') }}</th>
-                            </tr>
-                        </thead>
-                        
-                        {{--
-                        <tbody>
-                            @foreach($allTransactions as $transaction)
-                                <tr>
-                                    <td>{{ $transaction->created_at->format('Y-m-d H:i') }}</td>
-                                    <td>{{ $transaction->description }}</td>
-                                    <td class="{{ $transaction->amount > 0 ? 'text-success' : 'text-danger' }}">
-                                        {{ $transaction->amount > 0 ? '+' : '' }}{{ $transaction->amount }}
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-{{ $transaction->status == 'completed' ? 'success' : ($transaction->status == 'pending' ? 'warning' : 'danger') }}">
-                                            {{ __("wallet.{$transaction->status}") }}
-                                        </span>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                        --}}
-
-                        <tbody>
-                            <!-- Completed Deposit -->
-                            <tr>
-                                <td>2023-05-15 14:30</td>
-                                <td>{{ __('wallet.deposit') }} via PayPal</td>
-                                <td class="text-success">+100 {{ __('wallet.currency_dollar') }}</td>
-                                <td>
-                                    <span class="badge bg-success">{{ __('wallet.completed') }}</span>
-                                </td>
-                            </tr>
-                            
-                            <!-- Completed Transfer -->
-                            <tr>
-                                <td>2023-05-10 09:15</td>
-                                <td>{{ __('wallet.transfer') }} to @ahmed</td>
-                                <td class="text-danger">-50 {{ __('wallet.currency_dollar') }}</td>
-                                <td>
-                                    <span class="badge bg-success">{{ __('wallet.completed') }}</span>
-                                </td>
-                            </tr>
-                            
-                            <!-- Pending Deposit -->
-                            <tr>
-                                <td>2023-05-08 16:45</td>
-                                <td>{{ __('wallet.deposit') }} via {{ __('wallet.credit_debit_card') }}</td>
-                                <td class="text-success">+200 {{ __('wallet.currency_dollar') }}</td>
-                                <td>
-                                    <span class="badge bg-warning">{{ __('wallet.pending') }}</span>
-                                </td>
-                            </tr>
-                            
-                            <!-- Failed Transfer -->
-                            <tr>
-                                <td>2023-05-01 11:20</td>
-                                <td>{{ __('wallet.transfer') }} to @sara</td>
-                                <td class="text-danger">-30 {{ __('wallet.currency_dollar') }}</td>
-                                <td>
-                                    <span class="badge bg-danger">{{ __('wallet.failed') }}</span>
-                                </td>
-                            </tr>
-                            
-                            <!-- Completed Deposit -->
-                            <tr>
-                                <td>2023-04-28 13:10</td>
-                                <td>{{ __('wallet.deposit') }} via PayPal</td>
-                                <td class="text-success">+75 {{ __('wallet.currency_dollar') }}</td>
-                                <td>
-                                    <span class="badge bg-success">{{ __('wallet.completed') }}</span>
-                                </td>
-                            </tr>
-                            
-                            <!-- Completed Transfer -->
-                            <tr>
-                                <td>2023-04-25 18:30</td>
-                                <td>{{ __('wallet.transfer') }} to @mohammed</td>
-                                <td class="text-danger">-25 {{ __('wallet.currency_dollar') }}</td>
-                                <td>
-                                    <span class="badge bg-success">{{ __('wallet.completed') }}</span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('wallet.close') }}</button>
-            </div>
-        </div>
-    </div>
-</div>
+@include('wallet.partials._history_modal')
 @endsection
 
 @push('js')
     <script src="{{ asset('js/wallet/deposit_modal_helper.js') }}"></script>
+    <script>
+    $(function() {
+        $('#transferModal').on('shown.bs.modal', function () {
+            $('#recipient').select2({
+                dropdownParent: $('#transferModal')
+            });
+        });
+    });
+    </script>
 @endpush
 

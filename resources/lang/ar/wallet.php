@@ -23,7 +23,9 @@ return [
     'description' => 'الوصف',
     'status' => 'الحالة',
     'completed' => 'مكتمل',
+    'COMPLETED' => 'مكتمل',
     'pending' => 'قيد الانتظار',
+    'PENDING' => 'قيد الانتظار',
     'failed' => 'فشل',
     'close' => 'إغلاق',
     '2_days_ago' => 'قبل يومين',
@@ -48,4 +50,7 @@ return [
     'pay_with_card' => 'الدفع باستخدام البطاقة ',
     'or' => 'أو',
     'secure_payment_notice' => 'مدفوعاتك آمنة ومشفرة',
+    'non_refundable_notice' => 'هذا الإيداع غير قابل للاسترداد.',
+    'please_accept_non_refundable' =>  'يجب أن توافق على أن هذه الدفعة غير قابلة للاسترداد قبل المتابعة.',
+
 ];

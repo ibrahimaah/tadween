@@ -19,11 +19,14 @@ class WalletController extends Controller
 
     public function index()
     {
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
-        $transactions = $user->wallet->transactions()->latest()->take(10)->get();
-        return view('wallet.index', ['recent_transactions' => $transactions]);
+        $wallet = Auth::user()->wallet;
+    
+        return view('wallet.index', [
+            'recent_transactions' => $wallet->transactions()->latest()->take(10)->get(),
+            'allTransactions'     => $wallet->transactions()->latest()->get(),
+        ]);
     }
+    
 
     public function deposit(DepositToWalletRequest $request)
     {

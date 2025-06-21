@@ -23,7 +23,9 @@ return [
     'description' => 'Description',
     'status' => 'Status',
     'completed' => 'Completed',
+    'COMPLETED' => 'Completed',
     'pending' => 'Pending',
+    'PENDING' => 'Pending',
     'failed' => 'Failed',
     'close' => 'Close',
     '2_days_ago' => '2 days ago',
@@ -48,4 +50,8 @@ return [
     'pay_with_card' => 'Pay with card',
     'or' => 'or',
     'secure_payment_notice' => 'Your payment is secure and encrypted',
+    'non_refundable_notice' => 'I understand that this deposit is non-refundable.',
+    'please_accept_non_refundable' => 'You must accept that this payment is non-refundable.',
+
+
 ];

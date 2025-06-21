@@ -25,6 +25,16 @@
                         </div>
                     </div>
 
+                    
+                    <div class="form-check mt-3 d-flex flex-row align-items-center gap-2 justify-content-center alert alert-danger">
+                        <input class="form-check-input" type="checkbox" value="1" id="nonRefundableCheckbox">
+                        <label class="form-check-label text-muted mb-0" for="nonRefundableCheckbox">
+                            {{ __('wallet.non_refundable_notice') }}
+                        </label>
+                    </div>
+                    
+
+
                     <div id="paypal-loading" class="text-center mb-3" style="display: none;">
                         <div class="spinner-border text-primary" role="status">
                             <span class="visually-hidden">{{ __('wallet.loading') }}</span>
@@ -128,53 +138,110 @@
         const depositForm = $('#depositForm');
         const btnsPaymentChoices = $('#btnsPaymentChoices');
         const btnPayWithPaypal = $('#btnPayWithPaypal');
-        const btnPayWithCard = $('#btnPayWithCard');
-        var paymentMethod = 'UnKnown'; 
-        let paypalButtonRendered = false; 
+        const btnPayWithCard = $('#btnPayWithCard'); 
+        const checkbox = $('#nonRefundableCheckbox');
        
-    const createPaypalConfig = (fundingSource, style, methodValue) => ({
-        style,
-        fundingSource,
-        createOrder: function (data, actions) {
-            const amount = amountInput.val().trim() || '0.00';
-            return createOrderFun(amount, actions);
-        },
-        onApprove: function (data, actions) {
-            return onApproveFun(actions,methodValue);
-        },
-        onError: function (err) {
-            toastr.error("{{ __('wallet.error_occurred') }}");
-            console.error(err);
-        }
-    });
+        const createPaypalConfig = (fundingSource, style, methodValue) => ({
+            style,
+            fundingSource,
+            onClick: function (data, actions) {
+                const isChecked = checkbox.is(':checked');
+                const amount = parseFloat(amountInput.val());
 
-    const paypalConfig = createPaypalConfig(
-        paypal.FUNDING.PAYPAL,
-        {
-            layout: 'vertical',
-            color: 'silver',
-            shape: 'rect',
-            label: 'paypal'
-        },
-        @json(\App\Enums\PaymentMethods::PAYPAL->value)
-    );
+                if (!isChecked) {
+                    toastr.error("{{ __('wallet.please_accept_non_refundable') }}");
+                    return actions.reject(); // stop PayPal flow
+                }
+                if(!(amount > 0))
+                {
+                    toastr.error("{{ __('wallet.please_enter_valid_amount') }}");
+                    return actions.reject();
+                }
 
-    const paypalCardConfig = createPaypalConfig(
-        paypal.FUNDING.CARD,
-        {
-            layout: 'vertical',
-            color: 'black',
-            shape: 'rect',
-            label: 'paypal'
-        },
-        @json(\App\Enums\PaymentMethods::CREDIT_OR_DEBIT_CARD->value)
-    );
-
-        // Enable/disable continue button based on input
-        amountInput.on('input', function() {
-            const amount = parseFloat(amountInput.val());
-            continueBtn.prop('disabled', !(amount > 0));
+                return actions.resolve(); // allow PayPal flow
+            },
+            createOrder: function (data, actions) {
+                const amount = amountInput.val().trim() || '0.00';
+                return createOrderFun(amount, actions);
+            },
+            onApprove: function (data, actions) {
+                return onApproveFun(actions,methodValue);
+            },
+            onError: function (err) {
+                toastr.error("{{ __('wallet.error_occurred') }}");
+                console.error(err);
+            }
         });
+
+        const paypalConfig = createPaypalConfig(
+            paypal.FUNDING.PAYPAL,
+            {
+                layout: 'vertical',
+                color: 'silver',
+                shape: 'rect',
+                label: 'paypal'
+            },
+            @json(\App\Enums\PaymentMethods::PAYPAL->value)
+        );
+
+        const paypalCardConfig = createPaypalConfig(
+            paypal.FUNDING.CARD,
+            {
+                layout: 'vertical',
+                color: 'black',
+                shape: 'rect',
+                label: 'paypal'
+            },
+            @json(\App\Enums\PaymentMethods::CREDIT_OR_DEBIT_CARD->value)
+        );
+
+        const updateContinueButtonState = () => {
+            const amount = parseFloat(amountInput.val());
+            const isCheckboxChecked = checkbox.is(':checked');
+            continueBtn.prop('disabled', !(amount > 0 && isCheckboxChecked));
+            if (!checkbox.is(':checked')) {
+                checkbox.closest('.form-check').addClass('border border-danger');
+            } else {
+                checkbox.closest('.form-check').removeClass('border border-danger');
+            }
+
+        }
+  
+        const handleClick = (e, method, container) => {
+            e.preventDefault();
+            if (!checkbox.is(':checked')) {
+                toastr.error("{{ __('wallet.please_accept_non_refundable') }}");
+                return;
+            }
+            btnsPaymentChoices.hide();
+            paypalLoading.show();
+            setTimeout(() => {
+                paypalLoading.hide();
+                if (method === PAYPAL) {
+                    paypal.Buttons(paypalConfig).render('#paypal-button-container');
+                } else if (method === CARD) {
+                    paypal.Buttons(paypalCardConfig).render('#card-button-container');
+                }
+                $(container).show();
+            }, 500);
+        }
+
+
+        // Reset modal to initial state
+        const resetModal = () => {
+            depositForm[0].reset(); 
+            checkbox.prop('checked', false);
+            paypalLoading.hide();   
+            continueBtn.show().prop('disabled', true); 
+            
+            paypalButtonContainer.empty().hide();
+            cardButtonContainer.empty().hide();
+            
+            btnsPaymentChoices.hide();  
+        }
+
+        amountInput.on('input', updateContinueButtonState);
+        checkbox.on('change', updateContinueButtonState);
 
         // Continue button click handler
         continueBtn.on('click', function() {
@@ -191,40 +258,9 @@
             }, 500);
         });
 
-       
-
-       
-
-        function handleClick(e, method, container) {
-            e.preventDefault();
-            btnsPaymentChoices.hide();
-            paypalLoading.show();
-            setTimeout(() => {
-                paypalLoading.hide();
-                if (method === PAYPAL) {
-                    paypal.Buttons(paypalConfig).render('#paypal-button-container');
-                } else if (method === CARD) {
-                    paypal.Buttons(paypalCardConfig).render('#card-button-container');
-                }
-                $(container).show();
-            }, 500);
-        }
-
         btnPayWithPaypal.on('click', e => handleClick(e, PAYPAL, '#paypal-button-container'));
         btnPayWithCard.on('click', e => handleClick(e, CARD, '#card-button-container'));
-
-
-        // Reset modal to initial state
-        function resetModal() {
-            depositForm[0].reset(); 
-            paypalLoading.hide();   
-            continueBtn.show().prop('disabled', true); 
-            
-            paypalButtonContainer.empty().hide();
-            cardButtonContainer.empty().hide();
-            
-            btnsPaymentChoices.hide();  
-        }
+        
         // Reset modal when hidden
         depositModal.on('hidden.bs.modal', resetModal);
     });
