@@ -90,5 +90,38 @@
         });
     });
     </script>
+    <script>
+        $('#historyModal').on('show.bs.modal', function () {
+            $.ajax({
+                url: "{{ route('transactions.fetchTransactionsHistory') }}",
+                method: "GET",
+                beforeSend: function () {
+                    $('#history-body').html('<tr><td colspan="4" class="text-center">Loading...</td></tr>');
+                },
+                success: function (response) {
+                    let rows = '';
+                    response.transactions.forEach(function (t) {
+                        const amountClass = t.amount > 0 ? 'text-success' : 'text-danger';
+                        const amount = (t.amount > 0 ? '+' : '') + t.amount;
+    
+                        rows += `
+                            <tr>
+                                <td>${t.date}</td>
+                                <td>${t.description}</td>
+                                <td class="${amountClass}">${amount}</td>
+                                <td><span class="badge bg-${t.badgeColor}">${t.status}</span></td>
+                            </tr>
+                        `;
+                    });
+    
+                    $('#history-body').html(rows || '<tr><td colspan="4" class="text-center">No transactions</td></tr>');
+                },
+                error: function () {
+                    $('#transaction-body').html('<tr><td colspan="4" class="text-danger text-center">Failed to load transactions</td></tr>');
+                }
+            });
+        });
+    </script>
 @endpush
+
 

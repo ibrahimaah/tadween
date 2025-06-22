@@ -1,3 +1,4 @@
+ 
 <div class="modal fade" id="historyModal" tabindex="-1" aria-labelledby="historyModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-lg">
         <div class="modal-content"> 
@@ -19,11 +20,11 @@
                         </thead>
                         
                         
-                        <tbody>
-                            @foreach($allTransactions as $transaction)
+                        <tbody id="history-body">
+                            {{-- @foreach($allTransactions as $transaction) 
                                 <tr>
                                     <td>{{ $transaction->created_at->diffForHumans() }}</td>
-                                    <td>{{ \App\Enums\PaymentMethods::getDescription($transaction->payment_method) }}</td>
+                                    <td>{!! getTransactionDescription($transaction) !!}</td>
                                     <td class="{{ $transaction->amount > 0 ? 'text-success' : 'text-danger' }}">
                                         {{ $transaction->amount > 0 ? '+' : '' }}{{ $transaction->amount }}
                                     </td>
@@ -43,7 +44,7 @@
 
                                     </td>
                                 </tr>
-                            @endforeach
+                            @endforeach --}}
                         </tbody>
                        
                     </table>
@@ -55,3 +56,5 @@
         </div>
     </div>
 </div>
+
+ 

@@ -86,6 +86,7 @@ $(function() {
                     $('#btn_transfer').attr('disabled', false).text('{{ __("wallet.transfer") }}');
                     // Optional: close modal
                     $('#transferModal').modal('hide');
+                    $('#transactionsList').prepend(response.transaction_item_html);
                     toastr.success(response.msg);
                 }
                 else 

@@ -147,7 +147,12 @@ class UserService
     {
         try 
         {
-            $data = User::select('id','username')->where('role','user')->where ('is_ban','no')->get();
+            $data = User::select('id','username')
+                        ->where('role','user')
+                        ->where ('is_ban','no')
+                        ->where('id','!=',Auth::id())
+                        ->get();
+                        
             return ['code' => 1, 'data' => $data];
         }
         catch(Exception $ex)

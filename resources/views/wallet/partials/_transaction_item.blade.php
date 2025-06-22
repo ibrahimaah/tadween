@@ -1,5 +1,5 @@
 @php
-    $description = \App\Enums\PaymentMethods::getDescription($transaction->payment_method);
+    $description = getTransactionDescription($transaction);
 @endphp
 <li class="list-group-item">
     <div class="d-flex justify-content-between align-items-center {{ app()->getLocale() == 'ar' ? 'flex-row-reverse' : '' }} mb-2">
@@ -8,7 +8,7 @@
         </span>
         <div>
             <h6 class="mb-1 {{ app()->getLocale() == 'ar' ? 'text-end' : '' }}"> 
-                {{ $description ?? __('wallet.transaction') }}
+                {!! $description ?? __('wallet.transaction') !!}
             </h6>
             <small class="text-muted {{ app()->getLocale() == 'ar' ? 'text-end d-block' : '' }}">
                 {{ $transaction->created_at->diffForHumans() }}

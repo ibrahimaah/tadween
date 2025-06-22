@@ -57,5 +57,9 @@ return [
     'transfer_success' => 'Transfer success',
     'transfer_failed' => 'Transfer failed',
     'transferring' => 'transferring ...',
+    'transfer_from' => 'Transfer from',
+    'transfer_to' => 'to',
+    'unknown_user' => 'Unknown User',
+
 
 ];

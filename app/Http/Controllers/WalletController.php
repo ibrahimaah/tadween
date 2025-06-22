@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\TransactionStatus;
 use App\Http\Requests\DepositToWalletRequest;
 use App\Http\Requests\TransferWallerRequest;
 use App\Services\UserService;
@@ -20,11 +21,13 @@ class WalletController extends Controller
     {
         $wallet = Auth::user()->wallet;
         $res_users = $this->userService->getTransferWalletUsers();
-        $sender_id = Auth::id();
+        $sender_id = Auth::id(); 
         if($res_users['code'] == 0) dd($res_users['msg']);
+
+        
         return view('wallet.index', [
             'recent_transactions' => $wallet->transactions()->latest()->take(10)->get(),
-            'allTransactions'     => $wallet->transactions()->latest()->get(),
+            // 'allTransactions'     => $wallet->transactions()->latest()->get(),
             'users'               => $res_users['data'],
             'sender_id'           => $sender_id
         ]);
@@ -116,6 +119,30 @@ class WalletController extends Controller
             'balance' => Auth::user()->balance,
             'transaction_item_html' => $transaction_view
         ], 200);
+    }
+
+    public function fetchTransactionsHistory()
+    {
+        $transactions = Auth::user()->transactions()->latest()->get();
+        $badgeColor = 'danger';
+        return response()->json([
+            'transactions' => $transactions->map(function ($transaction) 
+            {
+                $badgeColor = match ($transaction->status) {
+                    TransactionStatus::COMPLETED->value => 'success',
+                    TransactionStatus::PENDING->value   => 'warning',
+                    default                      => 'danger',
+                };
+                
+                return [
+                    'date' => $transaction->created_at->diffForHumans(),
+                    'description' => getTransactionDescription($transaction),
+                    'amount' => $transaction->amount,
+                    'status' => __("wallet.".$transaction->status),
+                    'badgeColor' => $badgeColor
+                ];
+            }),
+        ]);
     }
     // public function deposit(Request $request)
     // {

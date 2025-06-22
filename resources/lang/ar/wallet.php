@@ -57,5 +57,6 @@ return [
     'transfer_success' => 'تم التحويل بنجاح',
     'transfer_failed' => 'فشلت عملية التحويل',
     'transferring' => 'جاري التحويل ...',
-
+    'transfer_from' => 'تحويل من',
+    'transfer_to' => 'إلى',
 ];
