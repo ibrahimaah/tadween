@@ -53,7 +53,7 @@ class WalletService
             }
 
             $transfer = $sender->transfer($receiver, $amount, [
-                'note' => __('wallet.transfer_from') . ' @' . "<a class='text-reset text-decoration-none' href='" . route('profile', $sender->username) . "'>" . $sender->username . "</a> " 
+                'transfer_note' => __('wallet.transfer_from') . ' @' . "<a class='text-reset text-decoration-none' href='" . route('profile', $sender->username) . "'>" . $sender->username . "</a> " 
                     . __('wallet.transfer_to') . ' @' . "<a class='text-reset text-decoration-none' href='" . route('profile', $receiver->username) . "'>" . $receiver->username . "</a>",
             ]);
             

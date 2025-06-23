@@ -148,7 +148,7 @@
     <div class="d-flex align-items-center mb-3">
         <i class="fa-solid fa-wallet text-orange-color {{ app()->getLocale() == 'en' ? 'pe-3' : 'ps-3' }}"></i>
         <a href="{{ route('wallet.index') }}" class="d-inline-flex text-decoration-none text-dark">
-            {{ __('home.wallet') }}  <span class="text text-success fw-bold">({{ auth()->user()->balance }} ر.س) </span>
+            {{ __('home.wallet') }}  <span class="text text-success fw-bold">({{ auth()->user()->balance }} دولار) </span>
         </a>
     </div>
     @endauth

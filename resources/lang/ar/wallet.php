@@ -59,4 +59,7 @@ return [
     'transferring' => 'جاري التحويل ...',
     'transfer_from' => 'تحويل من',
     'transfer_to' => 'إلى',
+    'no_transactions' => 'لا توجد معاملات',
+    'loading' => 'جاري التحميل ...',
+    'failed_loading' => 'فشلت عملية التحميل',
 ];

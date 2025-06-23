@@ -57,7 +57,11 @@
 
 <script>
 $(function() {
-    $('#recipient').select2();
+    $('#transferModal').on('shown.bs.modal', function () {
+        $('#recipient').select2({
+            dropdownParent: $('#transferModal') // Important for Bootstrap modals
+        });
+    });
     let sender_id = @json($sender_id);
 
     $('#form_transfer').on('submit', function(e) {

@@ -197,7 +197,7 @@
 
         const updateContinueButtonState = () => {
             const amount = parseFloat(amountInput.val());
-            const isCheckboxChecked = checkbox.is(':checked');
+            const isCheckboxChecked = checkbox.is(':checked'); 
             continueBtn.prop('disabled', !(amount > 0 && isCheckboxChecked));
             if (!checkbox.is(':checked')) {
                 checkbox.closest('.form-check').addClass('border border-danger');

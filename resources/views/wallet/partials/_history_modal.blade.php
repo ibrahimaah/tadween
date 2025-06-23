@@ -18,33 +18,7 @@
                                 <th>{{ __('wallet.status') }}</th>
                             </tr>
                         </thead>
-                        
-                        
-                        <tbody id="history-body">
-                            {{-- @foreach($allTransactions as $transaction) 
-                                <tr>
-                                    <td>{{ $transaction->created_at->diffForHumans() }}</td>
-                                    <td>{!! getTransactionDescription($transaction) !!}</td>
-                                    <td class="{{ $transaction->amount > 0 ? 'text-success' : 'text-danger' }}">
-                                        {{ $transaction->amount > 0 ? '+' : '' }}{{ $transaction->amount }}
-                                    </td>
-                                    <td>
-                                        @php
-                                            $status = $transaction->status; 
-                                            $badgeColor = match ($status) {
-                                                \App\Enums\TransactionStatus::COMPLETED->value => 'success',
-                                                \App\Enums\TransactionStatus::PENDING->value   => 'warning',
-                                                default                                 => 'danger',
-                                            };
-                                        @endphp
-
-                                        <span class="badge bg-{{ $badgeColor }}">
-                                            {{ __("wallet.$status") }}
-                                        </span>
-
-                                    </td>
-                                </tr>
-                            @endforeach --}}
+                        <tbody id="history-body"> 
                         </tbody>
                        
                     </table>

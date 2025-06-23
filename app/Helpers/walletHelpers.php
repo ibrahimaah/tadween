@@ -7,9 +7,9 @@ if (!function_exists('getTransactionDescription'))
 {
     function getTransactionDescription($transaction)
     {  
-        if($transaction->type === 'withdraw' && !empty($transaction->meta['note']))
+        if(!empty($transaction->meta['transfer_note']))
         {
-            return $transaction->meta['note'];
+            return $transaction->meta['transfer_note'];
         }
         else 
         {

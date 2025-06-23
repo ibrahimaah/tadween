@@ -92,11 +92,14 @@
     </script>
     <script>
         $('#historyModal').on('show.bs.modal', function () {
+            let no_transactions = "{{ __('wallet.no_transactions') }}";
+            let loading = "{{ __('wallet.loading') }}";
+            let failed_loading = "{{ __('wallet.failed_loading') }}";
             $.ajax({
                 url: "{{ route('transactions.fetchTransactionsHistory') }}",
                 method: "GET",
                 beforeSend: function () {
-                    $('#history-body').html('<tr><td colspan="4" class="text-center">Loading...</td></tr>');
+                    $('#history-body').html(`<tr><td colspan="4" class="text-center">${loading}</td></tr>`);
                 },
                 success: function (response) {
                     let rows = '';
@@ -114,10 +117,10 @@
                         `;
                     });
     
-                    $('#history-body').html(rows || '<tr><td colspan="4" class="text-center">No transactions</td></tr>');
+                    $('#history-body').html(rows || `<tr><td colspan="4" class="text-center">${no_transactions}</td></tr>`);
                 },
                 error: function () {
-                    $('#transaction-body').html('<tr><td colspan="4" class="text-danger text-center">Failed to load transactions</td></tr>');
+                    $('#transaction-body').html(`<tr><td colspan="4" class="text-danger text-center">${failed_loading}</td></tr>`);
                 }
             });
         });

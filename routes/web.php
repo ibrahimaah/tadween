@@ -12,21 +12,13 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\BlockedUserController;
-use App\Http\Controllers\CommentController;
+use App\Http\Controllers\BlockedUserController; 
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WalletController;
-use App\Http\Middleware\UpdateLastActivity;
-use App\Models\Follow;
-use App\Models\Post;
-use App\Models\Reply;
-use App\Models\User;
-use App\Services\PostService;
+use App\Http\Middleware\UpdateLastActivity; 
 use Illuminate\Support\Facades\Cookie;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
-
+use Illuminate\Http\Request; 
+use Illuminate\Support\Facades\Http; 
 ///////////// Route For Change Language /////////////
 Route::get('lang/{locale}', function ($locale, Request $request) {
     if (in_array($locale, ['en', 'ar'])) {
@@ -38,13 +30,31 @@ Route::get('lang/{locale}', function ($locale, Request $request) {
 
  
 Route::get('tmp',function(){
-    $transactions = auth()->user()
-    ->wallet
-    ->transactions()
-    ->latest()
-    ->take(10)
-    ->get();
-    dd($transactions);
+    try {
+        // $response = Http::get("https://open.er-api.com/v6/latest/SAR");
+
+        // if (!$response->successful()) {
+        //     return 'API failed';
+        // }
+        
+        // $rate = $response->json('rates.USD');
+        // $converted = 3000 * $rate;
+        
+        // return $converted;
+        $response = Http::get("https://open.er-api.com/v6/latest/USD");
+
+        if (!$response->successful()) {
+            return 'API failed';
+        }
+
+        $rate = $response->json('rates.SAR'); // 1 USD = how many SAR
+        $converted = 800 * $rate; // 3000 USD to SAR
+
+        return $converted;
+
+    } catch (Exception $e) {
+        return 'Exception: ' . $e->getMessage();
+    }
 
 });
 
