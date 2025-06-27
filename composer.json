@@ -28,8 +28,8 @@
             "Database\\Seeders\\": "database/seeders/"
         },
         "files": [
-            "app/helpers/helpers.php",
-            "app/helpers/walletHelpers.php"
+            "app/Helpers/helpers.php",
+            "app/Helpers/walletHelpers.php"
         ]
     },
     "autoload-dev": {
