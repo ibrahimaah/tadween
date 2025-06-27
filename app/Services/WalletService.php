@@ -52,12 +52,24 @@ class WalletService
                 throw new Exception('wallet.insufficient_funds');
             }
 
-            $transfer = $sender->transfer($receiver, $amount, [
-                'transfer_note' => __('wallet.transfer_from') . ' @' . "<a class='text-reset text-decoration-none' href='" . route('profile', $sender->username) . "'>" . $sender->username . "</a> " 
-                    . __('wallet.transfer_to') . ' @' . "<a class='text-reset text-decoration-none' href='" . route('profile', $receiver->username) . "'>" . $receiver->username . "</a>",
-            ]);
+            // $transfer = $sender->transfer($receiver, $amount, [
+            //     'transfer_note' => __('wallet.transfer_from') . ' @' . "<a class='text-reset text-decoration-none' href='" . route('profile', $sender->username) . "'>" . $sender->username . "</a> " 
+            //         . __('wallet.transfer_to') . ' @' . "<a class='text-reset text-decoration-none' href='" . route('profile', $receiver->username) . "'>" . $receiver->username . "</a>",
+            // ]);
             
 
+            $transfer = $sender->transfer($receiver, $amount, [
+                'transfer_note_en' => __('wallet.transfer_from', [], 'en') . ' @' .
+                    "<a class='text-reset text-decoration-none' href='" . route('profile', $sender->username) . "'>" . $sender->username . "</a> " .
+                    __('wallet.transfer_to', [], 'en') . ' @' .
+                    "<a class='text-reset text-decoration-none' href='" . route('profile', $receiver->username) . "'>" . $receiver->username . "</a>",
+            
+                'transfer_note_ar' => __('wallet.transfer_from', [], 'ar') . ' @' .
+                    "<a class='text-reset text-decoration-none' href='" . route('profile', $sender->username) . "'>" . $sender->username . "</a> " .
+                    __('wallet.transfer_to', [], 'ar') . ' @' .
+                    "<a class='text-reset text-decoration-none' href='" . route('profile', $receiver->username) . "'>" . $receiver->username . "</a>",
+            ]);
+            
             DB::commit();
 
             return ['code' => 1, 'data' => $transfer]; 
