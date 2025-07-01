@@ -987,7 +987,7 @@ CREATE TABLE `transactions` (
   `uuid` char(36) NOT NULL,
   `capture_id` varchar(255) DEFAULT NULL,
   `payment_method` varchar(255) DEFAULT NULL,
-  `status` varchar(255) DEFAULT 'PENDING',
+  `status` varchar(255) DEFAULT 'COMPLETED',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL

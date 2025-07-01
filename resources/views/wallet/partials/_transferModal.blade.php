@@ -1,6 +1,27 @@
  
 <link href="{{ asset('css/select2.min.css') }}" rel="stylesheet" />
- 
+ <style>
+    .autocomplete-items {
+  position: absolute;
+  border: 1px solid #d4d4d4;
+  border-top: none;
+  z-index: 99;
+  max-height: 150px;
+  overflow-y: auto;
+  background-color: white;
+  width: 100%;
+}
+
+.autocomplete-item {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.autocomplete-item:hover {
+  background-color: #e9e9e9;
+}
+
+ </style>
 <div class="modal fade" id="transferModal" tabindex="-1" aria-labelledby="transferModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -15,11 +36,9 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="recipient" class="form-label">{{ __('wallet.recipient') }}</label>
-                        <select class="form-control" name="recipient" id="recipient" required>
-                            @foreach ($users as $user)
-                                <option value="{{ $user->id }}">{{ $user->username }}</option> 
-                            @endforeach
-                        </select> 
+                        <input type="text" class="form-control" id="recipientInput" name="recipient" placeholder="@username" autocomplete="off" required />
+                        <div id="autocomplete-list" class="autocomplete-items" style="position: relative;"></div>
+
                     </div>
                     <div class="mb-3">
                         <label for="transferAmount" class="form-label">{{ __('wallet.amount') }}</label>
@@ -56,18 +75,72 @@
 </script>
 
 <script>
+const users = @json($users->map(fn($u) => ['id' => $u->id, 'username' => $u->username]));
 $(function() {
-    $('#transferModal').on('shown.bs.modal', function () {
-        $('#recipient').select2({
-            dropdownParent: $('#transferModal') // Important for Bootstrap modals
-        });
-    });
-    let sender_id = @json($sender_id);
+    const $input = $('#recipientInput');
+    const $list = $('#autocomplete-list');
+    let selectedUserId = null;
 
+    function closeList() {
+        $list.empty().hide();
+    }
+
+    $input.on('input', function() {
+        const val = $(this).val();
+        const atPos = val.lastIndexOf('@');
+
+        if (atPos === -1) {
+            closeList();
+            return;
+        }
+
+        const query = val.slice(atPos + 1).toLowerCase();
+
+        if (query.length === 0) {
+            closeList();
+            return;
+        }
+
+        const matches = users.filter(u => u.username.toLowerCase().startsWith(query));
+
+        if (matches.length === 0) {
+            closeList();
+            return;
+        }
+
+        $list.empty();
+
+        matches.forEach(u => {
+            const item = $('<div class="autocomplete-item"></div>').text(u.username);
+            item.on('click', function() {
+                // Replace @ + typed text with the selected username
+                const beforeAt = val.slice(0, atPos + 1);
+                $input.val(beforeAt + u.username + ' ');
+                selectedUserId = u.id;
+                closeList();
+            });
+            $list.append(item);
+        });
+
+        $list.show();
+    });
+
+    // Close autocomplete when clicking outside
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('#recipientInput').length && !$(e.target).closest('#autocomplete-list').length) {
+            closeList();
+        }
+    });
+
+    // Optional: On form submit, replace the input value with the selected user id for backend
     $('#form_transfer').on('submit', function(e) {
         e.preventDefault();
 
-        let receiver_id = $('#recipient').val();
+        if (!selectedUserId) {
+            toastr.error('Please select a valid recipient by typing @ and choosing from the list.');
+            return;
+        }
+
         let amount = $('#transferAmount').val();
         let url = $(this).attr('action');
         let token = $('input[name="_token"]').val();
@@ -79,8 +152,8 @@ $(function() {
             url: url,
             data: {
                 _token: token,
-                sender_id: sender_id,
-                receiver_id: receiver_id,
+                sender_id: @json($sender_id),
+                receiver_id: selectedUserId,
                 amount: amount
             },
             success: function(response) {
@@ -88,7 +161,6 @@ $(function() {
                 {
                     $('#balance').html(response.balance);
                     $('#btn_transfer').attr('disabled', false).text('{{ __("wallet.transfer") }}');
-                    // Optional: close modal
                     $('#transferModal').modal('hide');
                     $('#transactionsList').prepend(response.transaction_item_html);
                     toastr.success(response.msg);
@@ -97,16 +169,14 @@ $(function() {
                 {
                     toastr.error("{{ __('wallet.transfer_failed') }}") 
                 }
-
-                // Optional: refresh wallet balance or transaction history
             },
             error: function(xhr) {
                 $('#btn_transfer').attr('disabled', false).text('{{ __("wallet.transfer") }}');
-                // let msg = xhr.responseJSON?.msg || '{{ __("wallet.transfer_failed") }}';
                 toastr.error(xhr.responseJSON?.userMsg || "{{ __('wallet.transfer_failed') }}") 
             }
         });
     });
 });
+
 </script>
 @endpush

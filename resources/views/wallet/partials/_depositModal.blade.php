@@ -16,7 +16,8 @@
                 <input type="hidden" name="user_id" value="{{ auth()->id() }}">
 
                 <div class="modal-body">
-                    <div class="mb-3">
+                    
+                    <div class="mb-3" id="amountDiv">
                         <label for="amount" class="form-label">{{ __('wallet.amount') }}</label>
                         <div class="input-group">
                             <input type="number" class="form-control" id="amount" name="amount" min="1" step="any"
@@ -26,7 +27,7 @@
                     </div>
 
                     
-                    <div class="form-check mt-3 d-flex flex-row align-items-center gap-2 justify-content-center alert alert-danger">
+                    <div class="form-check mt-3 d-flex flex-row align-items-center gap-2 justify-content-center alert alert-danger" id="noticeDiv">
                         <input class="form-check-input" type="checkbox" value="1" id="nonRefundableCheckbox">
                         <label class="form-check-label text-muted mb-0" for="nonRefundableCheckbox">
                             {{ __('wallet.non_refundable_notice') }}
@@ -98,11 +99,19 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('wallet.cancel')
-                        }}</button>
-                    <button type="button" id="continueToPayPal" class="btn btn-orange" disabled>{{ __('wallet.continue')
-                        }}</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        {{ __('wallet.cancel') }}
+                    </button>
+                
+                    <button type="button" class="btn btn-outline-secondary d-none me-auto" id="backToAmount">
+                        <i class="fas fa-arrow-left me-2"></i> {{ __('wallet.back') }}
+                    </button>
+                
+                    <button type="button" id="continueToPayPal" class="btn btn-orange" disabled>
+                        {{ __('wallet.continue') }}
+                    </button>
                 </div>
+                
             </form>
         </div>
     </div>
@@ -126,6 +135,7 @@
 
 <script>
     $(function() {
+        let currentStep = 1;
         const PAYPAL = @json(\App\Enums\PaymentMethods::PAYPAL->value);
         const CARD = @json(\App\Enums\PaymentMethods::CARD->value);
 
@@ -140,7 +150,11 @@
         const btnPayWithPaypal = $('#btnPayWithPaypal');
         const btnPayWithCard = $('#btnPayWithCard'); 
         const checkbox = $('#nonRefundableCheckbox');
-       
+        const amountDiv = $('#amountDiv');
+        const noticeDiv = $('#noticeDiv');
+        const backBtn = $('#backToAmount');
+
+        // noticeDiv.hide();
         const createPaypalConfig = (fundingSource, style, methodValue) => ({
             style,
             fundingSource,
@@ -223,6 +237,7 @@
                     paypal.Buttons(paypalCardConfig).render('#card-button-container');
                 }
                 $(container).show();
+                currentStep = 3;
             }, 500);
         }
 
@@ -233,28 +248,54 @@
             checkbox.prop('checked', false);
             paypalLoading.hide();   
             continueBtn.show().prop('disabled', true); 
-            
+            amountDiv.show();
+            $('#noticeDiv').removeClass('d-none');
             paypalButtonContainer.empty().hide();
             cardButtonContainer.empty().hide();
-            
+            backBtn.addClass('d-none');
             btnsPaymentChoices.hide();  
+            currentStep = 1;
         }
 
         amountInput.on('input', updateContinueButtonState);
         checkbox.on('change', updateContinueButtonState);
 
+        backBtn.on('click', function () {
+            if (currentStep === 3) {
+                // Go back to payment choices
+                paypalButtonContainer.empty().hide();
+                cardButtonContainer.empty().hide();
+                btnsPaymentChoices.show();
+                currentStep = 2;
+            } else if (currentStep === 2) {
+                // Go back to amount input
+                btnsPaymentChoices.hide();
+                amountDiv.show();
+                $('#noticeDiv').removeClass('d-none');
+                continueBtn.show().prop('disabled', false);
+                backBtn.addClass('d-none');
+                currentStep = 1;
+            }
+        });
+
+
         // Continue button click handler
-        continueBtn.on('click', function() {
+        continueBtn.on('click', function() 
+        {
             const amount = parseFloat(amountInput.val());
             if (!(amount > 0)) {
                 toastr.error("{{ __('wallet.please_enter_valid_amount') }}");
                 return;
             }
             continueBtn.hide();
+            backBtn.removeClass('d-none');
+            amountDiv.hide();
+            $('#noticeDiv').addClass('d-none');
             paypalLoading.show();
             setTimeout(() => { 
                 paypalLoading.hide();
-                btnsPaymentChoices.show() 
+                btnsPaymentChoices.show();
+                currentStep = 2;
             }, 500);
         });
 

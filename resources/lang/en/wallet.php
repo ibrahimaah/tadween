@@ -63,6 +63,7 @@ return [
     'no_transactions' => 'No transactions',
     'loading' => 'Loading...',
     'failed_loading' => 'Failed to load transactions',
+    'back' => 'Back',
 
 
 ];

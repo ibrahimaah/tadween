@@ -62,4 +62,5 @@ return [
     'no_transactions' => 'لا توجد معاملات',
     'loading' => 'جاري التحميل ...',
     'failed_loading' => 'فشلت عملية التحميل',
+    'back' => 'رجوع',
 ];
