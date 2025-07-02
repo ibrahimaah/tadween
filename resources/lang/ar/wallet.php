@@ -63,4 +63,10 @@ return [
     'loading' => 'جاري التحميل ...',
     'failed_loading' => 'فشلت عملية التحميل',
     'back' => 'رجوع',
+    'confirm_transfer_checkbox' => 'أُقر بأنني متأكد من تنفيذ هذا التحويل.',
+    'confirm_transfer_error' => 'يجب تأكيد أنك متأكد من التحويل قبل المتابعة.',
+    'select_valid_recipient' => 'يرجى اختيار مستلم صالح عن طريق كتابة @ واختياره من القائمة.',
+    'cannot_transfer_to_self' => 'لا يمكنك التحويل إلى نفسك.',
+    'payment_gateway_fee_not_deducted' => 'ملاحظة: رسوم بوابة الدفع لا تُخصم من المبلغ المدخل.',
+
 ];

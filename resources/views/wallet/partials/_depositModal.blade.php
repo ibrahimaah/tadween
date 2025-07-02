@@ -24,15 +24,18 @@
                                 required>
                             <span class="input-group-text">{{ __('wallet.currency_dollar') }}</span>
                         </div>
+                        <small class="text-muted mt-1 d-block" style="font-size: 0.9em;">
+                            {{ __('wallet.payment_gateway_fee_not_deducted') }}
+                        </small>
                     </div>
 
-                    
-                    <div class="form-check mt-3 d-flex flex-row align-items-center gap-2 justify-content-center alert alert-danger" id="noticeDiv">
-                        <input class="form-check-input" type="checkbox" value="1" id="nonRefundableCheckbox">
-                        <label class="form-check-label text-muted mb-0" for="nonRefundableCheckbox">
+
+                    <div class="form-check form-check-reverse alert alert-danger" id="noticeDiv">
+                        <input class="form-check-input me-0 ms-1" type="checkbox" value="1" id="nonRefundableCheckbox">
+                        <label class="form-check-label" for="nonRefundableCheckbox">
                             {{ __('wallet.non_refundable_notice') }}
                         </label>
-                    </div>
+                    </div>  
                     
 
 

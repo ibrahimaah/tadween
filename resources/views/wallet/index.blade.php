@@ -22,10 +22,10 @@
         font-weight: 500;
     }
     /* RTL support */
-    [dir="rtl"] .form-check-input {
+    /* [dir="rtl"] .form-check-input {
         margin-left: 0.5em;
         margin-right: -1.5em;
-    }
+    } */
 </style>
 @endpush
 

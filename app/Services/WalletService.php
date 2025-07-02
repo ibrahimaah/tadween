@@ -42,42 +42,36 @@ class WalletService
     {
         try 
         {
+            if ($sender_id == $receiver_id) {
+                throw new Exception(__('wallet.cannot_transfer_to_self'));
+            }
             $sender = User::findOrFail($sender_id);
-            $receiver = User::findOrFail($receiver_id);
-            $amount = $amount;
+            $receiver = User::findOrFail($receiver_id); 
 
             DB::beginTransaction();
 
-            if ($sender->balance < $amount) {
-                throw new Exception('wallet.insufficient_funds');
+            
+            if ($sender->balance < $amount) 
+            {
+                throw new Exception(__('wallet.insufficient_funds'));
             }
-
-            // $transfer = $sender->transfer($receiver, $amount, [
-            //     'transfer_note' => __('wallet.transfer_from') . ' @' . "<a class='text-reset text-decoration-none' href='" . route('profile', $sender->username) . "'>" . $sender->username . "</a> " 
-            //         . __('wallet.transfer_to') . ' @' . "<a class='text-reset text-decoration-none' href='" . route('profile', $receiver->username) . "'>" . $receiver->username . "</a>",
-            // ]);
-            
-
+ 
             $transfer = $sender->transfer($receiver, $amount, [
-                'transfer_note_en' => __('wallet.transfer_from', [], 'en') . ' @' .
-                    "<a class='text-reset text-decoration-none' href='" . route('profile', $sender->username) . "'>" . $sender->username . "</a> " .
-                    __('wallet.transfer_to', [], 'en') . ' @' .
-                    "<a class='text-reset text-decoration-none' href='" . route('profile', $receiver->username) . "'>" . $receiver->username . "</a>",
+                'transfer_note_en' => __('wallet.transfer_from', [], 'en') . ' ' .
+                    "<a class='text-orange text-reset text-decoration-none' href='" . route('profile', $sender->username) . "'>" . $sender->name . "</a> " .
+                    __('wallet.transfer_to', [], 'en') . ' ' .
+                    "<a class='text-orange text-reset text-decoration-none' href='" . route('profile', $receiver->username) . "'>" . $receiver->name . "</a>",
             
-                'transfer_note_ar' => __('wallet.transfer_from', [], 'ar') . ' @' .
-                    "<a class='text-reset text-decoration-none' href='" . route('profile', $sender->username) . "'>" . $sender->username . "</a> " .
-                    __('wallet.transfer_to', [], 'ar') . ' @' .
-                    "<a class='text-reset text-decoration-none' href='" . route('profile', $receiver->username) . "'>" . $receiver->username . "</a>",
+                'transfer_note_ar' => __('wallet.transfer_from', [], 'ar') . ' ' .
+                    "<a class='text-orange text-reset text-decoration-none' href='" . route('profile', $sender->username) . "'>" . $sender->name . "</a> " .
+                    __('wallet.transfer_to', [], 'ar') . ' ' .
+                    "<a class='text-orange text-reset text-decoration-none' href='" . route('profile', $receiver->username) . "'>" . $receiver->name . "</a>",
             ]);
+            
             
             DB::commit();
 
             return ['code' => 1, 'data' => $transfer]; 
-        } 
-        catch (InsufficientFunds $e) 
-        {
-            DB::rollBack();
-            return ['code' => 0,'msg' => __('wallet.insufficient_funds')]; 
         } 
         catch (Throwable $ex) {
             DB::rollBack();

@@ -102,7 +102,7 @@ class WalletController extends Controller
             return response()->json([
                 'code' => false,
                 'msg' => $res_transfer['msg'],
-                'userMsg' => __('wallet.transfer_failed')
+                // 'userMsg' => __('wallet.transfer_failed')
             ],500);
         }
 

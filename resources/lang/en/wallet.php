@@ -64,6 +64,10 @@ return [
     'loading' => 'Loading...',
     'failed_loading' => 'Failed to load transactions',
     'back' => 'Back',
-
+    'confirm_transfer_checkbox' => 'I accept full responsibility for this transfer.',
+    'confirm_transfer_error' => 'Please check the box to confirm you\'re certain about this transfer.',
+    'select_valid_recipient' => 'Please select a valid recipient by typing @ and choosing from the list.',
+    'cannot_transfer_to_self' => 'You cannot transfer to yourself.',
+    'payment_gateway_fee_not_deducted' => 'Note: The payment gateway fees are not deducted from the entered amount.',
 
 ];
