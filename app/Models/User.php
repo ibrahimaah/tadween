@@ -255,5 +255,17 @@ class User extends Authenticatable implements Wallet
 
 
     //////////////////////////////////////////////////////////////////////
+    //Gifts
 
+    public function sentGifts()
+    {
+        return $this->hasMany(UserGift::class, 'sender_id');
+    }
+
+    public function receivedGifts()
+    {
+        return $this->hasMany(UserGift::class, 'receiver_id');
+    }
+
+    //////////////////////////////////////////////////////////////////////
 }
