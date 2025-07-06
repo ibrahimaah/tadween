@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\TextHelper;
 use App\Models\AccountPrivacy;
+use App\Models\Gift;
 use App\Models\User;
 use App\Models\Post;
 use App\Services\PostService;
@@ -76,7 +77,10 @@ class ProfileController extends Controller
             'can_not_see_followers' => $can_not_see_followers,
             'can_not_see_followings' => $can_not_see_followings
         ];
-        return view('profile.profile', ['data' => $data]);
+
+        
+
+        return view('profile.profile', compact('data'));
     }
 
     // عرض المنشورات الخاصة بالمستخدم

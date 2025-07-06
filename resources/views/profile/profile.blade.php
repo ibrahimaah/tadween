@@ -124,7 +124,7 @@
                                     </ul>
                                     
                                 </div>
-            
+                             
                                 @if($data['is_blocked'])
                                     <form action="{{ route('users.unblock') }}" method="POST" class="unblock-user-form">
                                         @csrf
@@ -145,7 +145,16 @@
                                     </button>
                                 @endif 
                             </div>
-                        
+                            <!-- Button to open modal -->
+                            <div>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#giftModal">
+                                    {{ __('gifts.make_gift') }} <i class="fa fa-gift"></i>
+                                </button>
+                            </div>
+
+                            <!-- Modal -->
+                           @include('profile.partials._modal_send_gift')
+
                         </div>
                     @endif 
                 @endif
@@ -393,6 +402,66 @@
      
                         
     </script>
+
+
+<script>
+    $(document).ready(function () {
+        let selectedIcon = null;
+    
+        // Open modal & load icons
+        $('#giftModal').on('show.bs.modal', function () { 
+    
+            $.ajax({
+                url: "{{ route('gifts.index') }}",  // Or just '/gifts' if in JS file
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    if(response.success) {
+                        const $container = $('#giftsContainer');
+                        $container.empty();
+
+                        response.data.forEach(function(gift) {
+                            const iconHtml = `
+                                <div class="col-3 mb-3">
+                                    <img src="${gift.icon_url}" 
+                                        data-gift-id="${gift.id}" 
+                                        class="img-thumbnail gift-icon" 
+                                        style="cursor: pointer;">
+                                </div>
+                            `;
+                            $container.append(iconHtml);
+                        });
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('AJAX error:', error);
+                }
+            });
+
+            
+        });
+    
+        // Handle icon click
+        $(document).on('click', '.gift-icon', function () {
+            $('.gift-icon').removeClass('border-primary border-3');
+            $(this).addClass('border-primary border-3');
+            selectedIcon = $(this).data('icon');
+            $('#confirmGiftBtn').prop('disabled', false);
+        });
+    
+        // Confirm button click
+        $('#confirmGiftBtn').click(function () {
+            if (selectedIcon) {
+                alert('You selected: ' + selectedIcon);
+                // Submit selection with AJAX or fill hidden input
+                $('#giftModal').modal('hide');
+            }
+        });
+    });
+    </script>
+    
     @endpush
    
     

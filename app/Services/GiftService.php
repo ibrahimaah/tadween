@@ -52,15 +52,7 @@ class GiftService
         }
     }
 
-    /**
-     * Get all gifts for listing.
-     *
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
-    public function getAllGifts()
-    {
-        return Gift::with('media')->get();
-    }
+  
 
     /**
      * Get gifts received by a user.
@@ -80,5 +72,18 @@ class GiftService
         }
 
         return $query->get();
+    }
+
+    public function getGifts()
+    {
+        try 
+        {
+            $gifts = Gift::with('media')->get();
+            return ['code' => 1, 'data' => $gifts];
+        }
+        catch(Throwable $th)
+        {
+            return ['code' => 0, 'msg' => $th->getMessage()];
+        }
     }
 }

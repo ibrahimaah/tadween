@@ -15,8 +15,15 @@ class GiftController extends Controller
     // Show all available gifts (for sending)
     public function index()
     {
-        $gifts = $this->giftService->getAllGifts();
-        return view('gifts.index', compact('gifts'));
+        // if(request()->ajax())
+        // {
+            $res_getGifts = $this->giftService->getGifts();
+            if($res_getGifts['code'] == 0)
+            {
+                return response()->json(['success' => false,'message'=>$res_getGifts['msg']]);
+            }
+            return response()->json(['success' => true,'data'=>$res_getGifts['data']]);
+        // }
     }
 
     public function send(SendGiftRequest $request)
@@ -43,4 +50,7 @@ class GiftController extends Controller
 
         return view('gifts.received', compact('receivedGifts'));
     }
+
+
+    
 }

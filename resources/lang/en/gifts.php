@@ -15,4 +15,5 @@ return [
     'gift_sent_success' => 'Gift sent successfully!',
     'gift_received_from' => 'Gift received from :sender',
     'anonymous_sender' => 'Anonymous',   
+    'make_gift' => 'Make a gift'
 ];

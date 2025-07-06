@@ -15,6 +15,8 @@ class Gift extends Model implements HasMedia
         'price',
     ];
 
+    protected $appends = ['icon_url'];
+
     // Accessor for icon URL (optional but useful)
     public function getIconUrlAttribute()
     {

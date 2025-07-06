@@ -15,4 +15,5 @@ return [
     'gift_sent_success' => 'تم إرسال الهدية بنجاح!',
     'gift_received_from' => 'هدية من :sender',
     'anonymous_sender' => 'مجهول',  
+    'make_gift' => 'قدّم هدية',
 ];
