@@ -152,8 +152,7 @@
                                 </button>
                             </div>
 
-                            <!-- Modal -->
-                           @include('profile.partials._modal_send_gift')
+                           
 
                         </div>
                     @endif 
@@ -342,6 +341,10 @@
 
 
 </div>
+
+
+@include('profile.partials._modal_send_gift')
+
 @endsection
 
 @section('java_scripts')
@@ -407,7 +410,8 @@
 <script>
     $(document).ready(function () {
         let selectedIcon = null;
-    
+        const gifts_preloader = $('#gifts_preloader');
+        const modal_container= $('.modal-body-container');
         // Open modal & load icons
         $('#giftModal').on('show.bs.modal', function () { 
     
@@ -425,12 +429,15 @@
                                 <div class="col-3 mb-3">
                                     <img src="${gift.icon_url}" 
                                         data-gift-id="${gift.id}" 
-                                        class="img-thumbnail gift-icon" 
+                                        class="img-fluid gift-icon" 
                                         style="cursor: pointer;">
                                 </div>
                             `;
                             $container.append(iconHtml);
                         });
+
+                        gifts_preloader.addClass('d-none');
+                        modal_container.removeClass('d-none');
                     } else {
                         alert(response.message);
                     }
@@ -445,8 +452,8 @@
     
         // Handle icon click
         $(document).on('click', '.gift-icon', function () {
-            $('.gift-icon').removeClass('border-primary border-3');
-            $(this).addClass('border-primary border-3');
+            $('.gift-icon').removeClass('border border-orange border-3');
+            $(this).addClass('border border-orange border-3');
             selectedIcon = $(this).data('icon');
             $('#confirmGiftBtn').prop('disabled', false);
         });

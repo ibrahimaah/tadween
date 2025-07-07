@@ -15,5 +15,9 @@ return [
     'gift_sent_success' => 'Gift sent successfully!',
     'gift_received_from' => 'Gift received from :sender',
     'anonymous_sender' => 'Anonymous',   
-    'make_gift' => 'Make a gift'
+    'make_gift' => 'Make a gift',
+    'confirm' => 'Confirm',
+    'public_gift_label' => 'Public Gift - Everyone will see the sender\'s name',
+    'private_gift_label' => 'Private Gift - Only the recipient will see the sender\'s name',
+    'anonymous_gift_label' => 'Anonymous Gift - No one will see the sender\'s name',
 ];

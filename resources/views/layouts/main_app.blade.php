@@ -19,7 +19,7 @@
 
     <link rel="stylesheet" href="{{asset('css/style.css')}}">
     <link rel="manifest" href="{{ asset('manifest.json') }}">
-
+    
     @stack('styles')
     {{-- <script>
         if ('serviceWorker' in navigator) {

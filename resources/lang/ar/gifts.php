@@ -16,4 +16,8 @@ return [
     'gift_received_from' => 'هدية من :sender',
     'anonymous_sender' => 'مجهول',  
     'make_gift' => 'قدّم هدية',
+    'confirm' => 'تأكيد',
+    'public_gift_label' => 'هدية علنية – اسم المُرسل سيكون ظاهرًا للجميع',
+    'private_gift_label' => 'هدية خاصة – فقط المستلم سيرى اسم المُرسل',
+    'anonymous_gift_label' => 'هدية مجهولة – لا أحد سيعرف اسم المُرسل',
 ];

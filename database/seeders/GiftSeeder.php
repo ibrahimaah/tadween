@@ -16,7 +16,7 @@ class GiftSeeder extends Seeder
      */
     public function run(): void
     {
-        $giftFolder = public_path('gifts');
+        $giftFolder = public_path('assets/gifts');
         $files = File::files($giftFolder);
         $index = 1;
 
