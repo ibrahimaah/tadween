@@ -134,10 +134,15 @@
                                         </button>
                                     </form>
                                 @else 
+
+                                    <span class="text-orange d-block px-2" style="cursor:pointer !important" data-bs-toggle="modal" data-bs-target="#giftModal"> 
+                                        <i class="fa fa-gift"></i>
+                                    </span>
+
                                     <a href="{{ route('messages.chat', ['username' => $data['username']]) }}" class="btn text-light">
                                         <i class="fa-regular fa-comments text-orange-color"></i>
                                     </a>
-                                    
+
                                     <button type="button" class="btn btn-orange text-light" onclick="followUser('{{$data['username']}}')">
                                         <span class="follow_text_btn">
                                             {{ $data['follow_btn_status_text'] }}
@@ -145,12 +150,7 @@
                                     </button>
                                 @endif 
                             </div>
-                            <!-- Button to open modal -->
-                            <div>
-                                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#giftModal">
-                                    {{ __('gifts.make_gift') }} <i class="fa fa-gift"></i>
-                                </button>
-                            </div>
+                           
 
                            
 
