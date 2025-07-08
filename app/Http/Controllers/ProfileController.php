@@ -57,6 +57,7 @@ class ProfileController extends Controller
             'is_owner' => Auth::id() === $user->id,
             'name' => $user->name,
             'username' => $user->username,
+            'user_id' => $user->id,
             // 'background_image' => $user->profile->background_image ?? asset('cover/logo.png'),
             'background_image' => $user->profile->background_image ?? null,
             'cover_image' => $user->profile->cover_image ?? asset('img/user.jpg'),

@@ -414,11 +414,22 @@
         const modal_container= $('.modal-body-container');
         // Open modal & load icons
         $('#giftModal').on('show.bs.modal', function () { 
-    
+            $('#textAreaGiftMsg').val('');
             $.ajax({
                 url: "{{ route('gifts.index') }}",  // Or just '/gifts' if in JS file
                 type: 'GET',
                 dataType: 'json',
+                beforeSend:function(){
+                    if(gifts_preloader.hasClass('d-none'))
+                    {
+                        gifts_preloader.removeClass('d-none');
+                    }
+                    if(!modal_container.hasClass('d-none'))
+                    {
+                        modal_container.addClass('d-none');
+                    }
+                    
+                },
                 success: function(response) {
                     if(response.success) {
                         const $container = $('#giftsContainer');
@@ -436,35 +447,78 @@
                             $container.append(iconHtml);
                         });
 
-                        gifts_preloader.addClass('d-none');
-                        modal_container.removeClass('d-none');
+                        // gifts_preloader.addClass('d-none');
+                        // modal_container.removeClass('d-none');
                     } else {
                         alert(response.message);
                     }
                 },
                 error: function(xhr, status, error) {
                     console.error('AJAX error:', error);
+                },
+                complete:function(){
+                    if(!gifts_preloader.hasClass('d-none'))
+                    {
+                        gifts_preloader.addClass('d-none');
+                    }
+                    if(modal_container.hasClass('d-none'))
+                    {
+                        modal_container.removeClass('d-none');
+                    }
                 }
             });
 
             
         });
     
+        let selectedGiftIconId = null;
         // Handle icon click
         $(document).on('click', '.gift-icon', function () {
             $('.gift-icon').removeClass('border border-orange border-3');
             $(this).addClass('border border-orange border-3');
-            selectedIcon = $(this).data('icon');
+            selectedGiftIconId = $(this).data('gift-id');
             $('#confirmGiftBtn').prop('disabled', false);
         });
     
         // Confirm button click
         $('#confirmGiftBtn').click(function () {
-            if (selectedIcon) {
-                alert('You selected: ' + selectedIcon);
-                // Submit selection with AJAX or fill hidden input
-                $('#giftModal').modal('hide');
+            
+            let textAreaGiftMsg = $('#textAreaGiftMsg').val();
+            let userGiftVisibility = $('input[name="userGiftVisibility"]:checked').val();
+            let receiver_id = $('#receiver_id').val();
+
+            if (!selectedGiftIconId) {
+                alert('Please select a gift icon first.');
+                return;
             }
+            $.ajax({
+                url: "{{ route('gifts.send') }}",
+                method: "POST",
+                data: {
+                    gift_id: selectedGiftIconId,
+                    message: textAreaGiftMsg,
+                    userGiftVisibility: userGiftVisibility,
+                    receiver_id: receiver_id,
+                    _token: "{{ csrf_token() }}"
+                },
+                success: function(response) {
+                    // handle success (e.g., show a success message)
+                    if(response.success)
+                    {
+                        alert('success')
+                        $('#giftModal').modal('hide');
+                    }
+                    else 
+                    {
+                        alert(response.message)
+                    
+                    }
+                },
+                error: function(xhr) {
+                    // handle error (e.g., show validation errors)
+                    console.error(xhr.responseJSON);
+                }
+            }); 
         });
     });
     </script>

@@ -7,6 +7,7 @@
             </div>
             <div class="modal-body">
 
+                <input type="hidden" id="receiver_id" name="receiver_id" value="{{ $data['user_id'] }}" />
                 <div class="d-flex justify-content-center" id="gifts_preloader">
                     <div class="spinner-border text-orange" role="status">
                         <span class="visually-hidden">Loading...</span>
@@ -19,36 +20,82 @@
                     </div>
                 </div>
             </div>
-            <div class="modal-footer justify-content-between">
+            <div class="container my-3">
 
-                <div class="d-flex flex-column">
-                    
-                    <div>
-                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" checked>
-                        <label class="form-check-label" for="flexRadioDefault1">
-                            {{ __('gifts.public_gift_label') }}
-                        </label>
+                <div class="row align-items-center">
+                    <div class="col-md-7">
+                        <div class="d-flex flex-column">
+
+                            <div>
+                                <input class="form-check-input" 
+                                       type="radio" 
+                                       name="userGiftVisibility" 
+                                       id="flexRadioDefault1"
+                                       value="{{ App\Constants\UserGiftVisibility::PUBLIC }}"
+                                        checked>
+                                <label class="form-check-label" for="flexRadioDefault1">
+                                    {{ __('gifts.public_gift_label') }}
+                                </label>
+                            </div>
+        
+                            <div>
+                                <input class="form-check-input" 
+                                       type="radio" 
+                                       name="userGiftVisibility" 
+                                       value="{{ App\Constants\UserGiftVisibility::PRIVATE }}"
+                                       id="flexRadioDefault2">
+                                <label class="form-check-label" for="flexRadioDefault2">
+                                    {{ __('gifts.private_gift_label') }} </label>
+                            </div>
+                            <div>
+                                <input class="form-check-input" 
+                                       type="radio" 
+                                       name="userGiftVisibility" 
+                                       id="flexRadioDefault3" 
+                                       value="{{ App\Constants\UserGiftVisibility::ANONYMOUS }}"
+                                >
+                                <label class="form-check-label" for="flexRadioDefault3">
+                                    {{ __('gifts.anonymous_gift_label') }}
+                                </label>
+                            </div>
+                        </div>
                     </div>
-                    
-                    <div>
-                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2">
-                        <label class="form-check-label" for="flexRadioDefault2">
-                            {{ __('gifts.private_gift_label') }}                        </label>
-                    </div>
-                    <div>
-                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault3">
-                        <label class="form-check-label" for="flexRadioDefault3">
-                            {{ __('gifts.anonymous_gift_label') }}
-                        </label>
+                    <div class="col-md-5">
+                        <div class="mt-3 mb-1">
+                            {{-- <label for="exampleFormControlTextarea1" class="form-label">Example textarea</label> --}}
+                            <textarea class="form-control" id="textAreaGiftMsg" rows="2" placeholder="{{ __('gifts.enter_msg') }}"></textarea>
+                        </div>
                     </div>
                 </div>
+                
 
-                <div class="modal-actions">
-                    <button id="confirmGiftBtn" class="btn btn-orange" disabled>{{ __('gifts.confirm') }}</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        {{ __('wallet.cancel') }}
-                    </button>
+            </div>
+            <div class="container mb-3">
+                <div class="row justify-content-between align-items-end">
+                    
+                    <div class="col-md-6">
+                        <div class="container mt-4">
+                            <div class="row flex-reverse">
+                              <div class="col-12 d-flex flex-column justify-content-between">
+                                <span>🎁 {{ __('gifts.gift_price') }}: <strong><span id="gift_price">-</span></strong></span>
+                                <span>💰 {{ __('gifts.your_wallet_balance') }}: <strong>{{ auth()->user()->balance }}$</strong></span>
+                              </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="modal-actions mt-auto text-start">
+                            <button id="confirmGiftBtn" class="btn btn-orange" disabled>{{ __('gifts.confirm') }}</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                {{ __('wallet.cancel') }}
+                            </button>
+                        </div>
+                    </div>
+
                 </div>
+
+               
             </div>
         </div>
     </div>

@@ -28,17 +28,14 @@ class GiftController extends Controller
 
     public function send(SendGiftRequest $request)
     {
-        $senderId = Auth::id();
-        $receiverId = $request->receiver_id;
-        $giftId = $request->gift_id;
-        $visibility = $request->visibility;
-    
-        $result = $this->giftService->sendGift($senderId, $receiverId, $giftId, $visibility);
+        $data = $request->validated();
+        $data['sender_id'] = Auth::id();
+        $result = $this->giftService->sendGift($data['sender_id'], $data['receiver_id'], $data['gift_id'], $data['userGiftVisibility']);
     
         if ($result['code'] === 1) {
-            return back()->with('success', __('gifts.gift_sent_success'));
+            return response()->json(['success' => true, 'message' =>  __('gifts.gift_sent_success')]);
         } else {
-            return back()->with('error', $result['msg']);
+            return response()->json(['success' => false, 'message' =>  $result['msg']]);
         }
     }
 

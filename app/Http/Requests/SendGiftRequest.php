@@ -4,6 +4,8 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use App\Constants\UserGiftVisibility;
+use Illuminate\Validation\Rule;
 
 class SendGiftRequest extends FormRequest
 {
@@ -18,7 +20,8 @@ class SendGiftRequest extends FormRequest
         return [
             'receiver_id' => ['required', 'exists:users,id', 'different:sender_id'],
             'gift_id' => ['required', 'exists:gifts,id'],
-            'visibility' => ['required', 'in:public,private,anonymous'],
+            'userGiftVisibility' => ['required', Rule::in(UserGiftVisibility::getAll())],
+            'message' => ['nullable', 'string', 'max:100'],
         ];
     }
 

@@ -68,6 +68,7 @@ Route::middleware(['auth', UpdateLastActivity::class])->group(function () {
 
     
     Route::get('gifts',[GiftController::class,'index'])->name('gifts.index');
+    Route::post('send-gift',[GiftController::class,'send'])->name('gifts.send');
     
     
 });

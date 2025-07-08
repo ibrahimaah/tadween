@@ -25,8 +25,8 @@ class GiftService
             $sender = User::findOrFail($senderId);
             $receiver = User::findOrFail($receiverId);
             $gift = Gift::findOrFail($giftId);
-
-            if ($sender->wallet_balance < $gift->price) {
+            // info($gift->price);
+            if ($sender->balance < $gift->price) {
                 return ['code' => 0, 'msg' => __('gifts.insufficient_balance')];
             }
             
@@ -36,7 +36,9 @@ class GiftService
             
 
             DB::transaction(function () use ($sender, $receiver, $gift, $visibility) {
-                $sender->decrement('wallet_balance', $gift->price);
+                $meta = ['reason' => 'Gift sent to another user'];
+                $transaction = $sender->withdraw($gift->price, $meta);
+                // $sender->decrement('wallet_balance', $gift->price);
 
                 UserGift::create([
                     'sender_id' => $sender->id,

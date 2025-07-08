@@ -20,4 +20,7 @@ return [
     'public_gift_label' => 'Public Gift - Everyone will see the sender\'s name',
     'private_gift_label' => 'Private Gift - Only the recipient will see the sender\'s name',
     'anonymous_gift_label' => 'Anonymous Gift - No one will see the sender\'s name',
+    'enter_msg' => 'Write a message to the gift recipient',
+    'gift_price' => 'Gift price',
+    'your_wallet_balance' => 'Your wallet balance',
 ];
