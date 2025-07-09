@@ -27,33 +27,23 @@
                         <div class="d-flex flex-column">
 
                             <div>
-                                <input class="form-check-input" 
-                                       type="radio" 
-                                       name="userGiftVisibility" 
-                                       id="flexRadioDefault1"
-                                       value="{{ App\Constants\UserGiftVisibility::PUBLIC }}"
-                                        checked>
+                                <input class="form-check-input" type="radio" name="userGiftVisibility"
+                                    id="flexRadioDefault1" value="{{ App\Constants\UserGiftVisibility::PUBLIC }}"
+                                    checked>
                                 <label class="form-check-label" for="flexRadioDefault1">
                                     {{ __('gifts.public_gift_label') }}
                                 </label>
                             </div>
-        
+
                             <div>
-                                <input class="form-check-input" 
-                                       type="radio" 
-                                       name="userGiftVisibility" 
-                                       value="{{ App\Constants\UserGiftVisibility::PRIVATE }}"
-                                       id="flexRadioDefault2">
+                                <input class="form-check-input" type="radio" name="userGiftVisibility"
+                                    value="{{ App\Constants\UserGiftVisibility::PRIVATE }}" id="flexRadioDefault2">
                                 <label class="form-check-label" for="flexRadioDefault2">
                                     {{ __('gifts.private_gift_label') }} </label>
                             </div>
                             <div>
-                                <input class="form-check-input" 
-                                       type="radio" 
-                                       name="userGiftVisibility" 
-                                       id="flexRadioDefault3" 
-                                       value="{{ App\Constants\UserGiftVisibility::ANONYMOUS }}"
-                                >
+                                <input class="form-check-input" type="radio" name="userGiftVisibility"
+                                    id="flexRadioDefault3" value="{{ App\Constants\UserGiftVisibility::ANONYMOUS }}">
                                 <label class="form-check-label" for="flexRadioDefault3">
                                     {{ __('gifts.anonymous_gift_label') }}
                                 </label>
@@ -62,31 +52,49 @@
                     </div>
                     <div class="col-md-5">
                         <div class="mt-3 mb-1">
-                            {{-- <label for="exampleFormControlTextarea1" class="form-label">Example textarea</label> --}}
-                            <textarea class="form-control" id="textAreaGiftMsg" rows="2" placeholder="{{ __('gifts.enter_msg') }}"></textarea>
+                            {{-- <label for="exampleFormControlTextarea1" class="form-label">Example textarea</label>
+                            --}}
+                            <textarea class="form-control" id="textAreaGiftMsg" rows="2"
+                                placeholder="{{ __('gifts.enter_msg') }}"></textarea>
                         </div>
                     </div>
                 </div>
-                
+
 
             </div>
             <div class="container mb-3">
                 <div class="row justify-content-between align-items-end">
-                    
+
                     <div class="col-md-6">
                         <div class="container mt-4">
                             <div class="row flex-reverse">
-                              <div class="col-12 d-flex flex-column justify-content-between">
-                                <span>🎁 {{ __('gifts.gift_price') }}: <strong><span id="gift_price">-</span></strong></span>
-                                <span>💰 {{ __('gifts.your_wallet_balance') }}: <strong>{{ auth()->user()->balance }}$</strong></span>
-                              </div>
+                                <div class="col-12 d-flex flex-column justify-content-between">
+                                    <span>🎁 {{ __('gifts.gift_price') }}: <strong>
+                                            <span id="gift_price">-</span></strong>
+                                        <div class="spinner-border text-orange" id="gift_price_spinner" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </span>
+                                    <span>💰 {{ __('gifts.your_wallet_balance') }}: 
+                                        {{-- <strong>{{ auth()->user()->balance }}$</strong> --}}
+                                        <div class="spinner-border" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="col-md-6">
                         <div class="modal-actions mt-auto text-start">
-                            <button id="confirmGiftBtn" class="btn btn-orange" disabled>{{ __('gifts.confirm') }}</button>
+                            <button id="confirmGiftBtn" class="btn btn-orange" disabled>{{ __('gifts.confirm') }}
+
+                                <div class="spinner-border" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+
+                            </button>
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                                 {{ __('wallet.cancel') }}
                             </button>
@@ -95,7 +103,7 @@
 
                 </div>
 
-               
+
             </div>
         </div>
     </div>

@@ -88,4 +88,17 @@ class GiftService
             return ['code' => 0, 'msg' => $th->getMessage()];
         }
     }
+
+    public function getGiftById($id)
+    {
+        try 
+        {
+            $gift = Gift::findOrFail($id);
+            return ['code' => 1, 'data' => $gift];
+        }
+        catch(Throwable $th)
+        {
+            return ['code' => 0, 'msg' => $th->getMessage()];
+        }
+    }
 }

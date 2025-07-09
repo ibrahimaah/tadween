@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SendGiftRequest;
+use App\Models\Gift;
 use App\Services\GiftService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -46,6 +47,16 @@ class GiftController extends Controller
         $receivedGifts = $this->giftService->getReceivedGifts($userId, $viewerId);
 
         return view('gifts.received', compact('receivedGifts'));
+    }
+
+    public function getGiftById($id)
+    {
+        $res = $this->giftService->getGiftById($id);
+        if($res['code'] == 0) 
+        {
+            return response()->json(['success' => false, 'message' => $res['msg']]);
+        }
+        return response()->json(['success' => true, 'data' => $res['data']]);
     }
 
 

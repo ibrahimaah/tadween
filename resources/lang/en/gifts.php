@@ -23,4 +23,5 @@ return [
     'enter_msg' => 'Write a message to the gift recipient',
     'gift_price' => 'Gift price',
     'your_wallet_balance' => 'Your wallet balance',
+    'send_success' => 'Your gift has been sent successfully!',
 ];

@@ -23,4 +23,5 @@ return [
     'enter_msg' => 'اكتب رسالة لمستلم الهدية',
     'gift_price' => 'سعر الهدية',
     'your_wallet_balance' => 'رصيدك في المحفظة',
+    'send_success' => 'تم إرسال الهدية بنجاح',
 ];

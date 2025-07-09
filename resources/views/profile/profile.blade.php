@@ -412,9 +412,19 @@
         let selectedIcon = null;
         const gifts_preloader = $('#gifts_preloader');
         const modal_container= $('.modal-body-container');
-        // Open modal & load icons
-        $('#giftModal').on('show.bs.modal', function () { 
+        
+        const resetSendGiftModal = () => {
+            $('#gift_price_spinner').hide();
             $('#textAreaGiftMsg').val('');
+            $('#gift_price').html('-');
+        }
+
+
+        // Open modal & load icons
+        $('#giftModal').on('show.bs.modal', function () 
+        { 
+            resetSendGiftModal();
+            
             $.ajax({
                 url: "{{ route('gifts.index') }}",  // Or just '/gifts' if in JS file
                 type: 'GET',
@@ -474,10 +484,35 @@
         let selectedGiftIconId = null;
         // Handle icon click
         $(document).on('click', '.gift-icon', function () {
+            
             $('.gift-icon').removeClass('border border-orange border-3');
             $(this).addClass('border border-orange border-3');
             selectedGiftIconId = $(this).data('gift-id');
-            $('#confirmGiftBtn').prop('disabled', false);
+            $.ajax({
+                url:`/gifts/${selectedGiftIconId}/price`,
+                method:"GET",
+                beforeSend:function(){
+                    $('#gift_price').html('');
+                    $('#gift_price_spinner').show();
+                    $('#confirmGiftBtn').prop('disabled', true);
+                },
+                success:function(response){
+                    if(response.success)
+                    {  
+                        $('#gift_price').html(response.data.price + '$');
+                    }
+                    else 
+                    {
+                        toastr.error(response.message);
+                    }
+                },
+                error:function(){},
+                complete:function(){
+                    $('#gift_price_spinner').hide();
+                    $('#confirmGiftBtn').prop('disabled', false);
+                }
+            })
+            // $('#confirmGiftBtn').prop('disabled', false);
         });
     
         // Confirm button click
@@ -505,7 +540,7 @@
                     // handle success (e.g., show a success message)
                     if(response.success)
                     {
-                        alert('success')
+                        toastr.success("{{ __('gifts.send_success') }}") 
                         $('#giftModal').modal('hide');
                     }
                     else 
