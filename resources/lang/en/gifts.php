@@ -24,4 +24,7 @@ return [
     'gift_price' => 'Gift price',
     'your_wallet_balance' => 'Your wallet balance',
     'send_success' => 'Your gift has been sent successfully!',
+    'select_gift_to_get_price' => 'Select a gift to get its price',
+    'something_went_wrong' => 'Something went wrong',
+
 ];

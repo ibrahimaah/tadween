@@ -24,4 +24,6 @@ return [
     'gift_price' => 'سعر الهدية',
     'your_wallet_balance' => 'رصيدك في المحفظة',
     'send_success' => 'تم إرسال الهدية بنجاح',
+    'select_gift_to_get_price' => 'اختر هدية لمعرفة ثمنها',
+    'something_went_wrong' => 'حدث خطأ ما',
 ];

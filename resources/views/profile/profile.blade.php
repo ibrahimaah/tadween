@@ -412,19 +412,61 @@
         let selectedIcon = null;
         const gifts_preloader = $('#gifts_preloader');
         const modal_container= $('.modal-body-container');
-        
+        const userId = @json(auth()->id());
+
         const resetSendGiftModal = () => {
-            $('#gift_price_spinner').hide();
+            // $('#gift_price_spinner').hide();
+            $('#gift_price_spinner').css('visibility', 'hidden');
             $('#textAreaGiftMsg').val('');
-            $('#gift_price').html('-');
+            $('#gift_price_note').show();
+            $('#gift_price').html('');
+            $('#confirmGiftBtn').prop('disabled', true);
         }
 
+        const refreshUserWalletBalance = () => {
+            
+            $.ajax({
+                url:`get-user-balance/${userId}`,
+                method:'GET',
+                beforeSend:function(){
+                    $('#userBalance').addClass('d-none');
+                    // $('#userBalance_spinner').show();
+                    $('#userBalance_spinner').css('visibility', 'visible');
+                },
+                success:function(response){
+                    if(response.success)
+                    {
+                        $('#userBalance').html(response.data + '$');
+                    }
+                    else 
+                    {
+                        toastr.error(response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                        console.error('Error fetching user balance:', error);
+                        
+                        // Show a generic error message
+                        toastr.error('Something went wrong while refreshing the balance.');
+
+                        // Optionally, show detailed error if available (e.g., from your Laravel API)
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            toastr.error(xhr.responseJSON.message);
+                        }
+                    },
+                complete:function(){
+                    // $('#userBalance_spinner').hide();
+                    $('#userBalance_spinner').css('visibility', 'hidden');
+                    $('#userBalance').removeClass('d-none');
+                }
+            });
+        }
 
         // Open modal & load icons
         $('#giftModal').on('show.bs.modal', function () 
         { 
             resetSendGiftModal();
-            
+            refreshUserWalletBalance();
             $.ajax({
                 url: "{{ route('gifts.index') }}",  // Or just '/gifts' if in JS file
                 type: 'GET',
@@ -460,7 +502,7 @@
                         // gifts_preloader.addClass('d-none');
                         // modal_container.removeClass('d-none');
                     } else {
-                        alert(response.message);
+                        toastr.error(response.message);
                     }
                 },
                 error: function(xhr, status, error) {
@@ -485,15 +527,18 @@
         // Handle icon click
         $(document).on('click', '.gift-icon', function () {
             
+            $('#gift_price_note').hide();
             $('.gift-icon').removeClass('border border-orange border-3');
             $(this).addClass('border border-orange border-3');
             selectedGiftIconId = $(this).data('gift-id');
+            refreshUserWalletBalance();
             $.ajax({
                 url:`/gifts/${selectedGiftIconId}/price`,
                 method:"GET",
                 beforeSend:function(){
                     $('#gift_price').html('');
-                    $('#gift_price_spinner').show();
+                    // $('#gift_price_spinner').show();
+                    $('#gift_price_spinner').css('visibility', 'visible');
                     $('#confirmGiftBtn').prop('disabled', true);
                 },
                 success:function(response){
@@ -508,7 +553,9 @@
                 },
                 error:function(){},
                 complete:function(){
-                    $('#gift_price_spinner').hide();
+                    // $('#gift_price_spinner').hide();
+                    $('#gift_price_spinner').css('visibility', 'hidden');
+                    
                     $('#confirmGiftBtn').prop('disabled', false);
                 }
             })
@@ -518,12 +565,15 @@
         // Confirm button click
         $('#confirmGiftBtn').click(function () {
             
+            $('#modalPreloader').removeClass('d-none');
+            $('#confirmGiftBtn').prop('disabled', true);
+
             let textAreaGiftMsg = $('#textAreaGiftMsg').val();
             let userGiftVisibility = $('input[name="userGiftVisibility"]:checked').val();
             let receiver_id = $('#receiver_id').val();
 
             if (!selectedGiftIconId) {
-                alert('Please select a gift icon first.');
+                toastr.error('Please select a gift icon first.');
                 return;
             }
             $.ajax({
@@ -545,13 +595,18 @@
                     }
                     else 
                     {
-                        alert(response.message)
+                        toastr.error(response.message)
                     
                     }
                 },
                 error: function(xhr) {
                     // handle error (e.g., show validation errors)
                     console.error(xhr.responseJSON);
+                    toastr.error("{{ __('gifts.something_went_wrong') }}")
+                },
+                complete:function(){
+                    $('#modalPreloader').addClass('d-none');
+                    $('#confirmGiftBtn').prop('disabled', false);
                 }
             }); 
         });

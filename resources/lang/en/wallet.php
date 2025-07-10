@@ -69,5 +69,6 @@ return [
     'select_valid_recipient' => 'Please select a valid recipient by typing @ and choosing from the list.',
     'cannot_transfer_to_self' => 'You cannot transfer to yourself.',
     'payment_gateway_fee_not_deducted' => 'Note: The payment gateway fees are not deducted from the entered amount.',
+    'err_refresh_balance' => 'Something went wrong while refreshing the balance.',
 
 ];

@@ -65,7 +65,7 @@ Route::middleware(['auth', UpdateLastActivity::class])->group(function () {
     Route::get('/wallet/paypal/success', [WalletController::class, 'paypalSuccess'])->name('wallet.paypal.success');
     Route::get('/wallet/paypal/cancel', [WalletController::class, 'paypalCancel'])->name('wallet.paypal.cancel'); 
     Route::get('/fetch-transactions-history', [WalletController::class, 'fetchTransactionsHistory'])->name('transactions.fetchTransactionsHistory');
-
+    Route::get('get-user-balance/{userId}',[WalletController::class,'getUserBalance'])->name('wallet.get_user_balance');
     
     Route::get('gifts',[GiftController::class,'index'])->name('gifts.index');
     Route::post('send-gift',[GiftController::class,'send'])->name('gifts.send');

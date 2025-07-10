@@ -144,6 +144,18 @@ class WalletController extends Controller
             }),
         ]);
     }
+
+    public function getUserBalance($userId)
+    {
+        $res = $this->walletService->getUserBalance($userId);
+        
+        if($res['code'] == 0)
+        {
+            return response()->json(['success' => false,'message' => $res['msg']]);
+        }
+
+        return response()->json(['success' => true, 'data' => $res['data']]);
+    }
     // public function deposit(Request $request)
     // {
     //     $provider = new PayPalClient;

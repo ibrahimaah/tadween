@@ -68,5 +68,6 @@ return [
     'select_valid_recipient' => 'يرجى اختيار مستلم صالح عن طريق كتابة @ واختياره من القائمة.',
     'cannot_transfer_to_self' => 'لا يمكنك التحويل إلى نفسك.',
     'payment_gateway_fee_not_deducted' => 'ملاحظة: رسوم بوابة الدفع لا تُخصم من المبلغ المدخل.',
+    'err_refresh_balance' => 'حدث خطأ أثناء تحديث الرصيد.',
 
 ];

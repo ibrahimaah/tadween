@@ -78,4 +78,19 @@ class WalletService
             return ['code' => 0, 'msg' => $ex->getMessage()];
         }
     }
+
+
+    public function getUserBalance($userId)
+    {
+        try 
+        {
+            $user = User::findOrFail($userId);
+            $userBalance = $user->balance;
+            return ['code' => 1, 'data' => $userBalance];
+        }
+        catch(Throwable $th)
+        {
+            return ['code' => 0, 'msg' => $th->getMessage()];
+        }
+    }
 }

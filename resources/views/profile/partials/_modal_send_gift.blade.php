@@ -1,6 +1,12 @@
 <div class="modal fade" id="giftModal" tabindex="-1" aria-labelledby="giftModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
         <div class="modal-content">
+            <div id="modalPreloader" class="position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-white bg-opacity-75 d-none" style="z-index: 1051;">
+                <div class="spinner-border text-orange" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+            
             <div class="modal-header d-flex justify-content-between align-items-center">
                 <h5 class="modal-title" id="giftModalLabel">{{ __('gifts.select_gift') }}</h5>
                 <button type="button" class="btn-close ms-0" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -69,15 +75,18 @@
                         <div class="container mt-4">
                             <div class="row flex-reverse">
                                 <div class="col-12 d-flex flex-column justify-content-between">
-                                    <span>🎁 {{ __('gifts.gift_price') }}: <strong>
-                                            <span id="gift_price">-</span></strong>
+                                    <span>🎁 {{ __('gifts.gift_price') }}: 
+                                        <span id="gift_price_note" class="small form-text text-muted">{{ __('gifts.select_gift_to_get_price') }}</span>
+                                        <strong>
+                                            <span id="gift_price"></span>
+                                        </strong>
                                         <div class="spinner-border text-orange" id="gift_price_spinner" role="status">
                                             <span class="visually-hidden">Loading...</span>
                                         </div>
                                     </span>
                                     <span>💰 {{ __('gifts.your_wallet_balance') }}: 
-                                        {{-- <strong>{{ auth()->user()->balance }}$</strong> --}}
-                                        <div class="spinner-border" role="status">
+                                        <strong id="userBalance" class="d-none"></strong>
+                                        <div class="spinner-border text-orange" id="userBalance_spinner" role="status">
                                             <span class="visually-hidden">Loading...</span>
                                         </div>
                                     </span>
@@ -88,13 +97,7 @@
 
                     <div class="col-md-6">
                         <div class="modal-actions mt-auto text-start">
-                            <button id="confirmGiftBtn" class="btn btn-orange" disabled>{{ __('gifts.confirm') }}
-
-                                <div class="spinner-border" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div>
-
-                            </button>
+                            <button id="confirmGiftBtn" class="btn btn-orange" disabled>{{ __('gifts.confirm') }}</button>
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                                 {{ __('wallet.cancel') }}
                             </button>
