@@ -41,7 +41,7 @@
                         {{ __('wallet.your_balance') }}
                     </h3>
                     <span class="badge bg-light text-success fs-4 fw-bold">
-                        <span id="balance"><span>$</span>{{ auth()->user()->balance }}</span>
+                        <span>$</span><span id="balance">{{ auth()->user()->balance }}</span>
                         {{-- {{ __('wallet.currency_dollar') }} --}}
                     </span>
                 </div>

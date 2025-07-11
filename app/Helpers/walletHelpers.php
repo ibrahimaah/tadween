@@ -1,7 +1,8 @@
 <?php
 
+use App\Constants\WithdrawType;
 use App\Enums\PaymentMethods;
-
+use Illuminate\Support\Facades\App;
 
 // if (!function_exists('getTransactionDescription')) 
 // {
@@ -21,16 +22,22 @@ use App\Enums\PaymentMethods;
 
 if (!function_exists('getTransactionDescription')) 
 {
-    function getTransactionDescription($transaction)
+    function getTransactionDescription($transaction): string
     {
-        $locale = app()->getLocale();
-        
-        $noteKey = 'transfer_note_' . $locale;
+        $locale = App::getLocale();
 
-        if (!empty($transaction->meta[$noteKey])) {
-            return $transaction->meta[$noteKey];
+        $metaKeys = [
+            WithdrawType::SEND_GIFT   => 'reason_' . $locale,
+            WithdrawType::TRANSFER    => 'transfer_note_' . $locale,
+        ];
+
+        $key = $metaKeys[$transaction->withdraw_type] ?? null;
+
+        if ($key && !empty($transaction->meta[$key])) {
+            return $transaction->meta[$key];
         }
 
         return PaymentMethods::getDescription($transaction->payment_method, true);
     }
+
 }

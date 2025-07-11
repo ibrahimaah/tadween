@@ -59,6 +59,12 @@ class GiftController extends Controller
         return response()->json(['success' => true, 'data' => $res['data']]);
     }
 
+    public function getUserGifts($username)
+    {
+        
+
+        return view('profile.gifts.index');
+    }
 
     
 }

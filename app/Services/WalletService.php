@@ -57,14 +57,10 @@ class WalletService
             }
  
             $transfer = $sender->transfer($receiver, $amount, [
-                'transfer_note_en' => __('wallet.transfer_from', [], 'en') . ' ' .
-                    "<a class='text-orange text-reset text-decoration-none' href='" . route('profile', $sender->username) . "'>" . $sender->name . "</a> " .
-                    __('wallet.transfer_to', [], 'en') . ' ' .
+                'transfer_note_en' => __('wallet.transfer', [], 'en') . ' ' .__('wallet.transfer_to', [], 'en') . ' ' .
                     "<a class='text-orange text-reset text-decoration-none' href='" . route('profile', $receiver->username) . "'>" . $receiver->name . "</a>",
             
-                'transfer_note_ar' => __('wallet.transfer_from', [], 'ar') . ' ' .
-                    "<a class='text-orange text-reset text-decoration-none' href='" . route('profile', $sender->username) . "'>" . $sender->name . "</a> " .
-                    __('wallet.transfer_to', [], 'ar') . ' ' .
+                'transfer_note_ar' => __('wallet.transfer', [], 'ar') . ' ' .__('wallet.transfer_to', [], 'ar') . ' ' .
                     "<a class='text-orange text-reset text-decoration-none' href='" . route('profile', $receiver->username) . "'>" . $receiver->name . "</a>",
             ]);
             

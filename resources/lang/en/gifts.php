@@ -26,5 +26,6 @@ return [
     'send_success' => 'Your gift has been sent successfully!',
     'select_gift_to_get_price' => 'Select a gift to get its price',
     'something_went_wrong' => 'Something went wrong',
-
+    'already_sent' => 'Looks like you’ve already sent this gift! Try choosing a new one.',
+    'no_gifts' => 'No gifts found',
 ];

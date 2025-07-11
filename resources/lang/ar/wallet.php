@@ -58,6 +58,7 @@ return [
     'transfer_failed' => 'فشلت عملية التحويل',
     'transferring' => 'جاري التحويل ...',
     'transfer_from' => 'تحويل من',
+    'transfer' => 'تحويل',
     'transfer_to' => 'إلى',
     'no_transactions' => 'لا توجد معاملات',
     'loading' => 'جاري التحميل ...',
@@ -69,5 +70,7 @@ return [
     'cannot_transfer_to_self' => 'لا يمكنك التحويل إلى نفسك.',
     'payment_gateway_fee_not_deducted' => 'ملاحظة: رسوم بوابة الدفع لا تُخصم من المبلغ المدخل.',
     'err_refresh_balance' => 'حدث خطأ أثناء تحديث الرصيد.',
+    'withdraw_process' => 'عملية سحب',
+    'send_gift' => 'إرسال هدية',
 
 ];

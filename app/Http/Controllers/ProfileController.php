@@ -76,7 +76,8 @@ class ProfileController extends Controller
             'is_blocked' => $user->isBlockedBy($current_user),
             'is_been_blocked' => $current_user->isBlockedBy($user),
             'can_not_see_followers' => $can_not_see_followers,
-            'can_not_see_followings' => $can_not_see_followings
+            'can_not_see_followings' => $can_not_see_followings,
+            'received_gifts' => 0,
         ];
 
         

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Constants\WithdrawType;
 use App\Models\Gift;
 use App\Models\UserGift;
 use App\Models\User;
@@ -25,6 +26,17 @@ class GiftService
             $sender = User::findOrFail($senderId);
             $receiver = User::findOrFail($receiverId);
             $gift = Gift::findOrFail($giftId);
+
+            $alreadySent = UserGift::where('sender_id', $senderId)
+                                    ->where('receiver_id', $receiverId)
+                                    ->where('gift_id', $giftId)
+                                    ->exists();
+            if($alreadySent)
+            {
+                return ['code' => 0, 'msg' => __('gifts.already_sent')];
+            }
+
+
             // info($gift->price);
             if ($sender->balance < $gift->price) {
                 return ['code' => 0, 'msg' => __('gifts.insufficient_balance')];
@@ -36,8 +48,18 @@ class GiftService
             
 
             DB::transaction(function () use ($sender, $receiver, $gift, $visibility) {
-                $meta = ['reason' => 'Gift sent to another user'];
+
+                $meta = [
+                    'reason_en' => __('wallet.send_gift', [], 'en') . ' ' .__('wallet.transfer_to', [], 'en') . ' ' .
+                        "<a class='text-orange text-reset text-decoration-none' href='" . route('profile', $receiver->username) . "'>" . $receiver->name . "</a>",
+                
+                    'reason_ar' => __('wallet.send_gift', [], 'ar') . ' ' .__('wallet.transfer_to', [], 'ar') . ' ' .
+                        "<a class='text-orange text-reset text-decoration-none' href='" . route('profile', $receiver->username) . "'>" . $receiver->name . "</a>",
+                ];
                 $transaction = $sender->withdraw($gift->price, $meta);
+                $transaction->withdraw_type = WithdrawType::SEND_GIFT;
+                $transaction->save();
+
                 // $sender->decrement('wallet_balance', $gift->price);
 
                 UserGift::create([

@@ -215,6 +215,12 @@
                     </p>
                     @endif
                     
+                    <a href="{{ route('profile.gifts.index', $data['username']) }}" class="text-decoration-none">
+                        <p class="text-orange-color mb-0">
+                            {{ $data['received_gifts'] }}
+                            <span class="text-grey fw-bold">{{ __('gifts.title') }}</span>
+                        </p>
+                    </a>
                 </div>
             </div>
     
@@ -361,6 +367,14 @@
     
     @push('js')
     <script src="{{asset('js/users/follow_user.js?version=1.0')}}"></script>
+    <script>
+        // Toastr global options
+        toastr.options = {
+            positionClass: "toast-top-center",
+            closeButton: true,
+            progressBar: true
+        };
+    </script>
     <script>
                 
     $(document).ready(function() {

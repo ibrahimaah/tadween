@@ -13,12 +13,14 @@ enum PaymentMethods: string
     {
         if(!$is_deposit_process)
         {
-            return null;
+            // return null;
+            return  __('wallet.withdraw_process');
         }
         return match ($method) {
             self::PAYPAL->value => __('wallet.deposit_via_paypal'),
             self::CREDIT_OR_DEBIT_CARD->value => __('wallet.deposit_via_credit_or_debit_card'),
-            default => null,
+            // default => null,
+            default => __('wallet.withdraw_process'),
         };
     }
 }
