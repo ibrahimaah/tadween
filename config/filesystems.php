@@ -36,7 +36,7 @@ return [
             'serve' => true,
             'throw' => false,
         ],
-        /*
+        
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
@@ -44,7 +44,7 @@ return [
             'visibility' => 'public',
             'throw' => false,
         ],
-        */
+        
         // إعدادات للمجلدات المختلفة داخل public
         'posts_images' => [
             'driver' => 'local',

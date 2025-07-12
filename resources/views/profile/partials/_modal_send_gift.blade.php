@@ -1,12 +1,14 @@
 <div class="modal fade" id="giftModal" tabindex="-1" aria-labelledby="giftModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
         <div class="modal-content">
-            <div id="modalPreloader" class="position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-white bg-opacity-75 d-none" style="z-index: 1051;">
+            <div id="modalPreloader"
+                class="position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-white bg-opacity-75 d-none"
+                style="z-index: 1051;">
                 <div class="spinner-border text-orange" role="status">
                     <span class="visually-hidden">Loading...</span>
                 </div>
             </div>
-            
+
             <div class="modal-header d-flex justify-content-between align-items-center">
                 <h5 class="modal-title" id="giftModalLabel">{{ __('gifts.select_gift') }}</h5>
                 <button type="button" class="btn-close ms-0" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -29,7 +31,7 @@
             <div class="container my-3">
 
                 <div class="row align-items-center">
-                    <div class="col-md-7">
+                    <div class="col-md-8">
                         <div class="d-flex flex-column">
 
                             <div>
@@ -56,12 +58,13 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-5">
+                    <div class="col-md-4">
                         <div class="mt-3 mb-1">
-                            {{-- <label for="exampleFormControlTextarea1" class="form-label">Example textarea</label>
-                            --}}
                             <textarea class="form-control" id="textAreaGiftMsg" rows="2"
-                                placeholder="{{ __('gifts.enter_msg') }}"></textarea>
+                                placeholder="{{ __('gifts.enter_msg') }}" maxlength="25"></textarea>
+                                <label for="textAreaGiftMsg" class="form-label text-muted d-block mt-1" id="giftMsgLabel">
+                                    0/25
+                                </label>
                         </div>
                     </div>
                 </div>
@@ -75,8 +78,9 @@
                         <div class="container mt-4">
                             <div class="row flex-reverse">
                                 <div class="col-12 d-flex flex-column justify-content-between">
-                                    <span>🎁 {{ __('gifts.gift_price') }}: 
-                                        <span id="gift_price_note" class="small form-text text-muted">{{ __('gifts.select_gift_to_get_price') }}</span>
+                                    <span>🎁 {{ __('gifts.gift_price') }}:
+                                        <span id="gift_price_note" class="small form-text text-muted">{{
+                                            __('gifts.select_gift_to_get_price') }}</span>
                                         <strong>
                                             <span id="gift_price" class="text-success"></span>
                                         </strong>
@@ -84,7 +88,7 @@
                                             <span class="visually-hidden">Loading...</span>
                                         </div>
                                     </span>
-                                    <span>💰 {{ __('gifts.your_wallet_balance') }}: 
+                                    <span>💰 {{ __('gifts.your_wallet_balance') }}:
                                         <strong id="userBalance" class="d-none text-success"></strong>
                                         <div class="spinner-border text-orange" id="userBalance_spinner" role="status">
                                             <span class="visually-hidden">Loading...</span>
@@ -97,7 +101,8 @@
 
                     <div class="col-md-6">
                         <div class="modal-actions mt-auto text-start">
-                            <button id="confirmGiftBtn" class="btn btn-orange" disabled>{{ __('gifts.confirm') }}</button>
+                            <button id="confirmGiftBtn" class="btn btn-orange" disabled>{{ __('gifts.confirm')
+                                }}</button>
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                                 {{ __('wallet.cancel') }}
                             </button>
@@ -111,3 +116,17 @@
         </div>
     </div>
 </div>
+
+@push('js')
+<script>
+    $(document).ready(function () {
+    const maxLength = 25;
+
+    $('#textAreaGiftMsg').on('input', function () {
+        const currentLength = $(this).val().length;
+        $('#giftMsgLabel').text(`${currentLength}/${maxLength}`);
+    });
+});
+
+</script>
+@endpush

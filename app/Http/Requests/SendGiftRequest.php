@@ -21,7 +21,7 @@ class SendGiftRequest extends FormRequest
             'receiver_id' => ['required', 'exists:users,id', 'different:sender_id'],
             'gift_id' => ['required', 'exists:gifts,id'],
             'userGiftVisibility' => ['required', Rule::in(UserGiftVisibility::getAll())],
-            'msg' => ['nullable', 'string', 'max:100'],
+            'msg' => ['nullable', 'string', 'max:25'],
         ];
     }
 
