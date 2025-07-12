@@ -215,12 +215,20 @@
                     </p>
                     @endif
                     
+
+                    @if(!$data['can_not_see_gifts'])
                     <a href="{{ route('profile.gifts.index', $data['username']) }}" class="text-decoration-none">
                         <p class="text-orange-color mb-0">
                             {{ $data['received_gifts'] }}
                             <span class="text-grey fw-bold">{{ __('gifts.title') }}</span>
                         </p>
                     </a>
+                    @else    
+                        <p class="text-orange-color">
+                            <span class="gifts_count">{{ $data['received_gifts'] }}</span>
+                            <span class="text-grey fw-bold">{{ __('gifts.title') }}</span>
+                        </p>
+                    @endif
                 </div>
             </div>
     
@@ -595,7 +603,7 @@
                 method: "POST",
                 data: {
                     gift_id: selectedGiftIconId,
-                    message: textAreaGiftMsg,
+                    msg: textAreaGiftMsg,
                     userGiftVisibility: userGiftVisibility,
                     receiver_id: receiver_id,
                     _token: "{{ csrf_token() }}"
@@ -615,8 +623,24 @@
                 },
                 error: function(xhr) {
                     // handle error (e.g., show validation errors)
-                    console.error(xhr.responseJSON);
-                    toastr.error("{{ __('gifts.something_went_wrong') }}")
+                    // console.error(xhr.responseJSON);
+                    // toastr.error("{{ __('gifts.something_went_wrong') }}")
+ 
+                    if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.errors) {
+                        const errors = xhr.responseJSON.errors;
+
+                        // Loop through all errors and display them with toastr
+                        Object.keys(errors).forEach(function(field) {
+                            errors[field].forEach(function(message) {
+                                toastr.error(message);
+                            });
+                        });
+                    } else {
+                        // Fallback for non-validation errors
+                        toastr.error("{{ __('gifts.something_went_wrong') }}");
+                    }
+
+                    console.error(xhr.responseJSON); // for debugging
                 },
                 complete:function(){
                     $('#modalPreloader').addClass('d-none');

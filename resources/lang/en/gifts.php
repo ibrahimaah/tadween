@@ -28,4 +28,11 @@ return [
     'something_went_wrong' => 'Something went wrong',
     'already_sent' => 'Looks like you’ve already sent this gift! Try choosing a new one.',
     'no_gifts' => 'No gifts found',
+    'from' => 'From',
+    'received_on' => 'Received on',
+    'anonymous' => 'Anonymous',
+    'unknown' => 'unKnown', 
+    'gift' => 'Gift',
+    'message' => 'Message',
+    'visibility' => 'Visibility', 
 ];

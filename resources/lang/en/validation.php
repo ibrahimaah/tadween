@@ -203,6 +203,12 @@ return [
     |
     */
 
-    'attributes' => [],
+    'attributes' => [
+        'receiver_id' => __('gifts.receiver'),
+        'gift_id' => __('gifts.gift'),
+        'msg' => __('gifts.message'),
+        'userGiftVisibility' => __('gifts.visibility'),
+    ],
+
 
 ];

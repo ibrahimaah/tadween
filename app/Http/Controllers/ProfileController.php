@@ -51,6 +51,7 @@ class ProfileController extends Controller
         $is_profile_locked = ($user->account_privacy == 'private') && (!$is_following || $is_pending) && (Auth::id() !== $user->id);
         $can_not_see_followers = ($current_user->isBlockedBy($user)) || (($user->account_privacy == 'private') && (!$is_following));
         $can_not_see_followings = $can_not_see_followers;
+        $can_not_see_gifts = $can_not_see_followers;
 
         // إعداد البيانات المراد عرضها
         $data = [
@@ -77,7 +78,8 @@ class ProfileController extends Controller
             'is_been_blocked' => $current_user->isBlockedBy($user),
             'can_not_see_followers' => $can_not_see_followers,
             'can_not_see_followings' => $can_not_see_followings,
-            'received_gifts' => 0,
+            'can_not_see_gifts' => $can_not_see_gifts,
+            'received_gifts' => $user->receivedGifts()->count(),
         ];
 
         

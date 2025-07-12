@@ -3,119 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment Options</title>
+    <title>Gift Gallery</title>
     <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        .payment-card {
-            border-radius: 15px;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            border: none;
-            overflow: hidden;
-        }
-        .payment-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
-        }
-        .paypal-btn {
-            background: linear-gradient(135deg, #253B80 0%, #179BD7 100%);
-            border: none;
-            padding: 12px 0;
-        }
-        .multi-payment-btn {
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-            border: 1px solid #dee2e6;
-            padding: 12px 0;
-        }
-        .payment-icon {
-            font-size: 1.8rem;
-            margin: 0 8px;
-            vertical-align: middle;
-        }
-        .paypal-icon {
-            color: white;
-        }
-        .visa-icon {
-            color: #1A1F71;
-        }
-        .mastercard-icon {
-            color: #EB001B;
-        }
-        .payment-separator {
-            display: flex;
-            align-items: center;
-            margin: 20px 0;
-        }
-        .payment-separator::before, .payment-separator::after {
-            content: "";
-            flex: 1;
-            border-bottom: 1px solid #dee2e6;
-        }
-        .payment-separator span {
-            padding: 0 10px;
-            color: #6c757d;
-            font-size: 0.9rem;
-        }
-    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-light">
     <div class="container py-5">
-        <div class="row justify-content-center">
-            <div class="col-lg-6 col-md-8">
-                <div class="card payment-card">
-                    <div class="card-body p-4">
-                        <h4 class="card-title text-center mb-4">Complete Your Payment</h4>
-                        
-                        <!-- PayPal Button -->
-                        <button class="btn btn-primary w-100 paypal-btn mb-3 rounded-pill">
-                            <i class="fab fa-cc-paypal payment-icon paypal-icon"></i>
-                            <span class="fw-bold">Pay with PayPal</span>
-                        </button>
-                        
-                        <!-- Separator -->
-                        <div class="payment-separator">
-                            <span>OR PAY WITH CARD</span>
-                        </div>
-                        
-                        <!-- Multi-Payment Option Button -->
-                        <button class="btn w-100 multi-payment-btn rounded-pill">
-                            <i class="fab fa-cc-visa payment-icon visa-icon"></i>
-                            <i class="fab fa-cc-mastercard payment-icon mastercard-icon"></i>
-                            <i class="fab fa-cc-paypal payment-icon" style="color: #253B80;"></i>
-                            <span class="text-muted ms-2">Credit/Debit Card</span>
-                        </button>
-                        
-                        <!-- This would expand to show card form in a real implementation -->
-                        <div class="mt-4 d-none" id="cardForm">
-                            <!-- Card form would go here -->
-                        </div>
+        <!-- Header -->
+        <header class="text-center mb-5">
+            <h1 class="display-4 fw-bold text-primary">Gift Gallery</h1>
+            <p class="lead text-muted">Treasures from special people</p>
+        </header>
+
+        <!-- Gift Cards -->
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            <!-- Gift 1 -->
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <img src="https://placehold.co/300x200?text=Gift+1" class="card-img-top" alt="Gift 1">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">From: Sarah</h5>
+                        <p class="card-text">Wishing you all the happiness in the world! Hope you enjoy this little something.</p>
+                    </div>
+                    <div class="card-footer bg-white">
+                        <small class="text-muted">Received on June 12, 2023</small>
                     </div>
                 </div>
-                
-                <!-- Security Info -->
-                <div class="text-center mt-3">
-                    <small class="text-muted">
-                        <i class="fas fa-lock me-1"></i>
-                        Your payment is secure and encrypted
-                    </small>
+            </div>
+
+            <!-- Gift 2 -->
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <img src="https://placehold.co/300x200?text=Gift+2" class="card-img-top" alt="Gift 2">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">From: Michael</h5>
+                        <p class="card-text">For all the wonderful memories we've shared. Here's to many more!</p>
+                    </div>
+                    <div class="card-footer bg-white">
+                        <small class="text-muted">Received on May 5, 2023</small>
+                    </div>
                 </div>
             </div>
+
+            <!-- Gift 3 -->
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <img src="https://placehold.co/300x200?text=Gift+3" class="card-img-top" alt="Gift 3">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">From: Grandma</h5>
+                        <p class="card-text">Made with love especially for you. Thinking of you always.</p>
+                    </div>
+                    <div class="card-footer bg-white">
+                        <small class="text-muted">Received on December 25, 2022</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gift 4 -->
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <img src="https://placehold.co/300x200?text=Gift+4" class="card-img-top" alt="Gift 4">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">From: Team at Work</h5>
+                        <p class="card-text">Congratulations on your achievement! We're lucky to have you on our team.</p>
+                    </div>
+                    <div class="card-footer bg-white">
+                        <small class="text-muted">Received on April 15, 2023</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gift 5 -->
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <img src="https://placehold.co/300x200?text=Gift+5" class="card-img-top" alt="Gift 5">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">From: Alex</h5>
+                        <p class="card-text">Saw this and immediately thought of you. Hope it brings you joy!</p>
+                    </div>
+                    <div class="card-footer bg-white">
+                        <small class="text-muted">Received on February 14, 2023</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gift 6 -->
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <img src="https://placehold.co/300x200?text=Gift+6" class="card-img-top" alt="Gift 6">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">From: Childhood Friends</h5>
+                        <p class="card-text">No matter how far apart we are, you'll always be in our hearts.</p>
+                    </div>
+                    <div class="card-footer bg-white">
+                        <small class="text-muted">Received on August 20, 2022</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add New Gift Button -->
+        <div class="text-center mt-5">
+            <button class="btn btn-primary btn-lg px-4">
+                <i class="bi bi-plus-circle"></i> Add New Gift
+            </button>
         </div>
     </div>
 
     <!-- Bootstrap 5 JS Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Optional JavaScript for interaction -->
-    <script>
-        document.querySelector('.multi-payment-btn').addEventListener('click', function() {
-            // In a real implementation, this would show the card form
-            document.getElementById('cardForm').classList.toggle('d-none');
-            // For demo purposes, just show an alert
-            alert('Card payment form would expand here in a real implementation');
-        });
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

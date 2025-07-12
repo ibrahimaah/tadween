@@ -20,7 +20,7 @@ class GiftService
      * @param string $visibility ('public', 'private', 'anonymous')
      * @return array ['code' => int, 'data' => mixed, 'msg' => string|null]
      */
-    public function sendGift(int $senderId, int $receiverId, int $giftId, string $visibility = 'public'): array
+    public function sendGift(int $senderId, int $receiverId, int $giftId, string $visibility = 'public',string|null $msg): array
     {
         try {
             $sender = User::findOrFail($senderId);
@@ -47,7 +47,7 @@ class GiftService
             }
             
 
-            DB::transaction(function () use ($sender, $receiver, $gift, $visibility) {
+            DB::transaction(function () use ($sender, $receiver, $gift, $visibility,$msg) {
 
                 $meta = [
                     'reason_en' => __('wallet.send_gift', [], 'en') . ' ' .__('wallet.transfer_to', [], 'en') . ' ' .
@@ -67,6 +67,7 @@ class GiftService
                     'receiver_id' => $receiver->id,
                     'gift_id' => $gift->id,
                     'visibility' => $visibility,
+                    'msg' => $msg
                 ]);
             });
 
@@ -123,4 +124,17 @@ class GiftService
             return ['code' => 0, 'msg' => $th->getMessage()];
         }
     }
+
+    // public function getUserGifts($username)
+    // {
+    //     try 
+    //     {
+    //         $user = User::where('username',$username)->first();
+            
+    //     }
+    //     catch(Throwable $th)
+    //     {
+    //         return ['code' => 0 , 'msg' => $th->getMessage()];
+    //     }
+    // }
 }

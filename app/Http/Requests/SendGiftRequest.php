@@ -21,7 +21,7 @@ class SendGiftRequest extends FormRequest
             'receiver_id' => ['required', 'exists:users,id', 'different:sender_id'],
             'gift_id' => ['required', 'exists:gifts,id'],
             'userGiftVisibility' => ['required', Rule::in(UserGiftVisibility::getAll())],
-            'message' => ['nullable', 'string', 'max:100'],
+            'msg' => ['nullable', 'string', 'max:100'],
         ];
     }
 
@@ -30,6 +30,13 @@ class SendGiftRequest extends FormRequest
     {
         return [
             'receiver_id.different' => __('gifts.cannot_send_self'),
+            'receiver_id.required' => __('validation.required', ['attribute' => __('gifts.receiver')]),
+            'receiver_id.exists' => __('validation.exists', ['attribute' => __('gifts.receiver')]),
+            'gift_id.required' => __('validation.required', ['attribute' => __('gifts.gift')]),
+            'gift_id.exists' => __('validation.exists', ['attribute' => __('gifts.gift')]),
+            'userGiftVisibility.required' => __('validation.required', ['attribute' => __('gifts.visibility')]),
+            'userGiftVisibility.in' => __('validation.in', ['attribute' => __('gifts.visibility')]),
+            'msg.max' => __('validation.max.string', ['attribute' => __('gifts.message'), 'max' => 100]),
         ];
     }
     
