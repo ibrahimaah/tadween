@@ -4,7 +4,7 @@
             <div id="modalPreloader"
                 class="position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-white bg-opacity-75 d-none"
                 style="z-index: 1051;">
-                <div class="spinner-border text-orange" role="status">
+                <div class="spinner-border text-orange-color" role="status">
                     <span class="visually-hidden">Loading...</span>
                 </div>
             </div>
@@ -17,7 +17,7 @@
 
                 <input type="hidden" id="receiver_id" name="receiver_id" value="{{ $data['user_id'] }}" />
                 <div class="d-flex justify-content-center" id="gifts_preloader">
-                    <div class="spinner-border text-orange" role="status">
+                    <div class="spinner-border text-orange-color" role="status">
                         <span class="visually-hidden">Loading...</span>
                     </div>
                 </div>
@@ -84,13 +84,13 @@
                                         <strong>
                                             <span id="gift_price" class="text-success"></span>
                                         </strong>
-                                        <div class="spinner-border text-orange" id="gift_price_spinner" role="status">
+                                        <div class="spinner-border text-orange-color" id="gift_price_spinner" role="status">
                                             <span class="visually-hidden">Loading...</span>
                                         </div>
                                     </span>
                                     <span>💰 {{ __('gifts.your_wallet_balance') }}:
                                         <strong id="userBalance" class="d-none text-success"></strong>
-                                        <div class="spinner-border text-orange" id="userBalance_spinner" role="status">
+                                        <div class="spinner-border text-orange-color" id="userBalance_spinner" role="status">
                                             <span class="visually-hidden">Loading...</span>
                                         </div>
                                     </span>
