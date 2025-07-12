@@ -121,7 +121,7 @@
                 } 
                 else if(gift.visibility === 'public' || (gift.visibility == 'private' && currentAuthId == gift['receiverId']))
                 {
-                    senderDisplay = `<h6 class='text-center'><span><a class='text-decoration-none text-orange' 
+                    senderDisplay = `<h6 class='text-center'><span><a class='text-decoration-none text-orange-color' 
                                               href='/${gift.senderUserName}'>${gift.senderName}
                                             </a>
                                     </span></h6>`;
