@@ -116,12 +116,12 @@
 
                 if (gift.visibility === 'anonymous') 
                 {
-                    senderDisplay = `<h6>{{ __('gifts.from') }} <span class="text-muted">{{ __('gifts.anonymous') }}
+                    senderDisplay = `<h6 class='text-center'><span class="text-muted">{{ __('gifts.anonymous') }}
                                     </span></h6>`;
                 } 
                 else if(gift.visibility === 'public' || (gift.visibility == 'private' && currentAuthId == gift['receiverId']))
                 {
-                    senderDisplay = `<h6>{{ __('gifts.from') }} <span><a class='text-decoration-none text-orange' 
+                    senderDisplay = `<h6 class='text-center'><span><a class='text-decoration-none text-orange' 
                                               href='/${gift.senderUserName}'>${gift.senderName}
                                             </a>
                                     </span></h6>`;
@@ -129,18 +129,19 @@
                 else 
                 {
                     // senderDisplay = "{{ __('gifts.unknown') }}";
-                    senderDisplay = "";
+                    senderDisplay = `<h6 class='text-center'><span class="text-muted">{{ __('gifts.anonymous') }}
+                                    </span></h6>`;
                 }
                 const giftHtml = `
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="card h-100 shadow-sm">
                             <img src="${gift['giftIcon']}" class="card-img-top" alt="Gift 1">
                             <div class="card-body">
                                 ${senderDisplay} 
-                                <p class="card-text">${gift['msg']}</p>
+                                <p class="card-text text-center">${gift['msg']}</p>
                             </div>
-                            <div class="card-footer bg-white">
-                                <small class="text-muted">{{ __('gifts.received_on') }} : ${gift['receive_date']}</small>
+                            <div class="card-footer bg-white text-center">
+                                <small class="text-muted">${gift['receive_date']}</small>
                             </div>
                         </div>
                     </div>`;

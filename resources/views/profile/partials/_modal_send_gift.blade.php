@@ -78,14 +78,14 @@
                                     <span>🎁 {{ __('gifts.gift_price') }}: 
                                         <span id="gift_price_note" class="small form-text text-muted">{{ __('gifts.select_gift_to_get_price') }}</span>
                                         <strong>
-                                            <span id="gift_price"></span>
+                                            <span id="gift_price" class="text-success"></span>
                                         </strong>
                                         <div class="spinner-border text-orange" id="gift_price_spinner" role="status">
                                             <span class="visually-hidden">Loading...</span>
                                         </div>
                                     </span>
                                     <span>💰 {{ __('gifts.your_wallet_balance') }}: 
-                                        <strong id="userBalance" class="d-none"></strong>
+                                        <strong id="userBalance" class="d-none text-success"></strong>
                                         <div class="spinner-border text-orange" id="userBalance_spinner" role="status">
                                             <span class="visually-hidden">Loading...</span>
                                         </div>

@@ -264,7 +264,7 @@ class User extends Authenticatable implements Wallet
 
     public function receivedGifts()
     {
-        return $this->hasMany(UserGift::class, 'receiver_id');
+        return $this->hasMany(UserGift::class, 'receiver_id')->orderBy('created_at','DESC');
     }
 
     //////////////////////////////////////////////////////////////////////
