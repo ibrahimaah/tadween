@@ -135,7 +135,7 @@
                                     </form>
                                 @else 
 
-                                    <span class="text-orange d-block px-2" style="cursor:pointer !important" data-bs-toggle="modal" data-bs-target="#giftModal"> 
+                                    <span class="text-orange-color d-block px-2" style="cursor:pointer !important" data-bs-toggle="modal" data-bs-target="#giftModal"> 
                                         <i class="fa fa-gift"></i>
                                     </span>
 

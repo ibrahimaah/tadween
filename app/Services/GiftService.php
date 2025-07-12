@@ -51,10 +51,10 @@ class GiftService
 
                 $meta = [
                     'reason_en' => __('wallet.send_gift', [], 'en') . ' ' .__('wallet.transfer_to', [], 'en') . ' ' .
-                        "<a class='text-orange text-reset text-decoration-none' href='" . route('profile', $receiver->username) . "'>" . $receiver->name . "</a>",
+                        "<a class='text-orange-color text-reset text-decoration-none' href='" . route('profile', $receiver->username) . "'>" . $receiver->name . "</a>",
                 
                     'reason_ar' => __('wallet.send_gift', [], 'ar') . ' ' .__('wallet.transfer_to', [], 'ar') . ' ' .
-                        "<a class='text-orange text-reset text-decoration-none' href='" . route('profile', $receiver->username) . "'>" . $receiver->name . "</a>",
+                        "<a class='text-orange-color text-reset text-decoration-none' href='" . route('profile', $receiver->username) . "'>" . $receiver->name . "</a>",
                 ];
                 $transaction = $sender->withdraw($gift->price, $meta);
                 $transaction->withdraw_type = WithdrawType::SEND_GIFT;
