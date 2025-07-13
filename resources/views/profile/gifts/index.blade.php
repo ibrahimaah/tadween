@@ -32,7 +32,7 @@
     <div class="bg-white rounded-top-4 p-3">
         <div class="row mb-2">
             <div class="col">
-                <a href="{{route('home')}}" class="text-decoration-none text-orange-color">
+                <a href="{{ url()->previous() }}" class="text-decoration-none text-orange-color">
                     <i class="fa-solid fa-arrow-{{ app()->getLocale() == 'ar' ? 'right' : 'left' }}" id="backPrev"></i>
                 </a>
             </div>

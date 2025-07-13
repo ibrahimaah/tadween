@@ -22,6 +22,10 @@
     .dots-btn:focus {
         opacity: 0.7;
     }
+    .last-selected {
+        border-color: #ff6600 !important;  /* or any distinct color */
+        box-shadow: 10px 10px 15px #ff6600;       /* optional glow */
+    }
 </style>
 
 
@@ -545,111 +549,176 @@
             
         });
     
-        let selectedGiftIconId = null;
-        // Handle icon click
-        $(document).on('click', '.gift-icon', function () {
-            
-            $('#gift_price_note').hide();
-            $('.gift-icon').removeClass('border border-orange border-3');
-            $(this).addClass('border border-orange border-3');
-            selectedGiftIconId = $(this).data('gift-id');
-            refreshUserWalletBalance();
-            $.ajax({
-                url:`/gifts/${selectedGiftIconId}/price`,
-                method:"GET",
-                beforeSend:function(){
-                    $('#gift_price').html('');
-                    // $('#gift_price_spinner').show();
-                    $('#gift_price_spinner').css('visibility', 'visible');
-                    $('#confirmGiftBtn').prop('disabled', true);
-                },
-                success:function(response){
-                    if(response.success)
-                    {  
-                        $('#gift_price').html(response.data.price + '$');
-                    }
-                    else 
-                    {
-                        toastr.error(response.message);
-                    }
-                },
-                error:function(){},
-                complete:function(){
-                    // $('#gift_price_spinner').hide();
-                    $('#gift_price_spinner').css('visibility', 'hidden');
-                    
-                    $('#confirmGiftBtn').prop('disabled', false);
-                }
-            })
-            // $('#confirmGiftBtn').prop('disabled', false);
-        });
-    
-        // Confirm button click
-        $('#confirmGiftBtn').click(function () {
-            
-            $('#modalPreloader').removeClass('d-none');
-            $('#confirmGiftBtn').prop('disabled', true);
 
-            let textAreaGiftMsg = $('#textAreaGiftMsg').val();
-            let userGiftVisibility = $('input[name="userGiftVisibility"]:checked').val();
-            let receiver_id = $('#receiver_id').val();
+        let selectedGiftIconIds = [];
+        let selectedGiftDetails = {}; // { giftId: { msg: '', visibility: 'PUBLIC' } }
+        let lastSelectedGiftId = null;
+        let totalPrice = 0;
 
-            if (!selectedGiftIconId) {
-                toastr.error('Please select a gift icon first.');
+        function renderLastSelectedGiftInput() {
+            const container = $('#lastGiftInputs');
+            container.empty();
+
+            if (!lastSelectedGiftId || !selectedGiftDetails[lastSelectedGiftId]) {
+                container.addClass('d-none');
                 return;
             }
-            $.ajax({
-                url: "{{ route('gifts.send') }}",
-                method: "POST",
-                data: {
-                    gift_id: selectedGiftIconId,
-                    msg: textAreaGiftMsg,
-                    userGiftVisibility: userGiftVisibility,
-                    receiver_id: receiver_id,
-                    _token: "{{ csrf_token() }}"
-                },
-                success: function(response) {
-                    // handle success (e.g., show a success message)
-                    if(response.success)
-                    {
-                        toastr.success("{{ __('gifts.send_success') }}") 
-                        $('#giftModal').modal('hide');
-                    }
-                    else 
-                    {
-                        toastr.error(response.message)
-                    
-                    }
-                },
-                error: function(xhr) {
-                    // handle error (e.g., show validation errors)
-                    // console.error(xhr.responseJSON);
-                    // toastr.error("{{ __('gifts.something_went_wrong') }}")
- 
-                    if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.errors) {
-                        const errors = xhr.responseJSON.errors;
 
-                        // Loop through all errors and display them with toastr
-                        Object.keys(errors).forEach(function(field) {
-                            errors[field].forEach(function(message) {
-                                toastr.error(message);
-                            });
-                        });
-                    } else {
-                        // Fallback for non-validation errors
-                        toastr.error("{{ __('gifts.something_went_wrong') }}");
-                    }
+            const details = selectedGiftDetails[lastSelectedGiftId];
+            const giftInputHtml = `
+                <div class="mb-3 p-3 border rounded" data-gift-input-id="${lastSelectedGiftId}">
+                    <h6>{{ __('gifts.customize_gift') }} #${lastSelectedGiftId}</h6>
 
-                    console.error(xhr.responseJSON); // for debugging
-                },
-                complete:function(){
-                    $('#modalPreloader').addClass('d-none');
-                    $('#confirmGiftBtn').prop('disabled', false);
+                    <textarea class="form-control gift-msg" 
+                        data-gift-id="${lastSelectedGiftId}" 
+                        rows="2" maxlength="25" 
+                        placeholder="{{ __('gifts.enter_msg') }}">${details.msg ?? ''}</textarea>
+
+                    <div class="form-check form-check-inline mt-2">
+                        <input class="form-check-input gift-visibility" type="radio" 
+                            name="visibility_${lastSelectedGiftId}" value="{{ App\Constants\UserGiftVisibility::PUBLIC }}" ${details.visibility === '{{ App\Constants\UserGiftVisibility::PUBLIC }}' ? 'checked' : ''}>
+                        <label class="form-check-label">{{ __('gifts.public_gift_label') }}</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input gift-visibility" type="radio" 
+                            name="visibility_${lastSelectedGiftId}" value="{{ App\Constants\UserGiftVisibility::PRIVATE }}" ${details.visibility === '{{ App\Constants\UserGiftVisibility::PRIVATE }}' ? 'checked' : ''}>
+                        <label class="form-check-label">{{ __('gifts.private_gift_label') }}</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input gift-visibility" type="radio" 
+                            name="visibility_${lastSelectedGiftId}" value="{{ App\Constants\UserGiftVisibility::ANONYMOUS }}" ${details.visibility === '{{ App\Constants\UserGiftVisibility::ANONYMOUS }}' ? 'checked' : ''}>
+                        <label class="form-check-label">{{ __('gifts.anonymous_gift_label') }}</label>
+                    </div>
+                </div>
+            `;
+
+            container.removeClass('d-none').append(giftInputHtml);
+        }
+
+
+
+
+        $(document).on('click', '.gift-icon', function () {
+            const giftId = $(this).data('gift-id');
+            const isSelected = selectedGiftIconIds.includes(giftId);
+
+            if (isSelected) {
+                selectedGiftIconIds = selectedGiftIconIds.filter(id => id !== giftId);
+                $(this).removeClass('border border-orange border-3 last-selected');
+                lastSelectedGiftId = selectedGiftIconIds[selectedGiftIconIds.length - 1] || null;
+            } else {
+                selectedGiftIconIds.push(giftId);
+                if (!selectedGiftDetails[giftId]) {
+                    selectedGiftDetails[giftId] = { msg: '', visibility: '{{ App\Constants\UserGiftVisibility::PUBLIC }}' };
                 }
-            }); 
+                $(this).addClass('border border-orange border-3');
+                lastSelectedGiftId = giftId;
+            }
+
+            $('.gift-icon.border-orange.last-selected').removeClass('last-selected');
+            if (lastSelectedGiftId) {
+                $(`.gift-icon[data-gift-id="${lastSelectedGiftId}"]`).addClass('last-selected');
+            }
+
+            if (selectedGiftIconIds.length === 0) {
+                $('#gift_price_note').show();
+                $('#gift_price').html('');
+                $('#confirmGiftBtn').prop('disabled', true);
+                $('#lastGiftInputs').addClass('d-none').empty();
+                return;
+            } else {
+                $('#gift_price_note').hide();
+                $('#confirmGiftBtn').prop('disabled', false);
+            }
+
+            renderLastSelectedGiftInput();
+
+            $('#gift_price_spinner').css('visibility', 'visible');
+            $('#gift_price').html('');
+            totalPrice = 0;
+            let requestsCompleted = 0;
+
+            selectedGiftIconIds.forEach(giftId => {
+                $.ajax({
+                    url: `/gifts/${giftId}/price`,
+                    method: 'GET',
+                    success: function (response) {
+                        if (response.success) {
+                            totalPrice += parseFloat(response.data.price);
+                        } else {
+                            toastr.error(response.message);
+                        }
+                    },
+                    complete: function () {
+                        requestsCompleted++;
+                        if (requestsCompleted === selectedGiftIconIds.length) {
+                            $('#gift_price_spinner').css('visibility', 'hidden');
+                            $('#gift_price').html(`${totalPrice}$`);
+                        }
+                    }
+                });
+            });
+        });
+
+
+    
+         // Update values on input
+         $(document).on('input', '.gift-msg', function () {
+            const giftId = $(this).data('gift-id');
+            if (selectedGiftDetails[giftId]) {
+                selectedGiftDetails[giftId].msg = $(this).val();
+            }
+        });
+
+        $(document).on('change', '.gift-visibility', function () {
+            const giftId = $('#lastGiftInputs [data-gift-input-id]').data('gift-input-id');
+            if (selectedGiftDetails[giftId]) {
+                selectedGiftDetails[giftId].visibility = $(this).val();
+            }
+        });
+
+        $('#confirmGiftBtn').click(function () {
+        const receiver_id = $('#receiver_id').val();
+
+        if (selectedGiftIconIds.length === 0) {
+            toastr.error(@json(__('gifts.please_select_at_least_one_gift')));
+            return;
+        }
+
+        const giftsToSend = selectedGiftIconIds.map(giftId => ({
+            gift_id: giftId,
+            msg: selectedGiftDetails[giftId]?.msg || '',
+            visibility: selectedGiftDetails[giftId]?.visibility || '{{ App\Constants\UserGiftVisibility::PUBLIC }}'
+        }));
+
+        $.ajax({
+            url: "{{ route('gifts.send') }}",
+            method: "POST",
+            data: {
+                gifts: giftsToSend,
+                receiver_id: receiver_id,
+                totalPrice: totalPrice,
+                _token: "{{ csrf_token() }}"
+            },
+            success: function (response) {
+                if (response.success) {
+                    toastr.success("{{ __('gifts.send_success') }}");
+                    $('#giftModal').modal('hide');
+                    selectedGiftIconIds = [];
+                    selectedGiftDetails = {};
+                    lastSelectedGiftId = null;
+                } else {
+                    toastr.error(response.message);
+                }
+            },
+            error: function () {
+                toastr.error("{{ __('gifts.something_went_wrong') }}");
+            }
         });
     });
-    </script>
+
+    });
+</script>
     
     @endpush
    

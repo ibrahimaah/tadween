@@ -6,6 +6,7 @@ use App\Constants\WithdrawType;
 use App\Models\Gift;
 use App\Models\UserGift;
 use App\Models\User;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -20,63 +21,158 @@ class GiftService
      * @param string $visibility ('public', 'private', 'anonymous')
      * @return array ['code' => int, 'data' => mixed, 'msg' => string|null]
      */
-    public function sendGift(int $senderId, int $receiverId, int $giftId, string $visibility = 'public',string|null $msg): array
+    // public function sendGift(int $senderId, int $receiverId, array $giftIds, string $visibility = 'public',string|null $msg,int $totalPrice): array
+    // {
+    //     try {
+    //         $sender = User::findOrFail($senderId);
+    //         $receiver = User::findOrFail($receiverId);
+    //         // $gift = Gift::findOrFail($giftId);
+
+    //         // $alreadySent = UserGift::where('sender_id', $senderId)
+    //         //                         ->where('receiver_id', $receiverId)
+    //         //                         ->where('gift_id', $giftId)
+    //         //                         ->exists();
+    //         // if($alreadySent)
+    //         // {
+    //         //     return ['code' => 0, 'msg' => __('gifts.already_sent')];
+    //         // }
+
+    //         // info($gift->price);
+    //         if ($sender->balance < $totalPrice) {
+    //             return ['code' => 0, 'msg' => __('gifts.insufficient_balance')];
+    //         }
+
+    //         // if ($senderId === $receiverId) {
+    //         //     return ['code' => 0, 'msg' => __('gifts.cannot_send_self')];
+    //         // }
+            
+
+            
+    //         DB::beginTransaction();
+
+    //         $meta = [
+    //             'reason_en' => __('wallet.send_gift', [], 'en') . ' ' .__('wallet.transfer_to', [], 'en') . ' ' .
+    //                 "<a class='text-orange-color text-reset text-decoration-none' href='" . route('profile', $receiver->username) . "'>" . $receiver->name . "</a>",
+            
+    //             'reason_ar' => __('wallet.send_gift', [], 'ar') . ' ' .__('wallet.transfer_to', [], 'ar') . ' ' .
+    //                 "<a class='text-orange-color text-reset text-decoration-none' href='" . route('profile', $receiver->username) . "'>" . $receiver->name . "</a>",
+    //         ];
+
+    //         foreach($giftIds as $giftId)
+    //         {
+    //             try 
+    //             {
+    //                 $gift = Gift::findOrFail($giftId);
+
+    //                 $transaction = $sender->withdraw($gift->price, $meta);
+
+    //                 $transaction->withdraw_type = WithdrawType::SEND_GIFT;
+
+    //                 $transaction->save();
+
+    //                 // $sender->decrement('wallet_balance', $gift->price);
+                        
+    //                 UserGift::create([
+    //                     'sender_id' => $sender->id,
+    //                     'receiver_id' => $receiver->id,
+    //                     'gift_id' => $gift->id,
+    //                     'visibility' => $visibility,
+    //                     'msg' => $msg
+    //                 ]);
+    //             } 
+    //             catch (Throwable $th) 
+    //             {
+    //                 throw new Exception($th->getMessage());
+    //             }
+    //         }
+
+    //         DB::commit();
+
+    //         return ['code' => 1, 'data' => true];
+    //     } catch (Throwable $th) {
+    //         DB::rollBack();
+    //         return ['code' => 0, 'msg' => $th->getMessage()];
+    //     }
+    // }
+
+
+
+    protected function buildWalletMeta(User $receiver): array
     {
-        try {
-            $sender = User::findOrFail($senderId);
-            $receiver = User::findOrFail($receiverId);
-            $gift = Gift::findOrFail($giftId);
+        $link = "<a class='text-orange-color text-reset text-decoration-none' href='" .
+            route('profile', $receiver->username) . "'>{$receiver->name}</a>";
 
-            $alreadySent = UserGift::where('sender_id', $senderId)
-                                    ->where('receiver_id', $receiverId)
-                                    ->where('gift_id', $giftId)
-                                    ->exists();
-            if($alreadySent)
-            {
-                return ['code' => 0, 'msg' => __('gifts.already_sent')];
-            }
-
-
-            // info($gift->price);
-            if ($sender->balance < $gift->price) {
-                return ['code' => 0, 'msg' => __('gifts.insufficient_balance')];
-            }
-            
-            if ($senderId === $receiverId) {
-                return ['code' => 0, 'msg' => __('gifts.cannot_send_self')];
-            }
-            
-
-            DB::transaction(function () use ($sender, $receiver, $gift, $visibility,$msg) {
-
-                $meta = [
-                    'reason_en' => __('wallet.send_gift', [], 'en') . ' ' .__('wallet.transfer_to', [], 'en') . ' ' .
-                        "<a class='text-orange-color text-reset text-decoration-none' href='" . route('profile', $receiver->username) . "'>" . $receiver->name . "</a>",
-                
-                    'reason_ar' => __('wallet.send_gift', [], 'ar') . ' ' .__('wallet.transfer_to', [], 'ar') . ' ' .
-                        "<a class='text-orange-color text-reset text-decoration-none' href='" . route('profile', $receiver->username) . "'>" . $receiver->name . "</a>",
-                ];
-                $transaction = $sender->withdraw($gift->price, $meta);
-                $transaction->withdraw_type = WithdrawType::SEND_GIFT;
-                $transaction->save();
-
-                // $sender->decrement('wallet_balance', $gift->price);
-
-                UserGift::create([
-                    'sender_id' => $sender->id,
-                    'receiver_id' => $receiver->id,
-                    'gift_id' => $gift->id,
-                    'visibility' => $visibility,
-                    'msg' => $msg
-                ]);
-            });
-
-            return ['code' => 1, 'data' => true];
-        } catch (Throwable $th) {
-            return ['code' => 0, 'msg' => $th->getMessage()];
-        }
+        return [
+            'reason_en' => __('wallet.send_gift', [], 'en') . ' ' . __('wallet.transfer_to', [], 'en') . ' ' . $link,
+            'reason_ar' => __('wallet.send_gift', [], 'ar') . ' ' . __('wallet.transfer_to', [], 'ar') . ' ' . $link,
+        ];
     }
 
+    protected function processGiftTransfer(User $sender, User $receiver, int $giftId, string $visibility, ?string $msg, array $meta): void
+    {
+        $gift = Gift::findOrFail($giftId);
+
+        $transaction = $sender->withdraw($gift->price, $meta);
+        $transaction->withdraw_type = WithdrawType::SEND_GIFT;
+        $transaction->save();
+
+        UserGift::create([
+            'sender_id'   => $sender->id,
+            'receiver_id' => $receiver->id,
+            'gift_id'     => $gift->id,
+            'visibility'  => $visibility,
+            'msg'         => $msg,
+        ]);
+    }
+
+    protected function success(mixed $data): array
+    {
+        return ['code' => 1, 'data' => $data];
+    }
+
+    protected function fail(string $message): array
+    {
+        return ['code' => 0, 'msg' => $message];
+    }
+
+
+    
+    public function sendGift(
+        int $senderId,
+        int $receiverId,
+        array $giftIds,
+        string $visibility = 'public',
+        ?string $msg,
+        int $totalPrice
+    ): array 
+    {
+        try 
+        {
+            $sender = User::findOrFail($senderId);
+            $receiver = User::findOrFail($receiverId);
+    
+            if ($sender->balance < $totalPrice) {
+                return $this->fail(__('gifts.insufficient_balance'));
+            }
+    
+            $meta = $this->buildWalletMeta($receiver);
+    
+            DB::beginTransaction();
+    
+            foreach ($giftIds as $giftId) {
+                $this->processGiftTransfer($sender, $receiver, $giftId, $visibility, $msg, $meta);
+            }
+    
+            DB::commit();
+            return $this->success(true);
+    
+        } 
+        catch (Throwable $e) 
+        {
+            DB::rollBack();
+            return $this->fail($e->getMessage());
+        }
+    }
   
 
     /**

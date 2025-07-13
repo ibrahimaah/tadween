@@ -19,9 +19,12 @@ class SendGiftRequest extends FormRequest
     {
         return [
             'receiver_id' => ['required', 'exists:users,id', 'different:sender_id'],
-            'gift_id' => ['required', 'exists:gifts,id'],
+            'gift_ids' => ['required', 'array', 'min:1'],
+            'gift_ids.*' => ['required', 'exists:gifts,id'],
+            // 'gift_id' => ['required', 'exists:gifts,id'],
             'userGiftVisibility' => ['required', Rule::in(UserGiftVisibility::getAll())],
             'msg' => ['nullable', 'string', 'max:25'],
+            'totalPrice' => ['required', 'numeric', 'min:0'],
         ];
     }
 
@@ -32,11 +35,18 @@ class SendGiftRequest extends FormRequest
             'receiver_id.different' => __('gifts.cannot_send_self'),
             'receiver_id.required' => __('validation.required', ['attribute' => __('gifts.receiver')]),
             'receiver_id.exists' => __('validation.exists', ['attribute' => __('gifts.receiver')]),
-            'gift_id.required' => __('validation.required', ['attribute' => __('gifts.gift')]),
-            'gift_id.exists' => __('validation.exists', ['attribute' => __('gifts.gift')]),
+            'gift_ids.required' => __('gifts.please_select_gift'),
+            'gift_ids.array' => __('gifts.invalid_gift_format'),
+            'gift_ids.*.exists' => __('validation.exists', ['attribute' => __('gifts.gift')]),
+            // 'gift_id.required' => __('validation.required', ['attribute' => __('gifts.gift')]),
+            // 'gift_id.exists' => __('validation.exists', ['attribute' => __('gifts.gift')]),
             'userGiftVisibility.required' => __('validation.required', ['attribute' => __('gifts.visibility')]),
             'userGiftVisibility.in' => __('validation.in', ['attribute' => __('gifts.visibility')]),
             'msg.max' => __('validation.max.string', ['attribute' => __('gifts.message'), 'max' => 100]),
+            'totalPrice.required' => __('validation.required', ['attribute' => __('gifts.total_price')]),
+            'totalPrice.numeric' => __('validation.numeric', ['attribute' => __('gifts.total_price')]),
+            'totalPrice.min' => __('validation.min.numeric', ['attribute' => __('gifts.total_price'), 'min' => 0]),
+
         ];
     }
     
