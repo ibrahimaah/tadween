@@ -37,4 +37,5 @@ return [
     'visibility' => 'Visibility', 
     'please_select_at_least_one_gift' => 'Please select at least one gift icon.',
     'total_price' => 'Total price',
+    'selected_gift_price' => 'Selected gift price',
 ];

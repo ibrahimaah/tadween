@@ -23,8 +23,9 @@
         opacity: 0.7;
     }
     .last-selected {
-        border-color: #ff6600 !important;  /* or any distinct color */
-        box-shadow: 10px 10px 15px #ff6600;       /* optional glow */
+        border: 3px solid var(--bs-success) !important;
+        box-shadow: 0 0 10px var(--bs-success); /* subtle glow */
+       /* optional, to match Bootstrap aesthetics */
     }
 </style>
 
@@ -389,44 +390,44 @@
     </script>
     <script>
                 
-    $(document).ready(function() {
-        // Handle block confirmation
-        $('#confirmBlockButton').on('click', function() 
-        {
-            $('.block-user-form').submit();
-        });
+        $(document).ready(function() {
+            // Handle block confirmation
+            $('#confirmBlockButton').on('click', function() 
+            {
+                $('.block-user-form').submit();
+            });
 
-        // Handle unblock confirmation
-        $('#confirmUnblockButton').on('click', function() {
-            $('.unblock-user-form').submit();
-        });
+            // Handle unblock confirmation
+            $('#confirmUnblockButton').on('click', function() {
+                $('.unblock-user-form').submit();
+            });
 
-        $('#copy-link').on('click', function () {
-            const profileLink = "{{ route('profile', $data['username']) }}"; // or however you get the profile link
-            
+            $('#copy-link').on('click', function () {
+                const profileLink = "{{ route('profile', $data['username']) }}"; // or however you get the profile link
+                
 
-            navigator.clipboard.writeText(profileLink).then(() => {
-                toastr.options = {
-                                    "closeButton": true,
-                                    "debug": false,
-                                    "newestOnTop": false,
-                                    "progressBar": true,
-                                    "positionClass": "toast-bottom-left",  // Position the toast bottom-left
-                                    "preventDuplicates": true,
-                                    "onclick": null,
-                                    "showDuration": "300",
-                                    "hideDuration": "1000",
-                                    "timeOut": "5000",
-                                    "extendedTimeOut": "1000",
-                                    "showEasing": "swing",
-                                    "hideEasing": "linear",
-                                    "showMethod": "fadeIn",
-                                    "hideMethod": "fadeOut"
-                                };
-                toastr.success("{{ __('messages.link_copied') }}");
+                navigator.clipboard.writeText(profileLink).then(() => {
+                    toastr.options = {
+                                        "closeButton": true,
+                                        "debug": false,
+                                        "newestOnTop": false,
+                                        "progressBar": true,
+                                        "positionClass": "toast-bottom-left",  // Position the toast bottom-left
+                                        "preventDuplicates": true,
+                                        "onclick": null,
+                                        "showDuration": "300",
+                                        "hideDuration": "1000",
+                                        "timeOut": "5000",
+                                        "extendedTimeOut": "1000",
+                                        "showEasing": "swing",
+                                        "hideEasing": "linear",
+                                        "showMethod": "fadeIn",
+                                        "hideMethod": "fadeOut"
+                                    };
+                    toastr.success("{{ __('messages.link_copied') }}");
+                });
             });
         });
-    });
 
      
                         
@@ -434,313 +435,96 @@
 
 
 <script>
-    $(document).ready(function () {
-        let selectedIcon = null;
-        const gifts_preloader = $('#gifts_preloader');
-        const modal_container= $('.modal-body-container');
+    $(document).ready(function () 
+    {
         const userId = @json(auth()->id());
+        const $giftsPreloader = $('#gifts_preloader');
+        const $modalContainer = $('.modal-body-container'); 
+    
+        
+    
+        const resetSendGiftModal = () => { 
+        };
 
-        const resetSendGiftModal = () => {
-            // $('#gift_price_spinner').hide();
-            $('#gift_price_spinner').css('visibility', 'hidden');
-            $('#textAreaGiftMsg').val('');
-            $('#gift_price_note').show();
-            $('#gift_price').html('');
-            $('#confirmGiftBtn').prop('disabled', true);
-        }
-
+        
+    
         const refreshUserWalletBalance = () => {
-            
             $.ajax({
-                url:`get-user-balance/${userId}`,
-                method:'GET',
-                beforeSend:function(){
+                url: `get-user-balance/${userId}`,
+                method: 'GET',
+                beforeSend: () => {
                     $('#userBalance').addClass('d-none');
-                    // $('#userBalance_spinner').show();
                     $('#userBalance_spinner').css('visibility', 'visible');
                 },
-                success:function(response){
-                    if(response.success)
-                    {
+                success: (response) => {
+                    if (response.success) {
                         $('#userBalance').html(response.data + '$');
-                    }
-                    else 
-                    {
-                        toastr.error(response.message);
-                    }
-                },
-                error: function(xhr, status, error) {
-                        console.error('Error fetching user balance:', error);
-                        
-                        // Show a generic error message
-                        toastr.error('Something went wrong while refreshing the balance.');
-
-                        // Optionally, show detailed error if available (e.g., from your Laravel API)
-                        if (xhr.responseJSON && xhr.responseJSON.message) {
-                            toastr.error(xhr.responseJSON.message);
-                        }
-                    },
-                complete:function(){
-                    // $('#userBalance_spinner').hide();
-                    $('#userBalance_spinner').css('visibility', 'hidden');
-                    $('#userBalance').removeClass('d-none');
-                }
-            });
-        }
-
-        // Open modal & load icons
-        $('#giftModal').on('show.bs.modal', function () 
-        { 
-            resetSendGiftModal();
-            refreshUserWalletBalance();
-            $.ajax({
-                url: "{{ route('gifts.index') }}",  // Or just '/gifts' if in JS file
-                type: 'GET',
-                dataType: 'json',
-                beforeSend:function(){
-                    if(gifts_preloader.hasClass('d-none'))
-                    {
-                        gifts_preloader.removeClass('d-none');
-                    }
-                    if(!modal_container.hasClass('d-none'))
-                    {
-                        modal_container.addClass('d-none');
-                    }
-                    
-                },
-                success: function(response) {
-                    if(response.success) {
-                        const $container = $('#giftsContainer');
-                        $container.empty();
-
-                        response.data.forEach(function(gift) {
-                            const iconHtml = `
-                                <div class="col-3 mb-3">
-                                    <img src="${gift.icon_url}" 
-                                        data-gift-id="${gift.id}" 
-                                        class="img-fluid gift-icon" 
-                                        style="cursor: pointer;">
-                                </div>
-                            `;
-                            $container.append(iconHtml);
-                        });
-
-                        // gifts_preloader.addClass('d-none');
-                        // modal_container.removeClass('d-none');
                     } else {
                         toastr.error(response.message);
                     }
                 },
-                error: function(xhr, status, error) {
+                error: (xhr) => {
+                    toastr.error('Something went wrong while refreshing the balance.');
+                    if (xhr.responseJSON?.message) {
+                        toastr.error(xhr.responseJSON.message);
+                    }
+                },
+                complete: () => {
+                    $('#userBalance_spinner').css('visibility', 'hidden');
+                    $('#userBalance').removeClass('d-none');
+                }
+            });
+        };
+    
+        // On modal open
+        $('#giftModal').on('show.bs.modal', function () {
+         
+    
+            $.ajax({
+                url: "{{ route('gifts.index') }}",
+                type: 'GET',
+                dataType: 'json',
+                beforeSend: () => {
+                    $giftsPreloader.removeClass('d-none');
+                    $modalContainer.addClass('d-none');
+                },
+                success: function (response) {
+                    if (response.success) {
+                        const $container = $('#giftsContainer');
+                        $container.empty();
+    
+                        response.data.forEach(gift => {
+                            $container.append(`
+                                <div class="col-3 mb-1 px-1">
+                                    <img src="${gift.icon_url}" 
+                                         data-gift-id="${gift.id}" 
+                                         class="img-fluid d-block m-0 p-0 gift-icon" 
+                                         style="cursor: pointer;">
+                                </div>
+                            `);
+                        });
+                    } else {
+                        toastr.error(response.message);
+                    }
+                },
+                error: (xhr, status, error) => {
                     console.error('AJAX error:', error);
                 },
-                complete:function(){
-                    if(!gifts_preloader.hasClass('d-none'))
-                    {
-                        gifts_preloader.addClass('d-none');
-                    }
-                    if(modal_container.hasClass('d-none'))
-                    {
-                        modal_container.removeClass('d-none');
-                    }
+                complete: () => {
+                    $giftsPreloader.addClass('d-none');
+                    $modalContainer.removeClass('d-none');
                 }
             });
-
+        });
+    
+        // Gift icon click handler
+        $(document).on('click', '.gift-icon', function () {
+            const $icon = $(this);
             
         });
-    
-
-        let selectedGiftIconIds = [];
-        let selectedGiftDetails = {}; // { giftId: { msg: '', visibility: 'PUBLIC' } }
-        let lastSelectedGiftId = null;
-        let totalPrice = 0;
-
-        function renderLastSelectedGiftInput() {
-            const container = $('#lastGiftInputs');
-            container.empty();
-
-            if (!lastSelectedGiftId || !selectedGiftDetails[lastSelectedGiftId]) {
-                container.addClass('d-none');
-                return;
-            }
-
-            const details = selectedGiftDetails[lastSelectedGiftId];
-            const giftInputHtml = `
-                <div class="mb-3 p-3 border rounded" data-gift-input-id="${lastSelectedGiftId}">
-                    <h6 class="mb-3">{{ __('gifts.customize_gift') }} #${lastSelectedGiftId}</h6>
-
-                    <div class="row g-3 align-items-start">
-                        <!-- Visibility Options -->
-                        <div class="col-md-8">
-                            <div class="form-check mb-2">
-                                <input class="form-check-input gift-visibility" type="radio"
-                                    name="visibility_${lastSelectedGiftId}"
-                                    value="{{ App\Constants\UserGiftVisibility::PUBLIC }}"
-                                    ${details.visibility === '{{ App\Constants\UserGiftVisibility::PUBLIC }}' ? 'checked' : ''}>
-                                <label class="form-check-label small">
-                                    {{ __('gifts.public_gift_label') }}
-                                </label>
-                            </div>
-                            <div class="form-check mb-2">
-                                <input class="form-check-input gift-visibility" type="radio"
-                                    name="visibility_${lastSelectedGiftId}"
-                                    value="{{ App\Constants\UserGiftVisibility::PRIVATE }}"
-                                    ${details.visibility === '{{ App\Constants\UserGiftVisibility::PRIVATE }}' ? 'checked' : ''}>
-                                <label class="form-check-label small">
-                                    {{ __('gifts.private_gift_label') }}
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input gift-visibility" type="radio"
-                                    name="visibility_${lastSelectedGiftId}"
-                                    value="{{ App\Constants\UserGiftVisibility::ANONYMOUS }}"
-                                    ${details.visibility === '{{ App\Constants\UserGiftVisibility::ANONYMOUS }}' ? 'checked' : ''}>
-                                <label class="form-check-label small">
-                                    {{ __('gifts.anonymous_gift_label') }}
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- Message Textarea -->
-                        <div class="col-md-4">
-                            <textarea class="form-control gift-msg"
-                                data-gift-id="${lastSelectedGiftId}"
-                                rows="2"
-                                maxlength="25"
-                                placeholder="{{ __('gifts.enter_msg') }}">${details.msg ?? ''}</textarea>
-                        </div>
-                    </div>
-                </div>
-
-            `;
-
-            container.removeClass('d-none').append(giftInputHtml);
-        }
-
-
-
-
-        $(document).on('click', '.gift-icon', function () {
-            const giftId = $(this).data('gift-id');
-            const isSelected = selectedGiftIconIds.includes(giftId);
-
-            if (isSelected) {
-                selectedGiftIconIds = selectedGiftIconIds.filter(id => id !== giftId);
-                $(this).removeClass('border border-orange border-3 last-selected');
-                lastSelectedGiftId = selectedGiftIconIds[selectedGiftIconIds.length - 1] || null;
-            } else {
-                selectedGiftIconIds.push(giftId);
-                if (!selectedGiftDetails[giftId]) {
-                    selectedGiftDetails[giftId] = { msg: '', visibility: '{{ App\Constants\UserGiftVisibility::PUBLIC }}' };
-                }
-                $(this).addClass('border border-orange border-3');
-                lastSelectedGiftId = giftId;
-            }
-
-            $('.gift-icon.border-orange.last-selected').removeClass('last-selected');
-            if (lastSelectedGiftId) {
-                $(`.gift-icon[data-gift-id="${lastSelectedGiftId}"]`).addClass('last-selected');
-            }
-
-            if (selectedGiftIconIds.length === 0) {
-                $('#gift_price_note').show();
-                $('#gift_price').html('');
-                $('#confirmGiftBtn').prop('disabled', true);
-                $('#lastGiftInputs').addClass('d-none').empty();
-                return;
-            } else {
-                $('#gift_price_note').hide();
-                $('#confirmGiftBtn').prop('disabled', false);
-            }
-
-            renderLastSelectedGiftInput();
-
-            $('#gift_price_spinner').css('visibility', 'visible');
-            $('#gift_price').html('');
-            totalPrice = 0;
-            let requestsCompleted = 0;
-
-            selectedGiftIconIds.forEach(giftId => {
-                $.ajax({
-                    url: `/gifts/${giftId}/price`,
-                    method: 'GET',
-                    success: function (response) {
-                        if (response.success) {
-                            totalPrice += parseFloat(response.data.price);
-                        } else {
-                            toastr.error(response.message);
-                        }
-                    },
-                    complete: function () {
-                        requestsCompleted++;
-                        if (requestsCompleted === selectedGiftIconIds.length) {
-                            $('#gift_price_spinner').css('visibility', 'hidden');
-                            $('#gift_price').html(`${totalPrice}$`);
-                        }
-                    }
-                });
-            });
-        });
-
-
-    
-         // Update values on input
-         $(document).on('input', '.gift-msg', function () {
-            const giftId = $(this).data('gift-id');
-            if (selectedGiftDetails[giftId]) {
-                selectedGiftDetails[giftId].msg = $(this).val();
-            }
-        });
-
-        $(document).on('change', '.gift-visibility', function () {
-            const giftId = $('#lastGiftInputs [data-gift-input-id]').data('gift-input-id');
-            if (selectedGiftDetails[giftId]) {
-                selectedGiftDetails[giftId].visibility = $(this).val();
-            }
-        });
-
-        $('#confirmGiftBtn').click(function () {
-        const receiver_id = $('#receiver_id').val();
-
-        if (selectedGiftIconIds.length === 0) {
-            toastr.error(@json(__('gifts.please_select_at_least_one_gift')));
-            return;
-        }
-
-        const giftsToSend = selectedGiftIconIds.map(giftId => ({
-            gift_id: giftId,
-            msg: selectedGiftDetails[giftId]?.msg || '',
-            visibility: selectedGiftDetails[giftId]?.visibility || '{{ App\Constants\UserGiftVisibility::PUBLIC }}'
-        }));
-
-        $.ajax({
-            url: "{{ route('gifts.send') }}",
-            method: "POST",
-            data: {
-                gifts: giftsToSend,
-                receiver_id: receiver_id,
-                totalPrice: totalPrice,
-                _token: "{{ csrf_token() }}"
-            },
-            success: function (response) {
-                if (response.success) {
-                    toastr.success("{{ __('gifts.send_success') }}");
-                    $('#giftModal').modal('hide');
-                    selectedGiftIconIds = [];
-                    selectedGiftDetails = {};
-                    lastSelectedGiftId = null;
-                } else {
-                    toastr.error(response.message);
-                }
-            },
-            error: function () {
-                toastr.error("{{ __('gifts.something_went_wrong') }}");
-            }
-        });
     });
-
-    });
-</script>
+    </script>
+    
     
     @endpush
    

@@ -37,4 +37,5 @@ return [
     'visibility' => 'الظهور', 
     'please_select_at_least_one_gift' => 'يرجى اختيار أيقونة هدية واحدة على الأقل.',
     'total_price' => 'السعر الإجمالي',
+    'selected_gift_price' => 'سعر الهدية المختارة',
 ];
