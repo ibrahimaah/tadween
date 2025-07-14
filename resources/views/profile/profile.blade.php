@@ -569,25 +569,31 @@
                 <div class="mb-3 p-3 border rounded" data-gift-input-id="${lastSelectedGiftId}">
                     <h6>{{ __('gifts.customize_gift') }} #${lastSelectedGiftId}</h6>
 
-                    <textarea class="form-control gift-msg" 
-                        data-gift-id="${lastSelectedGiftId}" 
-                        rows="2" maxlength="25" 
-                        placeholder="{{ __('gifts.enter_msg') }}">${details.msg ?? ''}</textarea>
-
-                    <div class="form-check form-check-inline mt-2">
-                        <input class="form-check-input gift-visibility" type="radio" 
-                            name="visibility_${lastSelectedGiftId}" value="{{ App\Constants\UserGiftVisibility::PUBLIC }}" ${details.visibility === '{{ App\Constants\UserGiftVisibility::PUBLIC }}' ? 'checked' : ''}>
-                        <label class="form-check-label">{{ __('gifts.public_gift_label') }}</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input gift-visibility" type="radio" 
-                            name="visibility_${lastSelectedGiftId}" value="{{ App\Constants\UserGiftVisibility::PRIVATE }}" ${details.visibility === '{{ App\Constants\UserGiftVisibility::PRIVATE }}' ? 'checked' : ''}>
-                        <label class="form-check-label">{{ __('gifts.private_gift_label') }}</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input gift-visibility" type="radio" 
-                            name="visibility_${lastSelectedGiftId}" value="{{ App\Constants\UserGiftVisibility::ANONYMOUS }}" ${details.visibility === '{{ App\Constants\UserGiftVisibility::ANONYMOUS }}' ? 'checked' : ''}>
-                        <label class="form-check-label">{{ __('gifts.anonymous_gift_label') }}</label>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form-check form-check-inline mt-2">
+                                <input class="form-check-input gift-visibility" type="radio" 
+                                    name="visibility_${lastSelectedGiftId}" value="{{ App\Constants\UserGiftVisibility::PUBLIC }}" ${details.visibility === '{{ App\Constants\UserGiftVisibility::PUBLIC }}' ? 'checked' : ''}>
+                                <label class="form-check-label" style="font-size:14px !important">{{ __('gifts.public_gift_label') }}</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input gift-visibility" type="radio" 
+                                    name="visibility_${lastSelectedGiftId}" value="{{ App\Constants\UserGiftVisibility::PRIVATE }}" ${details.visibility === '{{ App\Constants\UserGiftVisibility::PRIVATE }}' ? 'checked' : ''}>
+                                <label class="form-check-label" style="font-size:14px !important">{{ __('gifts.private_gift_label') }}</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input gift-visibility" type="radio" 
+                                    name="visibility_${lastSelectedGiftId}" value="{{ App\Constants\UserGiftVisibility::ANONYMOUS }}" ${details.visibility === '{{ App\Constants\UserGiftVisibility::ANONYMOUS }}' ? 'checked' : ''}>
+                                <label class="form-check-label" style="font-size:14px !important">{{ __('gifts.anonymous_gift_label') }}</label>
+                            </div>    
+                        </div>
+                        <div class="col-md-4">
+                            <textarea class="form-control gift-msg" 
+                                data-gift-id="${lastSelectedGiftId}" 
+                                rows="2" maxlength="25" 
+                                placeholder="{{ __('gifts.enter_msg') }}">${details.msg ?? ''}</textarea>
+                        </div>
+                      
                     </div>
                 </div>
             `;

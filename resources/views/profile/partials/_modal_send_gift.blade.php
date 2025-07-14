@@ -27,11 +27,12 @@
                         <!-- Icons will be loaded here -->
                     </div>
  
-                    <div id="lastGiftInputs" class="mt-3 d-none"></div>
+                    
                 </div>
             </div>
 
             <div class="container mb-3">
+                <div id="lastGiftInputs" class="mt-3 d-none"></div>
                 <div class="row justify-content-between align-items-end">
 
                     <div class="col-md-6">
