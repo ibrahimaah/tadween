@@ -569,19 +569,21 @@
                 <div class="mb-3 p-3 border rounded" data-gift-input-id="${lastSelectedGiftId}">
                     <h6>{{ __('gifts.customize_gift') }} #${lastSelectedGiftId}</h6>
 
-                    <div class="row">
+                    
+                    <div class="row align-items-center">
                         <div class="col-md-8">
-                            <div class="form-check form-check-inline mt-2">
+                            
+                            <div class="form-check-input mt-2">
                                 <input class="form-check-input gift-visibility" type="radio" 
                                     name="visibility_${lastSelectedGiftId}" value="{{ App\Constants\UserGiftVisibility::PUBLIC }}" ${details.visibility === '{{ App\Constants\UserGiftVisibility::PUBLIC }}' ? 'checked' : ''}>
                                 <label class="form-check-label" style="font-size:14px !important">{{ __('gifts.public_gift_label') }}</label>
                             </div>
-                            <div class="form-check form-check-inline">
+                            <div class="form-check-input">
                                 <input class="form-check-input gift-visibility" type="radio" 
                                     name="visibility_${lastSelectedGiftId}" value="{{ App\Constants\UserGiftVisibility::PRIVATE }}" ${details.visibility === '{{ App\Constants\UserGiftVisibility::PRIVATE }}' ? 'checked' : ''}>
                                 <label class="form-check-label" style="font-size:14px !important">{{ __('gifts.private_gift_label') }}</label>
                             </div>
-                            <div class="form-check form-check-inline">
+                            <div class="form-check-input">
                                 <input class="form-check-input gift-visibility" type="radio" 
                                     name="visibility_${lastSelectedGiftId}" value="{{ App\Constants\UserGiftVisibility::ANONYMOUS }}" ${details.visibility === '{{ App\Constants\UserGiftVisibility::ANONYMOUS }}' ? 'checked' : ''}>
                                 <label class="form-check-label" style="font-size:14px !important">{{ __('gifts.anonymous_gift_label') }}</label>
