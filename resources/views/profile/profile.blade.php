@@ -434,99 +434,10 @@
     </script>
 
 
-<script>
-    $(document).ready(function () 
-    {
-        const userId = @json(auth()->id());
-        const $giftsPreloader = $('#gifts_preloader');
-        const $modalContainer = $('.modal-body-container'); 
-    
-        
-    
-        const resetSendGiftModal = () => { 
-        };
 
-        
-    
-        const refreshUserWalletBalance = () => {
-            $.ajax({
-                url: `get-user-balance/${userId}`,
-                method: 'GET',
-                beforeSend: () => {
-                    $('#userBalance').addClass('d-none');
-                    $('#userBalance_spinner').css('visibility', 'visible');
-                },
-                success: (response) => {
-                    if (response.success) {
-                        $('#userBalance').html(response.data + '$');
-                    } else {
-                        toastr.error(response.message);
-                    }
-                },
-                error: (xhr) => {
-                    toastr.error('Something went wrong while refreshing the balance.');
-                    if (xhr.responseJSON?.message) {
-                        toastr.error(xhr.responseJSON.message);
-                    }
-                },
-                complete: () => {
-                    $('#userBalance_spinner').css('visibility', 'hidden');
-                    $('#userBalance').removeClass('d-none');
-                }
-            });
-        };
-    
-        // On modal open
-        $('#giftModal').on('show.bs.modal', function () {
-         
-    
-            $.ajax({
-                url: "{{ route('gifts.index') }}",
-                type: 'GET',
-                dataType: 'json',
-                beforeSend: () => {
-                    $giftsPreloader.removeClass('d-none');
-                    $modalContainer.addClass('d-none');
-                },
-                success: function (response) {
-                    if (response.success) {
-                        const $container = $('#giftsContainer');
-                        $container.empty();
-    
-                        response.data.forEach(gift => {
-                            $container.append(`
-                                <div class="col-3 mb-1 px-1">
-                                    <img src="${gift.icon_url}" 
-                                         data-gift-id="${gift.id}" 
-                                         class="img-fluid d-block m-0 p-0 gift-icon" 
-                                         style="cursor: pointer;">
-                                </div>
-                            `);
-                        });
-                    } else {
-                        toastr.error(response.message);
-                    }
-                },
-                error: (xhr, status, error) => {
-                    console.error('AJAX error:', error);
-                },
-                complete: () => {
-                    $giftsPreloader.addClass('d-none');
-                    $modalContainer.removeClass('d-none');
-                }
-            });
-        });
-    
-        // Gift icon click handler
-        $(document).on('click', '.gift-icon', function () {
-            const $icon = $(this);
-            
-        });
-    });
-    </script>
     
     
-    @endpush
+@endpush
    
     
 
