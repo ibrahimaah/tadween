@@ -567,37 +567,51 @@
             const details = selectedGiftDetails[lastSelectedGiftId];
             const giftInputHtml = `
                 <div class="mb-3 p-3 border rounded" data-gift-input-id="${lastSelectedGiftId}">
-                    <h6>{{ __('gifts.customize_gift') }} #${lastSelectedGiftId}</h6>
+                    <h6 class="mb-3">{{ __('gifts.customize_gift') }} #${lastSelectedGiftId}</h6>
 
-                    
-                    <div class="row align-items-center">
+                    <div class="row g-3 align-items-start">
+                        <!-- Visibility Options -->
                         <div class="col-md-8">
-                            
-                            <div class="form-check-input mt-2">
-                                <input class="form-check-input gift-visibility" type="radio" 
-                                    name="visibility_${lastSelectedGiftId}" value="{{ App\Constants\UserGiftVisibility::PUBLIC }}" ${details.visibility === '{{ App\Constants\UserGiftVisibility::PUBLIC }}' ? 'checked' : ''}>
-                                <label class="form-check-label" style="font-size:14px !important">{{ __('gifts.public_gift_label') }}</label>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input gift-visibility" type="radio"
+                                    name="visibility_${lastSelectedGiftId}"
+                                    value="{{ App\Constants\UserGiftVisibility::PUBLIC }}"
+                                    ${details.visibility === '{{ App\Constants\UserGiftVisibility::PUBLIC }}' ? 'checked' : ''}>
+                                <label class="form-check-label small">
+                                    {{ __('gifts.public_gift_label') }}
+                                </label>
                             </div>
-                            <div class="form-check-input">
-                                <input class="form-check-input gift-visibility" type="radio" 
-                                    name="visibility_${lastSelectedGiftId}" value="{{ App\Constants\UserGiftVisibility::PRIVATE }}" ${details.visibility === '{{ App\Constants\UserGiftVisibility::PRIVATE }}' ? 'checked' : ''}>
-                                <label class="form-check-label" style="font-size:14px !important">{{ __('gifts.private_gift_label') }}</label>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input gift-visibility" type="radio"
+                                    name="visibility_${lastSelectedGiftId}"
+                                    value="{{ App\Constants\UserGiftVisibility::PRIVATE }}"
+                                    ${details.visibility === '{{ App\Constants\UserGiftVisibility::PRIVATE }}' ? 'checked' : ''}>
+                                <label class="form-check-label small">
+                                    {{ __('gifts.private_gift_label') }}
+                                </label>
                             </div>
-                            <div class="form-check-input">
-                                <input class="form-check-input gift-visibility" type="radio" 
-                                    name="visibility_${lastSelectedGiftId}" value="{{ App\Constants\UserGiftVisibility::ANONYMOUS }}" ${details.visibility === '{{ App\Constants\UserGiftVisibility::ANONYMOUS }}' ? 'checked' : ''}>
-                                <label class="form-check-label" style="font-size:14px !important">{{ __('gifts.anonymous_gift_label') }}</label>
-                            </div>    
+                            <div class="form-check">
+                                <input class="form-check-input gift-visibility" type="radio"
+                                    name="visibility_${lastSelectedGiftId}"
+                                    value="{{ App\Constants\UserGiftVisibility::ANONYMOUS }}"
+                                    ${details.visibility === '{{ App\Constants\UserGiftVisibility::ANONYMOUS }}' ? 'checked' : ''}>
+                                <label class="form-check-label small">
+                                    {{ __('gifts.anonymous_gift_label') }}
+                                </label>
+                            </div>
                         </div>
+
+                        <!-- Message Textarea -->
                         <div class="col-md-4">
-                            <textarea class="form-control gift-msg" 
-                                data-gift-id="${lastSelectedGiftId}" 
-                                rows="2" maxlength="25" 
+                            <textarea class="form-control gift-msg"
+                                data-gift-id="${lastSelectedGiftId}"
+                                rows="2"
+                                maxlength="25"
                                 placeholder="{{ __('gifts.enter_msg') }}">${details.msg ?? ''}</textarea>
                         </div>
-                      
                     </div>
                 </div>
+
             `;
 
             container.removeClass('d-none').append(giftInputHtml);
