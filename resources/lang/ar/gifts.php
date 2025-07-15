@@ -39,4 +39,6 @@ return [
     'total_price' => 'السعر الإجمالي',
     'selected_gift_price' => 'سعر الهدية المختارة',
     'last_selected_gift' => 'آخر هدية تم اختيارها',
+    'enter_msg_for_active_gift' => 'أدخل رسالة للهدية المحددة',
+    'active_gift_price' => 'سعر الهدية المحددة',
 ];

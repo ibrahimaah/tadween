@@ -39,4 +39,6 @@ return [
     'total_price' => 'Total price',
     'selected_gift_price' => 'Selected gift price',
     'last_selected_gift' => 'Last Selected Gift',
+    'enter_msg_for_active_gift' => 'Enter a message for the active gift',
+    'active_gift_price' => 'Active gift price',
 ];
