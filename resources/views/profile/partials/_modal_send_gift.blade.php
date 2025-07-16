@@ -3,7 +3,7 @@
 @endphp
 <style>
     .selected-gift {
-        border: 2px solid #0d6efd !important; /* Blue for selected */
+        border: 1px solid #444 !important; /* Blue for selected */
         border-radius: 8px;
     }
     
@@ -179,7 +179,7 @@ $(document).ready(function () {
     const $giftMsgLabel = $('#giftMsgLabel');
     const $visibilityRadios = $('input[name="userGiftVisibility"]');
     const maxLength = 25;
-
+    let totalPrice = 0;
     // --- Data Store ---
     let selectedGifts = []; // Array to store selected gift objects {id, price, name, icon_url, message, visibility}
     let activeGiftId = null; // The ID of the gift currently being edited
@@ -277,7 +277,8 @@ $(document).ready(function () {
 
     // --- UI Update Functions ---
     const updateTotalPrice = () => {
-        const totalPrice = selectedGifts.reduce((sum, gift) => sum + gift.price, 0);
+        totalPrice = selectedGifts.reduce((sum, gift) => sum + gift.price, 0);
+
         $('#total_price').text(totalPrice + '$');
         $('#confirmGiftBtn').prop('disabled', selectedGifts.length === 0);
     };
@@ -354,7 +355,7 @@ $(document).ready(function () {
                 name: $icon.data('gift-name'),
                 icon_url: $icon.attr('src'),
                 message: '', // Default message
-                visibility: '{{ UserGiftVisibility::PUBLIC }}' // Default visibility
+                visibility: '{{ UserGiftVisibility::PUBLIC }}', // Default visibility
             });
         }
 
@@ -427,6 +428,7 @@ $(document).ready(function () {
             // We stringify the data and set the contentType to application/json
             data: JSON.stringify({
                 receiver_id: receiverId,
+                totalPrice,
                 gifts: selectedGifts // The array containing {id, message, visibility} for each gift
             }),
             contentType: 'application/json',

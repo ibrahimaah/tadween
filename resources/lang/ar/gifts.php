@@ -14,7 +14,7 @@ return [
     'cannot_send_self' => 'لا يمكنك إرسال هدية لنفسك.',
     'gift_sent_success' => 'تم إرسال الهدية بنجاح!',
     'gift_received_from' => 'هدية من :sender',
-    'anonymous_sender' => 'مجهول',  
+    'anonymous_sender' => 'مجهول',
     'make_gift' => 'قدّم هدية',
     'confirm' => 'تأكيد',
     'public_gift_label' => 'هدية علنية – اسم المُرسل سيكون ظاهرًا للجميع',
@@ -31,14 +31,40 @@ return [
     'from' => 'من',
     'received_on' => 'تاريخ الاستلام',
     'anonymous' => 'مجهول',
-    'unknown' => 'غير معروف', 
+    'unknown' => 'غير معروف',
     'gift' => 'الهدية',
     'message' => 'الرسالة',
-    'visibility' => 'الظهور', 
+    'visibility' => 'الظهور',
     'please_select_at_least_one_gift' => 'يرجى اختيار أيقونة هدية واحدة على الأقل.',
     'total_price' => 'السعر الإجمالي',
     'selected_gift_price' => 'سعر الهدية المختارة',
     'last_selected_gift' => 'آخر هدية تم اختيارها',
     'enter_msg_for_active_gift' => 'أدخل رسالة للهدية المحددة',
     'active_gift_price' => 'سعر الهدية المحددة',
+
+    'receiver_id_required' => 'المستلم مطلوب.',
+    'receiver_id_exists' => 'المستلم المحدد غير موجود.',
+
+    'gifts_required' => 'يجب اختيار هدية واحدة على الأقل.',
+    'gifts_array' => 'يجب أن تكون الهدايا في شكل مصفوفة.',
+    'gifts_min' => 'يجب اختيار هدية واحدة على الأقل.',
+
+    'gift_id_required' => 'يجب أن تحتوي كل هدية على معرف.',
+    'gift_id_exists' => 'إحدى الهدايا المحددة غير صالحة.',
+
+    'visibility_required' => 'يجب تحديد مستوى الظهور لكل هدية.',
+    'visibility_invalid' => 'يجب أن يكون مستوى الظهور: عام، خاص، أو مجهول.',
+
+    'message_string' => 'يجب أن تكون رسالة الهدية نصاً.',
+    'message_max' => 'يجب ألا تتجاوز رسالة الهدية 25 حرفًا.',
+
+    'price_required' => 'يجب تحديد سعر لكل هدية.',
+    'price_numeric' => 'يجب أن يكون سعر الهدية رقمًا.',
+    'price_min' => 'يجب ألا يقل سعر الهدية عن 0.',
+
+    'total_price_required' => 'إجمالي السعر مطلوب.',
+    'total_price_numeric' => 'يجب أن يكون إجمالي السعر رقمًا.',
+    'total_price_min' => 'يجب ألا يقل إجمالي السعر عن 0.',
+
+
 ];

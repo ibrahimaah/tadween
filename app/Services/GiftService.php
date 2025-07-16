@@ -108,21 +108,15 @@ class GiftService
         ];
     }
 
-    protected function processGiftTransfer(User $sender, User $receiver, int $giftId, string $visibility, ?string $msg, array $meta): void
+    protected function processGiftTransfer(User $sender, array $userGiftData, array $meta): void
     {
-        $gift = Gift::findOrFail($giftId);
+        $gift = Gift::findOrFail($userGiftData['gift_id']);
 
         $transaction = $sender->withdraw($gift->price, $meta);
         $transaction->withdraw_type = WithdrawType::SEND_GIFT;
         $transaction->save();
 
-        UserGift::create([
-            'sender_id'   => $sender->id,
-            'receiver_id' => $receiver->id,
-            'gift_id'     => $gift->id,
-            'visibility'  => $visibility,
-            'msg'         => $msg,
-        ]);
+        UserGift::create($userGiftData);
     }
 
     protected function success(mixed $data): array
@@ -139,19 +133,15 @@ class GiftService
     
     public function sendGift(
         int $senderId,
-        int $receiverId,
-        array $giftIds,
-        string $visibility = 'public',
-        ?string $msg,
-        int $totalPrice
+        array $data
     ): array 
     {
         try 
         {
             $sender = User::findOrFail($senderId);
-            $receiver = User::findOrFail($receiverId);
+            $receiver = User::findOrFail($data['receiver_id']);
     
-            if ($sender->balance < $totalPrice) {
+            if ($sender->balance < $data['totalPrice']) {
                 return $this->fail(__('gifts.insufficient_balance'));
             }
     
@@ -159,8 +149,17 @@ class GiftService
     
             DB::beginTransaction();
     
-            foreach ($giftIds as $giftId) {
-                $this->processGiftTransfer($sender, $receiver, $giftId, $visibility, $msg, $meta);
+            foreach ($data['gifts'] as $gift) 
+            {
+                $userGiftData = [
+                    'sender_id' => $sender->id,
+                    'receiver_id' => $receiver->id,
+                    'gift_id' => $gift['id'],
+                    'visibility' => $gift['visibility'],
+                    'msg' => $gift['message'],
+                    'price' => $gift['price']
+                ];
+                $this->processGiftTransfer($sender, $userGiftData, $meta);
             }
     
             DB::commit();

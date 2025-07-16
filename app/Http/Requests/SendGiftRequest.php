@@ -18,37 +18,47 @@ class SendGiftRequest extends FormRequest
     public function rules()
     {
         return [
-            'receiver_id' => ['required', 'exists:users,id', 'different:sender_id'],
-            'gift_ids' => ['required', 'array', 'min:1'],
-            'gift_ids.*' => ['required', 'exists:gifts,id'],
-            // 'gift_id' => ['required', 'exists:gifts,id'],
-            'userGiftVisibility' => ['required', Rule::in(UserGiftVisibility::getAll())],
-            'msg' => ['nullable', 'string', 'max:25'],
+            // 'receiver_id' => ['required', 'exists:users,id', 'different:sender_id'],
+            'receiver_id' => ['required', 'exists:users,id'],
+            'gifts' => ['required', 'array', 'min:1'],
+            'gifts.*.id' => ['required', 'exists:gifts,id'], 
+            'gifts.*.visibility' => ['required', Rule::in(UserGiftVisibility::getAll())],
+            'gifts.*.message' => ['nullable', 'string', 'max:25'],
+            'gifts.*.price' => ['required', 'numeric', 'min:0'],
             'totalPrice' => ['required', 'numeric', 'min:0'],
         ];
     }
 
     // Optionally add custom messages
-    public function messages()
+    public function messages(): array
     {
         return [
-            'receiver_id.different' => __('gifts.cannot_send_self'),
-            'receiver_id.required' => __('validation.required', ['attribute' => __('gifts.receiver')]),
-            'receiver_id.exists' => __('validation.exists', ['attribute' => __('gifts.receiver')]),
-            'gift_ids.required' => __('gifts.please_select_gift'),
-            'gift_ids.array' => __('gifts.invalid_gift_format'),
-            'gift_ids.*.exists' => __('validation.exists', ['attribute' => __('gifts.gift')]),
-            // 'gift_id.required' => __('validation.required', ['attribute' => __('gifts.gift')]),
-            // 'gift_id.exists' => __('validation.exists', ['attribute' => __('gifts.gift')]),
-            'userGiftVisibility.required' => __('validation.required', ['attribute' => __('gifts.visibility')]),
-            'userGiftVisibility.in' => __('validation.in', ['attribute' => __('gifts.visibility')]),
-            'msg.max' => __('validation.max.string', ['attribute' => __('gifts.message'), 'max' => 100]),
-            'totalPrice.required' => __('validation.required', ['attribute' => __('gifts.total_price')]),
-            'totalPrice.numeric' => __('validation.numeric', ['attribute' => __('gifts.total_price')]),
-            'totalPrice.min' => __('validation.min.numeric', ['attribute' => __('gifts.total_price'), 'min' => 0]),
+            'receiver_id.required' => __('gifts.receiver_id_required'),
+            'receiver_id.exists' => __('gifts.receiver_id_exists'),
+    
+            'gifts.required' => __('gifts.gifts_required'),
+            'gifts.array' => __('gifts.gifts_array'),
+            'gifts.min' => __('gifts.gifts_min'),
+    
+            'gifts.*.id.required' => __('gifts.gift_id_required'),
+            'gifts.*.id.exists' => __('gifts.gift_id_exists'),
+    
+            'gifts.*.visibility.required' => __('gifts.visibility_required'),
+            'gifts.*.visibility.in' => __('gifts.visibility_invalid'),
+    
+            'gifts.*.msg.string' => __('gifts.message_string'),
+            'gifts.*.msg.max' => __('gifts.message_max'),
+    
+            'gifts.*.price.required' => __('gifts.price_required'),
+            'gifts.*.price.numeric' => __('gifts.price_numeric'),
+            'gifts.*.price.min' => __('gifts.price_min'),
 
+            'totalPrice.required' => __('gifts.total_price_required'),
+            'totalPrice.numeric' => __('gifts.total_price_numeric'),
+            'totalPrice.min' => __('gifts.total_price_min'),
         ];
     }
+    
     
 
     // Prepare data for validation by adding sender_id to compare with receiver_id

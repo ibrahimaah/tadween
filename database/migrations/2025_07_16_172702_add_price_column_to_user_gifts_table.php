@@ -6,17 +6,23 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
         Schema::table('user_gifts', function (Blueprint $table) {
-            // $table->unique(['sender_id', 'receiver_id', 'gift_id'], 'unique_user_gift');
+            $table->decimal('price', 8, 2)->after('gift_id'); // store snapshot of gift price at time of sending
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
         Schema::table('user_gifts', function (Blueprint $table) {
-            // $table->dropUnique('unique_user_gift');
+            //
         });
     }
 };

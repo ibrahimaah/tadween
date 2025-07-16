@@ -1,5 +1,6 @@
 <?php
 
+use App\Constants\UserGiftVisibility;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -16,7 +17,7 @@ return new class extends Migration
             $table->foreignId('sender_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('receiver_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('gift_id')->constrained('gifts')->onDelete('cascade');
-            $table->enum('visibility', ['public', 'private', 'anonymous'])->default('public');
+            $table->enum('visibility', UserGiftVisibility::getAll())->default('public');
             $table->timestamps();
         });
     }

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserGift extends Model
 {
-    protected $fillable = ['sender_id','receiver_id','gift_id','visibility','msg'];
+    protected $fillable = ['sender_id','receiver_id','gift_id','price','msg','visibility'];
 
     public function sender()
     {

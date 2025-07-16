@@ -30,10 +30,12 @@ class GiftController extends Controller
 
     public function send(SendGiftRequest $request)
     {
+        
         $data = $request->validated();
         
-        $data['sender_id'] = Auth::id();
-        $result = $this->giftService->sendGift($data['sender_id'], $data['receiver_id'], $data['gift_ids'], $data['userGiftVisibility'],$data['msg'],$data['totalPrice']);
+        $senderId = Auth::id(); 
+
+        $result = $this->giftService->sendGift($senderId,$data);
     
         if ($result['code'] === 1) {
             return response()->json(['success' => true, 'message' =>  __('gifts.gift_sent_success')]);

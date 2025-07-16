@@ -41,4 +41,27 @@ return [
     'last_selected_gift' => 'Last Selected Gift',
     'enter_msg_for_active_gift' => 'Enter a message for the active gift',
     'active_gift_price' => 'Active gift price',
+    'receiver_id_required' => 'The receiver is required.',
+    'receiver_id_exists' => 'The selected receiver does not exist.',
+
+    'gifts_required' => 'You must select at least one gift.',
+    'gifts_array' => 'Gifts must be an array.',
+    'gifts_min' => 'At least one gift is required.',
+
+    'gift_id_required' => 'Each gift must have an ID.',
+    'gift_id_exists' => 'One of the selected gifts is invalid.',
+
+    'visibility_required' => 'Each gift must have a visibility setting.',
+    'visibility_invalid' => 'Visibility must be one of: public, private, or anonymous.',
+
+    'message_string' => 'Gift message must be a string.',
+    'message_max' => 'Gift message may not be greater than 25 characters.',
+
+    'price_required' => 'Each gift must have a price.',
+    'price_numeric' => 'Gift price must be a number.',
+    'price_min' => 'Gift price must be at least 0.',
+
+    'total_price_required' => 'The total price is required.',
+    'total_price_numeric' => 'The total price must be a number.',
+    'total_price_min' => 'The total price must be at least 0.',
 ];
