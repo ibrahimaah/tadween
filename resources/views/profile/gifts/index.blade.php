@@ -30,7 +30,7 @@
  
 
     <div class="bg-white rounded-top-4 p-3">
-        <div class="row mb-2">
+        <div class="row">
             <div class="col">
                 <a href="{{ url()->previous() }}" class="text-decoration-none text-orange-color">
                     <i class="fa-solid fa-arrow-{{ app()->getLocale() == 'ar' ? 'right' : 'left' }}" id="backPrev"></i>
@@ -38,7 +38,7 @@
             </div>
 
             <div class="col text-{{ app()->getLocale() == 'ar' ? 'start' : 'end' }}">
-                <h3 class="h5">{{ __('gifts.title') }}</h3>
+                <h5 class="mb-0 text-orange-color">{{ __('gifts.title') }}</h5>
             </div>
         </div>
     </div>
@@ -48,7 +48,7 @@
             <i class="fa fa-spinner fa-spin text-orange-color h1 py-3"></i>
         </div>
         <!-- HTML to display gifts -->
-        <div class="row p-3 g-4 mt-2" id="giftsContainer">
+        <div class="row p-3 g-4 mt-2 mb-4" id="giftsContainer">
         </div>
         
         <p class="text-center text-muted empty_gifts d-none my-5 p-3">{{__('gifts.no_gifts')}}</p>

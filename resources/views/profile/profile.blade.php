@@ -161,6 +161,12 @@
 
                         </div>
                     @endif 
+                @else    
+                    <div class="d-flex justify-content-end align-items-center">
+                        <span class="text-orange-color d-block px-2" style="cursor:pointer !important" data-bs-toggle="modal" data-bs-target="#giftModal"> 
+                            <i class="fa fa-gift"></i>
+                        </span>
+                    </div>
                 @endif
             </div>
         </div>
