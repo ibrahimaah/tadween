@@ -73,5 +73,8 @@ return [
     'are_you_sure_hide' => 'Are you sure you want to hide this gift?',
     'are_you_sure_show' => 'Are you sure you want to show this gift?',
     'are_you_sure_delete' => 'Are you sure you want to delete this gift?',
+    'deleted_successfully' => 'Gift is deleted successfully',
+    'invalid_action' => 'Invalid action',
+    'updated_successfully' => 'Updated successfully',
 
 ];

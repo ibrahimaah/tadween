@@ -5,6 +5,9 @@
                 <h5 class="modal-title">{{ $title }}</h5>
             </div>
             <div class="modal-body">
+                <div id="modal_spinner" class="text-center d-none justify-content-center">
+                    <i class="fa fa-spinner fa-spin text-orange-color h1 py-3"></i>
+                </div>
                 <p id="modal_msg">{{ $message }}</p> 
                 <input type="hidden" id="user_gift_id" name="gift_id">
                 <input type="hidden" id="gift_action" name="gift_action">

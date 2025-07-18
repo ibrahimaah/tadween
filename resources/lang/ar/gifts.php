@@ -74,6 +74,9 @@ return [
     'are_you_sure_hide' => 'هل أنت متأكد أنك تريد إخفاء هذه الهدية ؟',
     'are_you_sure_show' => 'هل أنت متأكد أنك تريد إظهار هذه الهدية؟',
     'are_you_sure_delete' => 'هل أنت متأكد أنك تريد حذف هذه الهدية؟',
+    'deleted_successfully' => 'تم حذف الهدية بنجاح',
+    'invalid_action' => 'حدث غير صالح',
+    'updated_successfully' => 'تم التحديث بنجاح',
 
 
 

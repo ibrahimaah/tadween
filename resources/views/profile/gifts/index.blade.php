@@ -7,7 +7,7 @@
 
 @push('styles')
     <style>
-        .hidden-gift::after {
+        /* .hidden-gift::after {
             content: "{{ __('gifts.hidden') }}";
             position: absolute;
             top: 50%;
@@ -17,8 +17,8 @@
             color: white;
             padding: 5px 10px;
             border-radius: 5px;
-            font-weight: bold;
-        }
+            font-weight: bold; 
+        } */
     </style>
     <link rel="stylesheet" href="{{ asset('css/gifts/gifts_styles.css') }}">  
 @endpush
@@ -100,7 +100,7 @@
             
             giftsData.forEach(userGift => {
                 // Skip hidden gifts if current user is not the receiver
-                if (userGift.status === 'hidden' && currentAuthId != userGift.receiverId) {
+                if (userGift.is_hidden == true && currentAuthId != userGift.receiverId) {
                     return;
                 }
 
@@ -173,8 +173,7 @@
 
             // Add event handlers for the actions
             $('.hide-gift').click(function(e) {
-                const userGiftId = $(this).data('user-gift-id');
-                alert(userGiftId)
+                const userGiftId = $(this).data('user-gift-id'); 
                 handleGiftAction('hide', userGiftId);
             });
 
@@ -225,6 +224,11 @@
                     _token: "{{ csrf_token() }}",
                     _method: 'POST'
                 },
+                beforeSend:function(){
+                    giftsContainer.empty();
+                    $('#modal_spinner').removeClass('d-none');
+                    $('#modal_msg').addClass('d-none');
+                },
                 success: function(response) {
                     if (response.success) {
                         toastr.success(response.message);
@@ -236,6 +240,11 @@
                 error: function(xhr) {
                     toastr.error("{{ __('general.something_went_wrong') }}");
                     console.error(xhr.responseText);
+                },
+                complete:function(){
+                    $('#modal_spinner').addClass('d-none');
+                    $('#modal_msg').removeClass('d-none');
+                    modal.modal('hide');
                 }
             });
         })

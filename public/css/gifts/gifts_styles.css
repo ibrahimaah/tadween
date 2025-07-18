@@ -16,13 +16,13 @@
     color: #6c757d;
     font-style: italic;
 }
-.gift-actions {
+/* .gift-actions {
     position: absolute;
     top: 10px;
     left: 10px;
-    z-index: 10;
+    z-index: 9999999999;
     color:var(--primary-color) !important;
-}
+} */
 .gift-actions .btn {
     background: rgba(255, 255, 255, 0.8);
     border-radius: 50%;
@@ -40,6 +40,6 @@
 }
 .hidden-gift {
     opacity: 0.6;
-    position: relative;
+    /* position: relative;  */
 }
 
