@@ -247,7 +247,7 @@ $(document).ready(function () {
                     $container.empty();
                     response.data.forEach(gift => {
                         $container.append(`
-                            <div class="col-3 mb-3 px-1">
+                            <div class="col-4 col-md-3 mb-3 px-1">
                                 <div class="gift-item">
                                     <img src="${gift.icon_url}" 
                                          data-gift-id="${gift.id}" 
