@@ -4,10 +4,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class UserGift extends Model
 {
-    protected $fillable = ['sender_id','receiver_id','gift_id','price','msg','visibility'];
+    use SoftDeletes;
+    protected $fillable = ['sender_id','receiver_id','gift_id','price','msg','is_hidden','visibility'];
 
     public function sender()
     {

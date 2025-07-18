@@ -1,0 +1,45 @@
+.gift-card {
+    transition: transform 0.3s;
+    margin-bottom: 20px;
+    position: relative;
+}
+.gift-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+.gift-img {
+    height: 200px;
+    object-fit: cover;
+    border-radius: 5px 5px 0 0;
+}
+.no-message {
+    color: #6c757d;
+    font-style: italic;
+}
+.gift-actions {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 10;
+    color:var(--primary-color) !important;
+}
+.gift-actions .btn {
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    color:var(--primary-color) !important;
+}
+.gift-actions .dropdown-menu {
+    min-width: 120px;
+    text-align: center !important;
+}
+.hidden-gift {
+    opacity: 0.6;
+    position: relative;
+}
+

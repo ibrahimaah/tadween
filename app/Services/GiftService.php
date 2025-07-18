@@ -190,7 +190,7 @@ class GiftService
         if ($viewerId !== $userId) {
             $query->where('visibility', '!=', 'private');
         }
-
+       
         return $query->get();
     }
 

@@ -67,10 +67,17 @@ Route::middleware(['auth', UpdateLastActivity::class])->group(function () {
     Route::get('/fetch-transactions-history', [WalletController::class, 'fetchTransactionsHistory'])->name('transactions.fetchTransactionsHistory');
     Route::get('get-user-balance/{userId}',[WalletController::class,'getUserBalance'])->name('wallet.get_user_balance');
     
-    Route::get('gifts',[GiftController::class,'index'])->name('gifts.index');
+    // Route::get('gifts',[GiftController::class,'index'])->name('gifts.index');
+    // Route::get('gifts',[GiftController::class,'received'])->name('gifts.received');
+    // Route::get('gifts/{gift}/price',[GiftController::class,'getGiftById'])->name('gifts.getById');
+
+
     Route::post('send-gift',[GiftController::class,'send'])->name('gifts.send');
-    Route::get('gifts/{gift}/price',[GiftController::class,'getGiftById'])->name('gifts.getById');
     Route::get('{username}/gifts', [GiftController::class, 'getUserGifts'])->name('profile.gifts.index');
+    Route::post('gifts/{giftId}/{action}', [GiftController::class, 'handleAction'])
+    ->whereIn('action', ['show', 'hide', 'delete'])
+    ->name('gifts.handleAction');
+
     
     
 });

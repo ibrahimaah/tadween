@@ -9,12 +9,12 @@ use Illuminate\View\Component;
 class PageHeader extends Component
 {
     public string $title;
-    public string $route;
+    public ?string $route;
 
     /**
      * Create a new component instance.
      */
-    public function __construct(string $title, string $route)
+    public function __construct(string $title, ?string $route=null)
     {
         $this->title = $title;
         $this->route = $route;

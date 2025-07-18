@@ -64,4 +64,14 @@ return [
     'total_price_required' => 'The total price is required.',
     'total_price_numeric' => 'The total price must be a number.',
     'total_price_min' => 'The total price must be at least 0.',
+
+    'hide' => 'hide',
+    'show' => 'show',
+    'delete' => 'delete',
+    'hidden' => 'hidden',
+    'ensure_msg' => 'Confirmation message',
+    'are_you_sure_hide' => 'Are you sure you want to hide this gift?',
+    'are_you_sure_show' => 'Are you sure you want to show this gift?',
+    'are_you_sure_delete' => 'Are you sure you want to delete this gift?',
+
 ];
