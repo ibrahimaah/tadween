@@ -141,8 +141,12 @@ class PostController extends Controller
                 $post_image = $post->image ?json_decode( $post->image) : null;
                 $user_name = $post->user->name ? htmlspecialchars($post->user->name, ENT_QUOTES, 'UTF-8') : null;
                 $user_username = $post->user->username ? htmlspecialchars($post->user->username, ENT_QUOTES, 'UTF-8') : null;
-                $user_cover_image = $post->user->profile->cover_image ? htmlspecialchars($post->user->profile->cover_image, ENT_QUOTES, 'UTF-8') : null;
-                
+               
+                $user_cover_image = $post->user->profile?->cover_image 
+                                    ? htmlspecialchars($post->user->profile->cover_image, ENT_QUOTES, 'UTF-8') 
+                                    : null;
+
+                // dd(2);
                 $pollData = null;
                 if ($post->poll) {
                     $pollData = [
